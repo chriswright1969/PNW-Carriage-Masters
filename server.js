@@ -34,7 +34,7 @@ import {
   listMedia,
   getMedia,
   deleteMedia
-} from "./src/db.js";
+} from './src/db.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
