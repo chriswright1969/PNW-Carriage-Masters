@@ -1,3 +1,5 @@
+import session from "express-session";
+import createSqliteStore from "better-sqlite3-session-store";
 import express from 'express';
 import session from 'express-session';
 import helmet from 'helmet';
@@ -71,8 +73,16 @@ app.use('/uploads', express.static(UPLOAD_DIR, {
 // Sessions persisted in SQLite
 const SqliteStore = SqliteStoreFactory(session);
 
-// Render sits behind a reverse proxy
+// Render sits behind a reverse proxy (needed for secure cookies)
 app.set("trust proxy", 1);
+
+// SQLite-backed session store
+const SqliteStore = createSqliteStore(session);
+const sessionStore = new SqliteStore({
+  client: db,                          // your better-sqlite3 instance from src/db.js
+  expired: 1000 * 60 * 60 * 24 * 14,   // 14 days
+  clearInterval: 1000 * 60 * 60        // cleanup hourly
+});
 
 app.use(session({
   store: new SqliteStore({
