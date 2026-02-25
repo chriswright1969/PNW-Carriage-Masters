@@ -1,1 +1,13 @@
-
+<footer>
+  <div class="wrap">
+    <div class="muted">
+      <div><strong><%= settings.company_name %></strong> — <%= settings.tagline %></div>
+      <div>Phone: <a href="tel:<%= settings.phone.replace(/\s/g,'') %>"><%= settings.phone %></a></div>
+      <div><%= settings.address %></div>
+      <div class="small">Serving <%= settings.coverage %></div>
+      <div class="small" style="margin-top:10px">© <%= new Date().getFullYear() %> <%= settings.company_name %></div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

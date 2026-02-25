@@ -1,0 +1,25 @@
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="Home">
+      <img src="/images/logo.png" alt="<%= settings.company_name %> logo"/>
+      <div class="brand-text">
+        <div class="name"><%= settings.company_name %></div>
+        <div class="tag"><%= settings.tagline %></div>
+      </div>
+    </a>
+
+    <nav aria-label="Primary">
+      <a href="/" class="pill">Home</a>
+      <a href="/gallery" class="pill">Gallery</a>
+      <a href="/contact" class="pill">Contact</a>
+      <% if (admin) { %>
+        <a href="/admin" class="pill">Admin</a>
+        <form action="/logout" method="post" style="display:inline">
+          <button class="btn" type="submit" style="margin-left:10px">Log out</button>
+        </form>
+      <% } else { %>
+        <a href="/login" class="pill">Admin login</a>
+      <% } %>
+    </nav>
+  </div>
+</header>
