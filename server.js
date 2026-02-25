@@ -70,6 +70,10 @@ app.use('/uploads', express.static(UPLOAD_DIR, {
 
 // Sessions persisted in SQLite
 const SqliteStore = SqliteStoreFactory(session);
+
+// Render sits behind a reverse proxy
+app.set("trust proxy", 1);
+
 app.use(session({
   store: new SqliteStore({
     client: db,
@@ -81,10 +85,12 @@ app.use(session({
   secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
   resave: false,
   saveUninitialized: false,
+  store: sessionStore,
   cookie: {
     httpOnly: true,
     sameSite: 'lax',
-    secure: !!process.env.RENDER // Render sets this env var; https only
+    secure: "auto",
+    maxAge: 1000 * 60 * 60 * 24 * 14
   }
 }));
 
