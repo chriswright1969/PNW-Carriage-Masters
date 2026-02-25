@@ -1,0 +1,73 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/header') %>
+
+<div class="wrap">
+  <div class="card">
+    <h1 class="section-title">Manage admins</h1>
+    <p class="muted">Add new admin users, reset passwords, or deactivate accounts. The last active admin cannot be removed.</p>
+
+    <% if (error && error.length) { %>
+      <div class="notice bad"><%= error %></div>
+      <div style="height:10px"></div>
+    <% } %>
+
+    <h2 class="section-title">Current admins</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% admins.forEach((a) => { %>
+          <tr>
+            <td><%= a.email %></td>
+            <td><%= (a.first_name || '') %> <%= (a.last_name || '') %></td>
+            <td><%= a.is_active ? 'Active' : 'Inactive' %></td>
+            <td><%= a.created_at %></td>
+            <td>
+              <form action="/admin/admins/<%= a.id %>/reset-password" method="post" style="display:inline-block;min-width:220px">
+                <input name="password" type="password" placeholder="New password (10+)" minlength="10" required style="width:180px"/>
+                <button class="btn" type="submit">Reset</button>
+              </form>
+
+              <form action="/admin/admins/<%= a.id %>/deactivate" method="post" style="display:inline-block;margin-left:8px">
+                <button class="btn danger" type="submit" <%= a.is_active ? '' : 'disabled' %>>Deactivate</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <hr/>
+    <h2 class="section-title">Add new admin</h2>
+    <form action="/admin/admins/add" method="post">
+      <div class="grid-3">
+        <div>
+          <label for="first_name">First name</label>
+          <input id="first_name" name="first_name" type="text" maxlength="60"/>
+        </div>
+        <div>
+          <label for="last_name">Surname</label>
+          <input id="last_name" name="last_name" type="text" maxlength="60"/>
+        </div>
+        <div>
+          <label for="email">Email *</label>
+          <input id="email" name="email" type="email" required/>
+        </div>
+      </div>
+      <label for="password">Password * (10+ characters)</label>
+      <input id="password" name="password" type="password" required minlength="10"/>
+      <div style="height:10px"></div>
+      <button class="btn" type="submit">Add admin</button>
+      <a class="btn" href="/admin" style="margin-left:8px">Back</a>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
