@@ -17,7 +17,7 @@ import createSqliteStore from "better-sqlite3-session-store";
 import {
   db,
   DATA_DIR,
-  // DB_PATH,        // (keep if you actually use it later)
+  DB_PATH,
   getSetting,
   setSetting,
   listSettings,
@@ -473,6 +473,6 @@ app.get('/health', (_req, res) => {
 // ---------- Start ----------
 app.listen(PORT, () => {
   console.log(`PNW Carriage Masters site listening on port ${PORT}`);
-  console.log(`DB: ${DB_PATH}`);
+  console.log("DB ready");
   console.log(`Uploads: ${UPLOAD_DIR}`);
 });
