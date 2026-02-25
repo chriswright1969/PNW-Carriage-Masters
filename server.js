@@ -1,25 +1,23 @@
+import express from "express";
 import session from "express-session";
-import createSqliteStore from "better-sqlite3-session-store";
-import express from 'express';
-import session from 'express-session';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import path from 'path';
-import fs from 'fs';
-import crypto from 'crypto';
-import dotenv from 'dotenv';
-import multer from 'multer';
-import bcrypt from 'bcryptjs';
-import validator from 'validator';
-import nodemailer from 'nodemailer';
-import sanitizeHtml from 'sanitize-html';
-import dns from 'dns/promises';
+import helmet from "helmet";
+import morgan from "morgan";
+import path from "path";
+import fs from "fs";
+import crypto from "crypto";
+import multer from "multer";
+import bcrypt from "bcryptjs";
+import validator from "validator";
+import nodemailer from "nodemailer";
+import sanitizeHtml from "sanitize-html";
+import dns from "dns/promises";
 
-import SqliteStoreFactory from 'better-sqlite3-session-store';
+import createSqliteStore from "better-sqlite3-session-store";
+
 import {
   db,
   DATA_DIR,
-  DB_PATH,
+  // DB_PATH,        // (keep if you actually use it later)
   getSetting,
   setSetting,
   listSettings,
@@ -36,53 +34,47 @@ import {
   listMedia,
   getMedia,
   deleteMedia
-} from './src/db.js';
-
-dotenv.config();
+} from "./src/db.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(DATA_DIR, 'uploads');
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(DATA_DIR, "uploads");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 // ---------- View engine ----------
-app.set('view engine', 'ejs');
-app.set('views', path.join(process.cwd(), 'views'));
+app.set("view engine", "ejs");
+app.set("views", path.join(process.cwd(), "views"));
 
 // ---------- Middleware ----------
-app.use(helmet({
-  contentSecurityPolicy: false // keep simple; can tighten later once you lock down external assets
-}));
-app.use(morgan('combined'));
-app.use(express.urlencoded({ extended: true, limit: '2mb' }));
-app.use(express.json({ limit: '2mb' }));
-
-// Static assets
-app.use('/css', express.static(path.join(process.cwd(), 'public/css')));
-app.use('/js', express.static(path.join(process.cwd(), 'public/js')));
-app.use('/images', express.static(path.join(process.cwd(), 'public/images')));
-app.use('/uploads', express.static(UPLOAD_DIR, {
-  // simple cache; uploaded assets change rarely
-  maxAge: '7d',
-  setHeaders(res) {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-  }
-}));
-
-// Sessions persisted in SQLite
-const SqliteStore = SqliteStoreFactory(session);
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use(morgan("combined"));
+app.use(express.urlencoded({ extended: true, limit: "2mb" }));
+app.use(express.json({ limit: "2mb" }));
 
 // Render sits behind a reverse proxy (needed for secure cookies)
 app.set("trust proxy", 1);
 
-// SQLite-backed session store
+// Sessions persisted in SQLite
 const SqliteStore = createSqliteStore(session);
 const sessionStore = new SqliteStore({
-  client: db,                          // your better-sqlite3 instance from src/db.js
+  client: db,
   expired: 1000 * 60 * 60 * 24 * 14,   // 14 days
   clearInterval: 1000 * 60 * 60        // cleanup hourly
 });
+
+app.use(session({
+  store: sessionStore,
+  secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString("hex"),
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: "auto",
+    maxAge: 1000 * 60 * 60 * 24 * 14
+  }
+}));
 
 app.use(session({
   store: new SqliteStore({
