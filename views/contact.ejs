@@ -1,1 +1,86 @@
+<%- include('partials/head', { title }) %>
+<%- include('partials/header') %>
 
+<div class="wrap">
+  <div class="card">
+    <h1 class="section-title"><%= pageTitle %></h1>
+    <div><%- contentHtml %></div>
+
+    <hr/>
+
+    <% if (success) { %>
+      <div class="notice ok">Thank you — your message has been sent. We’ll respond as soon as possible.</div>
+      <div style="height:10px"></div>
+    <% } %>
+    <% if (error && error.length) { %>
+      <div class="notice bad"><%= error %></div>
+      <div style="height:10px"></div>
+    <% } %>
+
+    <div class="grid-3">
+      <div class="notice">
+        <div class="small muted">Phone</div>
+        <div><a href="tel:<%= settings.phone.replace(/\s/g,'') %>"><%= settings.phone %></a></div>
+      </div>
+      <div class="notice">
+        <div class="small muted">Address</div>
+        <div><%= settings.address %></div>
+      </div>
+      <div class="notice">
+        <div class="small muted">Find us</div>
+        <div class="small"><a href="<%= settings.map_link %>" target="_blank" rel="noopener noreferrer">Map link</a></div>
+        <div class="small"><a href="<%= settings.what3words_link %>" target="_blank" rel="noopener noreferrer">what3words</a></div>
+      </div>
+    </div>
+
+    <div style="height:14px"></div>
+
+    <div class="icon-row">
+      <% if (settings.facebook_link) { %>
+        <a class="btn" href="<%= settings.facebook_link %>" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a>
+      <% } %>
+      <% if (settings.instagram_link) { %>
+        <a class="btn" href="<%= settings.instagram_link %>" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
+      <% } %>
+      <% if (settings.tiktok_link) { %>
+        <a class="btn" href="<%= settings.tiktok_link %>" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TikTok</a>
+      <% } %>
+      <% if (settings.youtube_link) { %>
+        <a class="btn" href="<%= settings.youtube_link %>" target="_blank" rel="noopener noreferrer" aria-label="YouTube">YouTube</a>
+      <% } %>
+    </div>
+
+    <hr/>
+
+    <h2 class="section-title">Send an enquiry</h2>
+    <form action="/contact" method="post" novalidate>
+      <div class="grid-3">
+        <div>
+          <label for="first_name">Christian name *</label>
+          <input id="first_name" name="first_name" type="text" required maxlength="60" autocomplete="given-name"/>
+        </div>
+        <div>
+          <label for="last_name">Surname *</label>
+          <input id="last_name" name="last_name" type="text" required maxlength="60" autocomplete="family-name"/>
+        </div>
+        <div>
+          <label for="phone">Telephone *</label>
+          <input id="phone" name="phone" type="tel" required maxlength="40" autocomplete="tel"/>
+        </div>
+      </div>
+
+      <label for="email">Email *</label>
+      <input id="email" name="email" type="email" required maxlength="120" autocomplete="email"/>
+
+      <label for="message">Message (optional)</label>
+      <textarea id="message" name="message" rows="5" maxlength="1200" placeholder="Tell us about the service date, pickup location, and vehicle preference (if known)."></textarea>
+
+      <div style="height:10px"></div>
+      <button class="btn" type="submit">Send</button>
+      <div class="small muted" style="margin-top:10px">We’ll use your details only to respond to this enquiry.</div>
+    </form>
+
+  </div>
+</div>
+
+<%- include('partials/footer') %>

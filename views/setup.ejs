@@ -1,0 +1,46 @@
+<%- include('partials/head', { title }) %>
+<%- include('partials/header') %>
+
+<div class="wrap">
+  <div class="card" style="max-width:720px;margin:0 auto">
+    <h1 class="section-title">Initial admin setup</h1>
+    <p class="muted">This page is only available when no admin users exist. A <span class="code">SETUP_TOKEN</span> must be configured on the server to create the first admin.</p>
+
+    <% if (error && error.length) { %>
+      <div class="notice bad"><%= error %></div>
+      <div style="height:10px"></div>
+    <% } %>
+
+    <div class="notice">
+      <div class="small muted"><%= setupTokenHint %></div>
+    </div>
+
+    <form action="/setup" method="post">
+      <label for="token">Setup token *</label>
+      <input id="token" name="token" type="password" required autocomplete="one-time-code"/>
+
+      <div class="grid-3">
+        <div>
+          <label for="first_name">First name</label>
+          <input id="first_name" name="first_name" type="text" maxlength="60"/>
+        </div>
+        <div>
+          <label for="last_name">Surname</label>
+          <input id="last_name" name="last_name" type="text" maxlength="60"/>
+        </div>
+        <div>
+          <label for="email">Admin email *</label>
+          <input id="email" name="email" type="email" required autocomplete="email"/>
+        </div>
+      </div>
+
+      <label for="password">Admin password * (10+ characters)</label>
+      <input id="password" name="password" type="password" required minlength="10"/>
+
+      <div style="height:10px"></div>
+      <button class="btn" type="submit">Create admin</button>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

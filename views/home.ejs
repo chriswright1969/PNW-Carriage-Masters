@@ -1,0 +1,55 @@
+<%- include('partials/head', { title }) %>
+<%- include('partials/header') %>
+
+<div class="wrap hero">
+  <div class="hero-card">
+    <div class="kv">
+      <div>
+        <h1><%= pageTitle %></h1>
+        <div class="lead">Respectful, professional alternative hearse hire for unique send‑offs.</div>
+        <div class="notice">
+          <div class="small muted">Covering: <strong><%= settings.coverage %></strong></div>
+          <div class="small muted">Call: <a href="tel:<%= settings.phone.replace(/\s/g,'') %>"><%= settings.phone %></a></div>
+        </div>
+        <div style="height:12px"></div>
+        <div><%- contentHtml %></div>
+        <div style="height:18px"></div>
+        <div class="icon-row">
+          <a class="btn" href="/contact">Contact / Find us</a>
+          <a class="btn" href="/gallery">View gallery</a>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h2 class="section-title">Our vehicles</h2>
+          <ul class="muted">
+            <li>Bespoke truck hearse</li>
+            <li>Classic black Rolls‑Royce hearse & limousine</li>
+            <li>Classic white Daimler hearse & limousine</li>
+          </ul>
+          <hr/>
+          <div class="muted small">Discreet service, immaculate presentation, and considerate support for families and funeral directors.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="grid-3">
+    <div class="card">
+      <h3 class="section-title">Sombre & professional</h3>
+      <div class="muted">A calm, respectful presence on the day — your arrangements carried out with care.</div>
+    </div>
+    <div class="card">
+      <h3 class="section-title">Flexible hire</h3>
+      <div class="muted">Work with us directly or through your funeral director to suit the service.</div>
+    </div>
+    <div class="card">
+      <h3 class="section-title">Local coverage</h3>
+      <div class="muted">North Wales, Chester, Wrexham, Shrewsbury, Liverpool, Wirral and Warrington.</div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

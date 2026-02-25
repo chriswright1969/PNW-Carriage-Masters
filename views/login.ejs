@@ -1,0 +1,31 @@
+<%- include('partials/head', { title }) %>
+<%- include('partials/header') %>
+
+<div class="wrap">
+  <div class="card" style="max-width:520px;margin:0 auto">
+    <h1 class="section-title">Admin login</h1>
+
+    <% if (error && error.length) { %>
+      <div class="notice bad"><%= error %></div>
+      <div style="height:10px"></div>
+    <% } %>
+
+    <form action="/login" method="post">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required autocomplete="username"/>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required autocomplete="current-password"/>
+
+      <div style="height:10px"></div>
+      <button class="btn" type="submit">Log in</button>
+    </form>
+
+    <hr/>
+    <div class="small muted">
+      If this is the first time setting up the site and no admins exist, use <span class="code">/setup</span> (requires a server setup token).
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
