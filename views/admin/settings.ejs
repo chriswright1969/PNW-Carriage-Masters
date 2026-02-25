@@ -1,0 +1,79 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/header') %>
+
+<div class="wrap">
+  <div class="card">
+    <h1 class="section-title">Site settings</h1>
+    <p class="muted">These values appear across the site. The contact form is forwarded to the email below.</p>
+
+    <form action="/admin/settings" method="post">
+      <div class="grid-3">
+        <div>
+          <label for="company_name">Company name</label>
+          <input id="company_name" name="company_name" type="text" value="<%= settings.company_name %>" maxlength="120"/>
+        </div>
+        <div>
+          <label for="tagline">Tagline</label>
+          <input id="tagline" name="tagline" type="text" value="<%= settings.tagline %>" maxlength="120"/>
+        </div>
+        <div>
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="text" value="<%= settings.phone %>" maxlength="40"/>
+        </div>
+      </div>
+
+      <label for="address">Address</label>
+      <input id="address" name="address" type="text" value="<%= settings.address %>" maxlength="200"/>
+
+      <label for="coverage">Coverage areas</label>
+      <input id="coverage" name="coverage" type="text" value="<%= settings.coverage %>" maxlength="240"/>
+
+      <hr/>
+
+      <label for="forward_to_email">Contact form forwarding email</label>
+      <input id="forward_to_email" name="forward_to_email" type="email" value="<%= settings.forward_to_email %>" maxlength="160"/>
+      <div class="small muted">Subject is fixed as: <span class="code">Contact From truckhearse.co.uk Website</span></div>
+
+      <hr/>
+
+      <div class="grid-3">
+        <div>
+          <label for="map_link">Map link</label>
+          <input id="map_link" name="map_link" type="url" value="<%= settings.map_link %>"/>
+        </div>
+        <div>
+          <label for="what3words_link">what3words link</label>
+          <input id="what3words_link" name="what3words_link" type="url" value="<%= settings.what3words_link %>"/>
+        </div>
+        <div>
+          <label for="facebook_link">Facebook link</label>
+          <input id="facebook_link" name="facebook_link" type="url" value="<%= settings.facebook_link %>"/>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div>
+          <label for="instagram_link">Instagram link</label>
+          <input id="instagram_link" name="instagram_link" type="url" value="<%= settings.instagram_link %>"/>
+        </div>
+        <div>
+          <label for="tiktok_link">TikTok link</label>
+          <input id="tiktok_link" name="tiktok_link" type="url" value="<%= settings.tiktok_link %>"/>
+        </div>
+        <div>
+          <label for="youtube_link">YouTube link</label>
+          <input id="youtube_link" name="youtube_link" type="url" value="<%= settings.youtube_link %>"/>
+        </div>
+      </div>
+
+      <div style="height:10px"></div>
+      <button class="btn" type="submit">Save settings</button>
+      <a class="btn" href="/admin" style="margin-left:8px">Back</a>
+    </form>
+
+    <hr/>
+    <div class="small muted">Email delivery requires SMTP settings on the server (see README).</div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
