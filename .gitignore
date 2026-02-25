@@ -1,0 +1,12 @@
+node_modules/
+.env
+.env.*
+!/.env.example
+data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+.DS_Store
+
+# uploads are stored on Render disk, but keep local uploads out of git
+uploads/
