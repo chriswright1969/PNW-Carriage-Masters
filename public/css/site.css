@@ -43,6 +43,81 @@ nav a{margin-left:16px;color:var(--text);opacity:0.92}
 nav a:hover{opacity:1}
 nav .pill{display:inline-block;border:1px solid var(--line);padding:8px 12px;border-radius:999px}
 
+/* =========================
+   PNW Home: big logo hero
+========================= */
+.home-hero{
+  padding: clamp(2.2rem, 6vw, 5rem) 0;
+  text-align: center;
+}
+
+.home-hero__inner{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .9rem;
+}
+
+.home-hero__logo{
+  width: min(920px, 94vw); /* BIG + prominent */
+  height: auto;
+  display: block;
+}
+
+.home-hero__title{
+  margin: 0;
+  font-size: clamp(1.9rem, 3.2vw, 2.7rem);
+  letter-spacing: .02em;
+}
+
+.home-hero__tagline{
+  max-width: 62ch;
+  opacity: .9;
+}
+
+.home-hero__meta{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  justify-content: center;
+  margin-top: .25rem;
+}
+
+.meta-pill{
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 999px;
+  padding: .55rem .85rem;
+}
+
+.home-hero__cta{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  justify-content: center;
+  margin-top: .65rem;
+}
+
+/* =========================
+   PNW Home: split layout
+========================= */
+.home-split{
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+}
+
+.home-copy{
+  padding-top: 1.25rem;
+}
+
+@media (max-width: 900px){
+  .home-split{
+    grid-template-columns: 1fr;
+  }
+}
+
 .hero{
   padding:44px 0 16px;
 }
