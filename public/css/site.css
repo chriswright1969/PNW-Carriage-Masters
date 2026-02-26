@@ -59,7 +59,7 @@ nav .pill{display:inline-block;border:1px solid var(--line);padding:8px 12px;bor
 }
 
 .home-hero__logo{
-  width: min(920px, 94vw); /* BIG + prominent */
+  width: min(600px, 90vw); /* BIG + prominent */
   height: auto;
   display: block;
 }
