@@ -17,7 +17,7 @@ import dns from "dns/promises";
 
 import createSqliteStore from "better-sqlite3-session-store";
 
-import adminHomeTrucksRoutes from "/src/routes/adminHomeTrucksRoutes.js";
+import adminHomeTrucksRoutes from "./src/routes/adminHomeTrucksRoutes.js";
 // NOTE: if your actual filename is misspelled (e.g. adminHomeTrcuksRoutes.js),
 // either rename the file or change this import to match exactly.
 
