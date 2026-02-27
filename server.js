@@ -140,7 +140,6 @@ function requireAdmin(req, res, next) {
 function formatPageContent(raw, settings) {
   const tokens = {
     "{coverage}": settings.coverage,
-    "{address}": settings.address,
     "{phone}": settings.phone,
     "{company_name}": settings.company_name,
     "{tagline}": settings.tagline
@@ -148,6 +147,7 @@ function formatPageContent(raw, settings) {
 
   let text = String(raw || "");
   for (const [k, v] of Object.entries(tokens)) text = text.split(k).join(String(v || ""));
+}
 
   const cleaned = sanitizeHtml(text, {
     allowedTags: ["b", "strong", "i", "em", "u", "br", "p", "ul", "ol", "li", "a"],
