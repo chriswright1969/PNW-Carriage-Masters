@@ -172,18 +172,6 @@ function formatPageContent(raw, settings) {
   return cleaned;
 }
 
-  if (!cleaned.includes("<p")) {
-    const parts = cleaned
-      .split(/\n\n+/)
-      .map((p) => p.trim())
-      .filter(Boolean)
-      .map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`)
-      .join("\n");
-    return parts || "";
-  }
-  return cleaned;
-}
-
 async function emailDomainHasMX(email) {
   const domain = String(email).split("@")[1];
   if (!domain) return false;
