@@ -285,7 +285,7 @@ app.use((req, res, next) => {
 });
 
 // NOW mount the admin trucks router (needs session + locals)
-app.use("/admin", adminHomeTrucksRoutes);
+app.use("/admin", adminHomeTruckRoutes);
 
 // ======================================================
 // 4) Multer configs
