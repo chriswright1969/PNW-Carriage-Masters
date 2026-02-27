@@ -353,20 +353,6 @@ function parseJsonArray(s) {
   }
 }
 
-function safeFilename(name) {
-  const s = String(name || "");
-  return /^[a-zA-Z0-9._-]+$/.test(s) ? s : "";
-}
-
-function parseJsonArray(s) {
-  try {
-    const v = JSON.parse(String(s || "[]"));
-    return Array.isArray(v) ? v : [];
-  } catch {
-    return [];
-  }
-}
-
 function writeJsonArraySetting(key, arr) {
   setSetting(key, JSON.stringify(Array.isArray(arr) ? arr : []));
 }
