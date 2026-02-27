@@ -1,10 +1,9 @@
 /* =========================
-   PNW Carriage Masters — site.css (cleaned + corrected)
-   Media-first home + gallery layout
-   Fixes:
-   - Truck images under hero video (stack)
-   - Truck tiles reduced in size + constrained width
-   - Wider hero copy column on desktop
+   PNW Carriage Masters — site.css (corrected)
+   Key fixes:
+   - Truck tiles gap tightened (ONLY affects the two truck images)
+   - Right-hand “Welcome” column made MUCH wider (desktop)
+   - Hero block centred, media column kept a fixed width
 ========================= */
 
 /* ---------- Design tokens ---------- */
@@ -17,8 +16,6 @@
   --accent:#d7b46a;
   --line:#2a3442;
   --border: var(--line);
-
-  /* subtle “table line” used in some newer rules */
   --table-line: rgba(42, 52, 66, 0.9);
 
   --danger:#e06c75;
@@ -27,9 +24,14 @@
   --shadow: 0 14px 40px rgba(0,0,0,.35);
   --radius: 16px;
 
-  /* Home hero trucks sizing (tweak these to taste) */
-  --hero-truck-tile-h: 120px;   /* was ~190–200; smaller tiles */
-  --hero-truck-maxw: 520px;     /* keep tiles compact under the video */
+  /* Home hero truck sizing */
+  --hero-truck-tile-h: 120px;   /* tile height */
+  --hero-truck-maxw: 520px;     /* keeps the two tiles compact under the video */
+
+  /* Desktop hero layout */
+  --hero-media-w: 560px;        /* FIXED width for video + trucks column */
+  --home-maxw: 1500px;          /* wider landing page wrapper */
+  --hero-maxw: 1460px;          /* centred hero “table” width */
 }
 
 /* ---------- Base / reset ---------- */
@@ -161,20 +163,29 @@ table th,.table th{color:var(--muted);font-weight:600}
   font-size:12.5px;
 }
 
-/* ---------- Home (media-first landing page) ---------- */
+/* ---------- Home (landing page) ---------- */
 .wrap.home{padding-top:18px}
 
+/* Mobile/tablet: single column (media above text) */
 .hero{
   display:grid;
-  gap:10px;
-  grid-template-columns: 1.4fr 2fr; /* default */
+  row-gap:18px;
+  column-gap:14px; /* controls the gap BETWEEN media and text on desktop too */
+  grid-template-columns: 1fr;
   align-items:start;
 }
 
-/* Widen the copy column on desktop */
+/* Desktop: centre the whole hero and make the RIGHT column much wider */
 @media (min-width: 980px){
-  .hero{ grid-template-columns: 0.9fr 1.1fr; } /* media slightly narrower, text wider */
-  .hero-copy{ max-width: 780px; }
+  .wrap.home{
+    max-width: var(--home-maxw);
+    margin: 0 auto;
+  }
+  .wrap.home .hero{
+    max-width: var(--hero-maxw);
+    margin: 0 auto;                        /* centres the “table” */
+    grid-template-columns: var(--hero-media-w) 1fr; /* media fixed; text takes the rest */
+  }
 }
 
 .hero-media{
@@ -188,7 +199,7 @@ table th,.table th{color:var(--muted);font-weight:600}
 .hero-media-stack{
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:10px;
 }
 
 .hero-video{width:100%;height:auto;display:block}
@@ -199,26 +210,20 @@ table th,.table th{color:var(--muted);font-weight:600}
   color:var(--muted);
 }
 
+.hero-copy{min-width:0}
 .hero-copy h1{margin:0 0 8px}
 .hero-copy .lead{color:var(--muted);margin:0 0 10px}
 .hero-copy .cta{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
 .hero-copy .rich{margin-top:10px}
 
-@media (max-width: 900px){
-  .hero{grid-template-columns:1fr}
-  .hero-copy{max-width:none}
-}
-
-/* --- Truck tiles under hero video (reduced size) --- */
+/* --- Truck tiles under hero video (tight gap) --- */
 .hero-truck-grid{
-  margin-top:8px;
+  margin-top:6px;
   display:grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap:8px;
-
-  /* make the whole block smaller under the video */
-  max-width: var(--hero-truck-maxw);
-  margin-inline:auto;
+  gap:6px;                                /* tighter gap BETWEEN the two tiles */
+  max-width: var(--hero-truck-maxw);      /* keeps the pair compact */
+  margin-inline:auto;                     /* centred under video */
 }
 
 .hero-truck-card{
@@ -263,6 +268,7 @@ table th,.table th{color:var(--muted);font-weight:600}
   .hero-truck-grid{
     grid-template-columns:1fr;
     max-width: 520px;
+    gap:8px;
   }
 }
 
@@ -386,27 +392,6 @@ table th,.table th{color:var(--muted);font-weight:600}
   object-fit:cover;
   border-radius:14px;
   display:block;
-}
-
-/* --- Home hero: keep media size, widen text, centre the whole block --- */
-@media (min-width: 980px){
-  /* Optional: give the landing page a bit more overall room */
-  .wrap.home{
-    max-width: 1400px;      /* was 1100 */
-    margin: 0 auto;
-  }
-
-  /* Centre the hero block and keep the media column a fixed width */
-  .hero{
-    max-width: 1360px;      /* centres the “table” */
-    margin: 0 auto;
-    grid-template-columns: 560px 1fr;  /* media fixed, text gets the extra width */
-  }
-
-  /* Remove any constraint that forces wrapping in the text column */
-  .hero-copy{
-    max-width: none;
-  }
 }
 
 .gthumb.active{outline:2px solid var(--accent)}
