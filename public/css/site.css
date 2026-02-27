@@ -388,4 +388,25 @@ table th,.table th{color:var(--muted);font-weight:600}
   display:block;
 }
 
+/* --- Home hero: keep media size, widen text, centre the whole block --- */
+@media (min-width: 980px){
+  /* Optional: give the landing page a bit more overall room */
+  .wrap.home{
+    max-width: 1280px;      /* was 1100 */
+    margin: 0 auto;
+  }
+
+  /* Centre the hero block and keep the media column a fixed width */
+  .hero{
+    max-width: 1200px;      /* centres the “table” */
+    margin: 0 auto;
+    grid-template-columns: 560px 1fr;  /* media fixed, text gets the extra width */
+  }
+
+  /* Remove any constraint that forces wrapping in the text column */
+  .hero-copy{
+    max-width: none;
+  }
+}
+
 .gthumb.active{outline:2px solid var(--accent)}
