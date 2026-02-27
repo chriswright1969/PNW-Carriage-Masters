@@ -1,0 +1,52 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/header') %>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Home page truck images</h1>
+
+    <% if (message) { %><div class="notice"><%= message %></div><% } %>
+    <% if (errorMsg) { %><div class="error"><%= errorMsg %></div><% } %>
+
+    <form method="post" action="/admin/home-trucks" enctype="multipart/form-data">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card" style="padding:14px;">
+          <h3 style="margin-top:0;color:var(--accent);">The Power</h3>
+
+          <% if (powerImg) { %>
+            <img src="/uploads/<%= powerImg %>?v=<%= powerVer %>" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid var(--table-line);" alt="The Power">
+          <% } else { %>
+            <div class="hero-fallback" style="height:220px;display:flex;align-items:center;justify-content:center;">
+              <div class="muted">No image set</div>
+            </div>
+          <% } %>
+
+          <div style="height:10px;"></div>
+          <input type="file" name="power_img" accept="image/*">
+          <div style="height:10px;"></div>
+          <label><input type="checkbox" name="clear_power" value="1"> Clear image</label>
+        </div>
+
+        <div class="card" style="padding:14px;">
+          <h3 style="margin-top:0;color:var(--accent);">The Glory</h3>
+
+          <% if (gloryImg) { %>
+            <img src="/uploads/<%= gloryImg %>?v=<%= gloryVer %>" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid var(--table-line);" alt="The Glory">
+          <% } else { %>
+            <div class="hero-fallback" style="height:220px;display:flex;align-items:center;justify-content:center;">
+              <div class="muted">No image set</div>
+            </div>
+          <% } %>
+
+          <div style="height:10px;"></div>
+          <input type="file" name="glory_img" accept="image/*">
+          <div style="height:10px;"></div>
+          <label><input type="checkbox" name="clear_glory" value="1"> Clear image</label>
+        </div>
+      </div>
+
+      <div style="height:14px;"></div>
+      <button class="btn" type="submit">Save</button>
+    </form>
+  </div>
+</div>
