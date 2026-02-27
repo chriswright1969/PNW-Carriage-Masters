@@ -400,7 +400,7 @@ table th,.table th{color:var(--muted);font-weight:600}
   .hero{
     max-width: 1200px;      /* centres the “table” */
     margin: 0 auto;
-    grid-template-columns: 560px 1fr;  /* media fixed, text gets the extra width */
+    grid-template-columns: 520px 1fr;  /* media fixed, text gets the extra width */
   }
 
   /* Remove any constraint that forces wrapping in the text column */
