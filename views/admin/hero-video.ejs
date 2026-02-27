@@ -1,0 +1,68 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/header') %>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Hero Video</h1>
+
+    <% if (message) { %><div class="notice ok"><%= message %></div><% } %>
+    <% if (errorMsg) { %><div class="notice bad"><%= errorMsg %></div><% } %>
+
+    <h2>Current landing page video</h2>
+
+    <% if (current) { %>
+      <video controls muted style="width:100%; max-width:900px; border-radius:16px; border:1px solid var(--line);">
+        <source src="/uploads/<%= current %>?v=<%= version %>">
+      </video>
+      <form method="post" action="/admin/hero-video/clear" style="margin-top:10px">
+        <button class="btn" type="submit">Remove hero video from landing page</button>
+      </form>
+    <% } else { %>
+      <div class="muted">No hero video selected.</div>
+    <% } %>
+
+    <hr>
+
+    <h2>Upload new video</h2>
+    <form method="post" action="/admin/hero-video/upload" enctype="multipart/form-data">
+      <input type="file" name="heroVideo" accept="video/mp4,video/webm,video/quicktime" required>
+      <div style="height:10px"></div>
+      <button class="btn" type="submit">Upload (and select)</button>
+    </form>
+
+    <hr>
+
+    <h2>Video library (select which shows)</h2>
+
+    <% if (!videos || !videos.length) { %>
+      <div class="muted">No videos uploaded yet.</div>
+    <% } else { %>
+      <div style="display:grid; gap:14px;">
+        <% videos.forEach(v => { %>
+          <div style="border:1px solid var(--line); border-radius:16px; padding:12px;">
+            <div class="small muted" style="margin-bottom:8px;">
+              <%= v.original || v.filename %>
+              <% if (v.filename === current) { %> — <strong style="color:var(--accent)">Selected</strong><% } %>
+            </div>
+
+            <video controls muted style="width:100%; max-width:900px; border-radius:14px;">
+              <source src="/uploads/<%= v.filename %>?v=<%= version %>">
+            </video>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+              <form method="post" action="/admin/hero-video/select">
+                <input type="hidden" name="filename" value="<%= v.filename %>">
+                <button class="btn" type="submit">Select for landing page</button>
+              </form>
+
+              <form method="post" action="/admin/hero-video/<%= v.filename %>/delete" onsubmit="return confirm('Delete this video?');">
+                <button class="btn danger" type="submit">Delete video</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+  </div>
+</div>
