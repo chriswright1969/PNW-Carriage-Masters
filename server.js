@@ -45,6 +45,9 @@ const PORT = process.env.PORT || 3000;
 const ROOT_DIR = process.cwd();
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 
+// ======================================================
+// 1) Persistent uploads directory + public mount (/uploads)
+// ======================================================
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(DATA_DIR, "uploads");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
@@ -100,7 +103,7 @@ const SqliteStore = createSqliteStore(session);
 const sessionStore = new SqliteStore({
   client: db,
   expired: 1000 * 60 * 60 * 24 * 14, // 14 days
-  clearInterval: 1000 * 60 * 60      // cleanup hourly
+  clearInterval: 1000 * 60 * 60 // cleanup hourly
 });
 
 app.use(
@@ -209,25 +212,122 @@ function findAdminByEmail(email) {
     .get(e);
 }
 
+// ======================================================
+// 3) Ensure branding defaults exist (do not overwrite)
+// ======================================================
+function ensureSetting(key, value) {
+  const existing = getSetting(key);
+  if (existing === null || existing === undefined || String(existing).trim() === "") {
+    setSetting(key, String(value));
+  }
+}
+
+ensureSetting("logo_file", ""); // empty means "use fallback in /public"
+ensureSetting("logo_version", String(Date.now())); // cache-bust query string
+ensureSetting("logo_home_px", "600");
+ensureSetting("logo_home_vw", "90");
+ensureSetting("logo_header_h", "44");
+ensureSetting("phone", "07503 608944");
+
+// Home media (no DB needed)
+ensureSetting("home_video_file", "");
+ensureSetting("home_video_version", String(Date.now()));
+ensureSetting("home_thumbs_json", "[]");   // array of image filenames
+ensureSetting("home_montage_json", "[]");  // array of image filenames
+
 // Settings available everywhere
 app.use((req, res, next) => {
   const settings = listSettings([
     "company_name",
     "tagline",
     "phone",
-    "address",
     "coverage",
-    "map_link",
-    "what3words_link",
     "facebook_link",
     "instagram_link",
     "tiktok_link",
-    "youtube_link"
+    "youtube_link",
+
+    // Branding settings
+    "logo_file",
+    "logo_version",
+    "logo_home_px",
+    "logo_home_vw",
+    "logo_header_h",
+    "home_video_file",
+    "home_video_version",
+    "home_thumbs_json",
+    "home_montage_json"
   ]);
   res.locals.settings = settings;
   res.locals.admin = currentAdmin(req);
   next();
 });
+
+// ======================================================
+// 2) Multer config for logo uploads (PNG/JPG/WebP, 2MB)
+// ======================================================
+const logoUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
+    filename: (_req, file, cb) => {
+      const ext = (path.extname(file.originalname) || "").toLowerCase();
+      cb(null, `logo-${Date.now()}${ext}`);
+    }
+  }),
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  fileFilter: (_req, file, cb) => {
+    const ok = ["image/png", "image/jpeg", "image/webp"].includes(file.mimetype);
+    if (!ok) return cb(new Error("Only PNG, JPG, or WebP files are allowed"));
+    cb(null, true);
+  }
+});
+
+const homeVideoUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
+    filename: (_req, file, cb) => {
+      const ext = (path.extname(file.originalname) || "").toLowerCase();
+      cb(null, `home-video-${Date.now()}${ext}`);
+    }
+  }),
+  limits: { fileSize: 1024 * 1024 * 250 }, // 250MB
+  fileFilter: (_req, file, cb) => {
+    const ok = file.mimetype.startsWith("video/");
+    if (!ok) return cb(new Error("Hero clip must be a video file (mp4/webm)."));
+    cb(null, true);
+  }
+});
+
+const homeImageUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
+    filename: (_req, file, cb) => {
+      const ext = (path.extname(file.originalname) || "").toLowerCase();
+      cb(null, `home-img-${Date.now()}-${crypto.randomBytes(4).toString("hex")}${ext}`);
+    }
+  }),
+  limits: { fileSize: 1024 * 1024 * 12 }, // 12MB per image
+  fileFilter: (_req, file, cb) => {
+    const ok = file.mimetype.startsWith("image/");
+    if (!ok) return cb(new Error("Only image files are allowed."));
+    cb(null, true);
+  }
+});
+
+function safeFilename(name) {
+  // prevent path traversal
+  const s = String(name || "");
+  return /^[a-zA-Z0-9._-]+$/.test(s) ? s : "";
+}
+
+function parseJsonArray(s) {
+  try {
+    const v = JSON.parse(String(s || "[]"));
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
 
 // --------------------
 // Routes
@@ -235,10 +335,16 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => {
   const page = getPage("home");
   const settings = res.locals.settings;
+
+  const thumbs = parseJsonArray(settings.home_thumbs_json);
+  const montage = parseJsonArray(settings.home_montage_json);
+
   res.render("home", {
     title: `${settings.company_name} – ${settings.tagline}`,
     pageTitle: page?.title || "Welcome",
-    contentHtml: formatPageContent(page?.content, settings)
+    contentHtml: formatPageContent(page?.content, settings),
+    thumbs,
+    montage
   });
 });
 
@@ -250,7 +356,7 @@ app.get("/gallery", (req, res) => {
   });
 });
 
-// Uploads (admin only)
+// Uploads (admin only) - gallery media
 const upload = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
@@ -349,7 +455,9 @@ app.post("/contact", async (req, res) => {
   const forwardTo = getSetting("forward_to_email") || process.env.CONTACT_FORWARD_TO || "chris@chriswright.info";
   const transport = buildTransport();
   if (!transport) {
-    return res.redirect("/contact?error=" + encodeURIComponent("Email sending is not configured. Please call us instead."));
+    return res.redirect(
+      "/contact?error=" + encodeURIComponent("Email sending is not configured. Please call us instead.")
+    );
   }
 
   const from = process.env.SMTP_FROM || `no-reply@${process.env.PUBLIC_HOST || "truckhearse.co.uk"}`;
@@ -461,11 +569,8 @@ app.get("/admin/settings", requireAdmin, (_req, res) => {
     "company_name",
     "tagline",
     "phone",
-    "address",
     "coverage",
     "forward_to_email",
-    "map_link",
-    "what3words_link",
     "facebook_link",
     "instagram_link",
     "tiktok_link",
@@ -479,11 +584,8 @@ app.post("/admin/settings", requireAdmin, (req, res) => {
     "company_name",
     "tagline",
     "phone",
-    "address",
     "coverage",
     "forward_to_email",
-    "map_link",
-    "what3words_link",
     "facebook_link",
     "instagram_link",
     "tiktok_link",
@@ -491,6 +593,57 @@ app.post("/admin/settings", requireAdmin, (req, res) => {
   ];
   for (const k of keys) setSetting(k, String(req.body[k] || "").trim());
   res.redirect("/admin/settings");
+});
+
+// ======================================================
+// 4) Admin branding routes (logo upload + size settings)
+// ======================================================
+app.get("/admin/branding", requireAdmin, (req, res) => {
+  res.render("admin/branding", {
+    title: "Branding",
+    message: req.query.ok === "1" ? "Saved." : null,
+    errorMsg: null,
+    logo_file: getSetting("logo_file") || "",
+    logo_home_px: getSetting("logo_home_px") || "600",
+    logo_home_vw: getSetting("logo_home_vw") || "90",
+    logo_header_h: getSetting("logo_header_h") || "44"
+  });
+});
+
+app.post("/admin/branding", requireAdmin, (req, res) => {
+  // capture multer errors so the user sees a nice message
+  logoUpload.single("logo")(req, res, (err) => {
+    if (err) {
+      return res.status(400).render("admin/branding", {
+        title: "Branding",
+        message: null,
+        errorMsg: err.message || "Upload failed",
+        logo_file: getSetting("logo_file") || "",
+        logo_home_px: getSetting("logo_home_px") || "600",
+        logo_home_vw: getSetting("logo_home_vw") || "90",
+        logo_header_h: getSetting("logo_header_h") || "44"
+      });
+    }
+
+    const clampInt = (v, min, max, fallback) => {
+      const n = Number.parseInt(String(v ?? ""), 10);
+      if (!Number.isFinite(n)) return String(fallback);
+      return String(Math.max(min, Math.min(max, n)));
+    };
+
+    // sizes (save even if no file uploaded)
+    setSetting("logo_home_px", clampInt(req.body.logo_home_px, 120, 1200, 600));
+    setSetting("logo_home_vw", clampInt(req.body.logo_home_vw, 20, 100, 90));
+    setSetting("logo_header_h", clampInt(req.body.logo_header_h, 20, 120, 44));
+
+    // if a new logo was uploaded, store filename + bump version to bust caches
+    if (req.file?.filename) {
+      setSetting("logo_file", req.file.filename);
+      setSetting("logo_version", String(Date.now()));
+    }
+
+    res.redirect("/admin/branding?ok=1");
+  });
 });
 
 app.get("/admin/admins", requireAdmin, (req, res) => {
@@ -549,6 +702,97 @@ app.post("/admin/admins/:id/deactivate", requireAdmin, (req, res) => {
   }
 
   res.redirect("/admin/admins");
+});
+
+app.get("/admin/home-media", requireAdmin, (_req, res) => {
+  const settings = res.locals.settings;
+  res.render("admin/home-media", {
+    title: "Home Media",
+    message: _req.query.ok === "1" ? "Saved." : null,
+    errorMsg: _req.query.error || "",
+    videoFile: settings.home_video_file || "",
+    videoVer: settings.home_video_version || "",
+    thumbs: parseJsonArray(settings.home_thumbs_json),
+    montage: parseJsonArray(settings.home_montage_json)
+  });
+});
+
+app.post("/admin/home-media/video", requireAdmin, (req, res) => {
+  homeVideoUpload.single("heroVideo")(req, res, (err) => {
+    if (err) return res.redirect("/admin/home-media?error=" + encodeURIComponent(err.message));
+
+    if (!req.file?.filename) {
+      return res.redirect("/admin/home-media?error=" + encodeURIComponent("No video uploaded."));
+    }
+
+    setSetting("home_video_file", req.file.filename);
+    setSetting("home_video_version", String(Date.now())); // cache-bust
+
+    return res.redirect("/admin/home-media?ok=1");
+  });
+});
+
+app.post("/admin/home-media/video/clear", requireAdmin, (_req, res) => {
+  // Optional: delete old file too
+  const old = getSetting("home_video_file") || "";
+  if (old) {
+    try { fs.unlinkSync(path.join(UPLOAD_DIR, old)); } catch {}
+  }
+  setSetting("home_video_file", "");
+  setSetting("home_video_version", String(Date.now()));
+  res.redirect("/admin/home-media?ok=1");
+});
+
+app.post("/admin/home-media/thumbs/add", requireAdmin, (req, res) => {
+  homeImageUpload.array("thumbs", 24)(req, res, (err) => {
+    if (err) return res.redirect("/admin/home-media?error=" + encodeURIComponent(err.message));
+    const files = (req.files || []).map(f => f.filename).filter(Boolean);
+    if (!files.length) return res.redirect("/admin/home-media?error=" + encodeURIComponent("No images uploaded."));
+
+    const current = parseJsonArray(getSetting("home_thumbs_json"));
+    const next = current.concat(files).slice(0, 60); // cap
+    setSetting("home_thumbs_json", JSON.stringify(next));
+
+    res.redirect("/admin/home-media?ok=1");
+  });
+});
+
+app.post("/admin/home-media/montage/add", requireAdmin, (req, res) => {
+  homeImageUpload.array("montage", 60)(req, res, (err) => {
+    if (err) return res.redirect("/admin/home-media?error=" + encodeURIComponent(err.message));
+    const files = (req.files || []).map(f => f.filename).filter(Boolean);
+    if (!files.length) return res.redirect("/admin/home-media?error=" + encodeURIComponent("No images uploaded."));
+
+    const current = parseJsonArray(getSetting("home_montage_json"));
+    const next = current.concat(files).slice(0, 200); // cap
+    setSetting("home_montage_json", JSON.stringify(next));
+
+    res.redirect("/admin/home-media?ok=1");
+  });
+});
+
+app.post("/admin/home-media/thumbs/:name/delete", requireAdmin, (req, res) => {
+  const name = safeFilename(req.params.name);
+  if (!name) return res.redirect("/admin/home-media?error=" + encodeURIComponent("Invalid filename."));
+
+  const current = parseJsonArray(getSetting("home_thumbs_json"));
+  const next = current.filter(x => x !== name);
+  setSetting("home_thumbs_json", JSON.stringify(next));
+
+  try { fs.unlinkSync(path.join(UPLOAD_DIR, name)); } catch {}
+  res.redirect("/admin/home-media?ok=1");
+});
+
+app.post("/admin/home-media/montage/:name/delete", requireAdmin, (req, res) => {
+  const name = safeFilename(req.params.name);
+  if (!name) return res.redirect("/admin/home-media?error=" + encodeURIComponent("Invalid filename."));
+
+  const current = parseJsonArray(getSetting("home_montage_json"));
+  const next = current.filter(x => x !== name);
+  setSetting("home_montage_json", JSON.stringify(next));
+
+  try { fs.unlinkSync(path.join(UPLOAD_DIR, name)); } catch {}
+  res.redirect("/admin/home-media?ok=1");
 });
 
 // --------------------
