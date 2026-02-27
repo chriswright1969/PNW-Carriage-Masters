@@ -166,8 +166,8 @@ table th,.table th{color:var(--muted);font-weight:600}
 
 .hero{
   display:grid;
-  gap:18px;
-  grid-template-columns: 1.4fr 1fr; /* default */
+  gap:10px;
+  grid-template-columns: 1.4fr 2fr; /* default */
   align-items:start;
 }
 
