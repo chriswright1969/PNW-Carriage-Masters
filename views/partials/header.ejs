@@ -1,7 +1,21 @@
 <header class="site-header">
   <div class="header-inner">
+    <%
+      // Use admin-changeable logo if set, otherwise fall back to /images/logo.png
+      const logoFile = (settings && settings.logo_file) ? String(settings.logo_file) : "";
+      const logoVer  = (settings && settings.logo_version) ? String(settings.logo_version) : "";
+      const logoSrc  = logoFile ? (`/uploads/${logoFile}${logoVer ? `?v=${logoVer}` : ""}`) : "/images/logo.png";
+
+      // Admin-changeable header logo height (px)
+      const headerH = Number(settings?.logo_header_h || 44);
+    %>
+
     <a class="brand" href="/" aria-label="Home">
-      <img src="/images/logo.png" alt="<%= settings.company_name %> logo"/>
+      <img
+        src="<%= logoSrc %>"
+        alt="<%= settings.company_name %> logo"
+        style="height:<%= headerH %>px; width:auto;"
+      />
       <div class="brand-text">
         <div class="name"><%= settings.company_name %></div>
         <div class="tag"><%= settings.tagline %></div>
