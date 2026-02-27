@@ -3,24 +3,21 @@
 
 <%
   const s = settings || {};
-  const heroFile = s.home_video_file || "";
-  const heroVer = s.home_video_version || "";
+  const heroFile = s.hero_video_current || "";
+  const heroVer  = s.hero_video_version || "";
   const phoneRaw = String(s.phone || "").trim();
   const phoneTel = phoneRaw.replace(/\s+/g, "");
 %>
-
 <div class="wrap home">
   <section class="hero">
     <div class="hero-media">
       <% if (heroFile) { %>
-        <video class="hero-video" autoplay muted loop playsinline preload="metadata" controls>
-          <source src="/uploads/<%= heroFile %>?v=<%= heroVer %>">
-        </video>
-      <% } else { %>
-        <div class="hero-fallback">
-          <div class="muted">No hero video set yet.</div>
-        </div>
-      <% } %>
+  <video class="hero-video" autoplay muted loop playsinline controls>
+    <source src="/uploads/<%= heroFile %>?v=<%= heroVer %>">
+  </video>
+<% } else { %>
+  <div class="hero-fallback"><div class="muted">No hero video selected.</div></div>
+<% } %>
     </div>
 
     <div class="hero-copy">
