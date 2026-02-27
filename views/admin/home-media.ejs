@@ -1,0 +1,74 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/header') %>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Home Media</h1>
+
+    <% if (message) { %><div class="notice"><%= message %></div><% } %>
+    <% if (errorMsg) { %><div class="error"><%= errorMsg %></div><% } %>
+
+    <h2>Hero video</h2>
+    <% if (videoFile) { %>
+      <video controls muted style="width:100%; max-width:720px; border-radius:14px;">
+        <source src="/uploads/<%= videoFile %>?v=<%= videoVer %>">
+      </video>
+      <form method="post" action="/admin/home-media/video/clear" style="margin-top:10px">
+        <button class="btn" type="submit">Remove hero video</button>
+      </form>
+    <% } else { %>
+      <div class="small muted">No hero video set.</div>
+    <% } %>
+
+    <form method="post" action="/admin/home-media/video" enctype="multipart/form-data" style="margin-top:12px">
+      <input type="file" name="heroVideo" accept="video/mp4,video/webm" required>
+      <button class="btn" type="submit">Upload / Replace hero video</button>
+    </form>
+
+    <hr style="margin:22px 0; opacity:.35">
+
+    <h2>Truck hearse thumbnails (beneath video)</h2>
+    <form method="post" action="/admin/home-media/thumbs/add" enctype="multipart/form-data">
+      <input type="file" name="thumbs" accept="image/*" multiple required>
+      <button class="btn" type="submit">Add thumbnails</button>
+    </form>
+
+    <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
+      <% thumbs.forEach(fn => { %>
+        <div style="width:140px">
+          <img src="/uploads/<%= fn %>" style="width:100%; height:90px; object-fit:cover; border-radius:12px;">
+          <form method="post" action="/admin/home-media/thumbs/<%= fn %>/delete" style="margin-top:6px">
+            <button class="btn" type="submit">Delete</button>
+          </form>
+        </div>
+      <% }) %>
+    </div>
+
+    <hr style="margin:22px 0; opacity:.35">
+
+    <h2>Rolling montage (under thumbnails)</h2>
+    <form method="post" action="/admin/home-media/montage/add" enctype="multipart/form-data">
+      <input type="file" name="montage" accept="image/*" multiple required>
+      <button class="btn" type="submit">Add montage images</button>
+    </form>
+
+    <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px;">
+      <% montage.forEach(fn => { %>
+        <div style="width:140px">
+          <img src="/uploads/<%= fn %>" style="width:100%; height:90px; object-fit:cover; border-radius:12px;">
+          <form method="post" action="/admin/home-media/montage/<%= fn %>/delete" style="margin-top:6px">
+            <button class="btn" type="submit">Delete</button>
+          </form>
+        </div>
+      <% }) %>
+    </div>
+
+    <hr style="margin:22px 0; opacity:.35">
+
+    <h2>Photo gallery</h2>
+    <div class="small muted">Upload/delete gallery images using your existing Gallery admin tools.</div>
+    <div style="margin-top:10px">
+      <a class="btn" href="/gallery">Open gallery</a>
+    </div>
+  </div>
+</div>
