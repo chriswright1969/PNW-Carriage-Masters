@@ -15,6 +15,8 @@ import nodemailer from "nodemailer";
 import sanitizeHtml from "sanitize-html";
 import dns from "dns/promises";
 
+import adminHomeTrucksRoutes from "./src/routes/adminHomeTrucksRoutes.js";
+
 import createSqliteStore from "better-sqlite3-session-store";
 
 import {
@@ -56,6 +58,9 @@ fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 // --------------------
 app.set("view engine", "ejs");
 app.set("views", path.join(ROOT_DIR, "views"));
+
+
+app.use("/admin", adminHomeTrucksRoutes);
 
 // --------------------
 // Middleware
@@ -239,6 +244,11 @@ ensureSetting("hero_video_version", String(Date.now())); // cache-bust
 ensureSetting("home_thumbs_json", "[]");   // array of image filenames
 ensureSetting("home_montage_json", "[]");  // array of image filenames
 
+ensureSetting("home_truck_power_img", "");
+ensureSetting("home_truck_power_ver", String(Date.now()));
+ensureSetting("home_truck_glory_img", "");
+ensureSetting("home_truck_glory_ver", String(Date.now()));
+
 // Settings available everywhere
 app.use((req, res, next) => {
   const settings = listSettings([
@@ -264,7 +274,13 @@ app.use((req, res, next) => {
      // NEW hero video keys (next section)
     "hero_videos_json",
     "hero_video_current",
-    "hero_video_version"
+    "hero_video_version",
+
+    "home_truck_power_img",
+    "home_truck_power_ver",
+    "home_truck_glory_img",
+    "home_truck_glory_ver"
+    
   ]);
   res.locals.settings = settings;
   res.locals.admin = currentAdmin(req);
