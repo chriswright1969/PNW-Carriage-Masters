@@ -226,6 +226,59 @@ table th, .table th{color:var(--muted);font-weight:600}
   to{transform:translateX(-50%)}
 }
 
+/* Home hero: two truck placeholders directly under the video */
+.hero-truck-grid{
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.hero-truck-card{
+  border: 1px solid var(--table-line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.hero-truck-link{ display:block; text-decoration:none; color:inherit; }
+
+.hero-truck-card img{
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-truck-fallback{
+  height: 200px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap: 6px;
+  background: var(--panel2);
+}
+
+.hero-truck-name{
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.hero-truck-card figcaption{
+  padding: 10px 12px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+@media (max-width: 720px){
+  .hero-truck-grid{ grid-template-columns: 1fr; }
+  .hero-truck-card img,
+  .hero-truck-fallback{ height: 190px; }
+}
+
 /* Footer socials (new) */
 .footer{
   margin-top:22px;
