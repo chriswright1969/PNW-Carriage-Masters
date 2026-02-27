@@ -1,82 +1,36 @@
 <%- include('partials/head', { title }) %>
 <%- include('partials/header') %>
 
-<div class="wrap">
-  <div class="card">
-    <h1 class="section-title">Gallery</h1>
-    <p class="muted">Photos and short video clips of our vehicles. Click a thumbnail to view larger, then use ◀ ▶ to browse.</p>
+<%
+  const items = (media || []).filter(m => m.type === "image");
+  const first = items[0];
+%>
 
-    <% if (admin) { %>
-      <hr/>
-      <h2 class="section-title">Upload (admins only)</h2>
-      <form action="/admin/upload" method="post" enctype="multipart/form-data">
-        <label for="media">Choose photo or video</label>
-        <input id="media" name="media" type="file" accept="image/*,video/*" required/>
-        <label for="caption">Caption (optional)</label>
-        <input id="caption" name="caption" type="text" maxlength="200" placeholder="e.g., Bespoke truck hearse"/>
-        <div style="height:10px"></div>
-        <button class="btn" type="submit">Upload</button>
-        <div class="small muted" style="margin-top:8px">Max upload size: 200MB. Videos are served directly and play in the viewer.</div>
-      </form>
-    <% } %>
-  </div>
-
-  <div style="height:14px"></div>
-
-  <div class="card">
-    <% if (!media || media.length === 0) { %>
-      <div class="muted">No media uploaded yet.</div>
+<div class="wrap gallery">
+  <div class="gallery-main">
+    <% if (first) { %>
+      <img id="galleryMain" src="/uploads/<%= first.filename %>" alt="<%= first.caption || 'Gallery image' %>">
     <% } else { %>
-      <div class="thumb-grid">
-        <% media.forEach((m, idx) => { %>
-          <div>
-            <button
-              class="thumb"
-              type="button"
-              data-gallery-item
-              data-index="<%= idx %>"
-              data-type="<%= m.type %>"
-              data-src="/uploads/<%= m.filename %>"
-              data-caption="<%= (m.caption || '') %>">
-
-              <% if (m.type === 'video') { %>
-                <video src="/uploads/<%= m.filename %>#t=0.1" muted playsinline preload="metadata"></video>
-              <% } else { %>
-                <img src="/uploads/<%= m.filename %>" alt="<%= (m.caption || 'Gallery item') %>" loading="lazy"/>
-              <% } %>
-
-              <div class="cap"><%= m.caption || (m.type === 'video' ? 'Video clip' : 'Photo') %></div>
-            </button>
-
-            <% if (admin) { %>
-              <form action="/admin/media/<%= m.id %>/delete" method="post" style="margin-top:8px">
-                <button class="btn danger" type="submit">Delete</button>
-              </form>
-            <% } %>
-          </div>
-        <% }) %>
-      </div>
+      <div class="card"><div class="muted">No gallery images yet.</div></div>
     <% } %>
   </div>
-</div>
 
-<!-- Lightbox -->
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Gallery viewer">
-  <div class="lightbox-inner">
-    <div class="lightbox-media"></div>
-    <div class="lightbox-bar">
-      <div class="controls">
-        <button class="btn" type="button" data-lb-prev aria-label="Previous">◀</button>
-        <button class="btn" type="button" data-lb-next aria-label="Next">▶</button>
-      </div>
-      <div class="cap" data-lb-caption></div>
-      <div class="controls">
-        <button class="btn" type="button" data-lb-close aria-label="Close">Close</button>
-      </div>
+  <% if (items.length) { %>
+    <div class="gallery-strip" id="galleryStrip">
+      <% items.forEach((it, idx) => { %>
+        <button class="gthumb <%= idx===0 ? 'active' : '' %>"
+                type="button"
+                data-src="/uploads/<%= it.filename %>"
+                data-alt="<%= (it.caption || 'Gallery image') %>">
+          <img src="/uploads/<%= it.filename %>" alt="">
+        </button>
+      <% }) %>
     </div>
+  <% } %>
+
+  <div style="margin-top:16px">
+    <a class="btn" href="/contact">Enquire</a>
   </div>
 </div>
 
-<script src="/js/gallery-lightbox.js"></script>
-
-<%- include('partials/footer') %>
+<script src="/js/gallery.js" defer></script>
