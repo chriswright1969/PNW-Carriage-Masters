@@ -232,9 +232,10 @@ ensureSetting("logo_home_vw", "90");
 ensureSetting("logo_header_h", "44");
 ensureSetting("phone", "07503 608944");
 
-// Home media (no DB needed)
-ensureSetting("home_video_file", "");
-ensureSetting("home_video_version", String(Date.now()));
+// Hero video library
+ensureSetting("hero_videos_json", "[]");                 // [{ filename, original, uploadedAt }]
+ensureSetting("hero_video_current", "");                 // filename of selected clip
+ensureSetting("hero_video_version", String(Date.now())); // cache-bust
 ensureSetting("home_thumbs_json", "[]");   // array of image filenames
 ensureSetting("home_montage_json", "[]");  // array of image filenames
 
@@ -259,7 +260,11 @@ app.use((req, res, next) => {
     "home_video_file",
     "home_video_version",
     "home_thumbs_json",
-    "home_montage_json"
+    "home_montage_json",
+     // NEW hero video keys (next section)
+    "hero_videos_json",
+    "hero_video_current",
+    "hero_video_version"
   ]);
   res.locals.settings = settings;
   res.locals.admin = currentAdmin(req);
@@ -317,6 +322,22 @@ const homeImageUpload = multer({
   }
 });
 
+const heroVideoUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
+    filename: (_req, file, cb) => {
+      const ext = (path.extname(file.originalname) || "").toLowerCase();
+      cb(null, `hero-${Date.now()}-${crypto.randomBytes(4).toString("hex")}${ext}`);
+    }
+  }),
+  limits: { fileSize: 1024 * 1024 * 300 }, // 300MB
+  fileFilter: (_req, file, cb) => {
+    const ok = ["video/mp4", "video/webm", "video/quicktime"].includes(file.mimetype) || file.mimetype.startsWith("video/");
+    if (!ok) return cb(new Error("Please upload a video file (MP4/WebM)."));
+    cb(null, true);
+  }
+});
+
 function safeFilename(name) {
   // prevent path traversal
   const s = String(name || "");
@@ -330,6 +351,24 @@ function parseJsonArray(s) {
   } catch {
     return [];
   }
+}
+
+function safeFilename(name) {
+  const s = String(name || "");
+  return /^[a-zA-Z0-9._-]+$/.test(s) ? s : "";
+}
+
+function parseJsonArray(s) {
+  try {
+    const v = JSON.parse(String(s || "[]"));
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeJsonArraySetting(key, arr) {
+  setSetting(key, JSON.stringify(Array.isArray(arr) ? arr : []));
 }
 
 // --------------------
@@ -796,6 +835,80 @@ app.post("/admin/home-media/montage/:name/delete", requireAdmin, (req, res) => {
 
   try { fs.unlinkSync(path.join(UPLOAD_DIR, name)); } catch {}
   res.redirect("/admin/home-media?ok=1");
+});
+
+app.get("/admin/hero-video", requireAdmin, (req, res) => {
+  const settings = res.locals.settings;
+  const videos = parseJsonArray(settings.hero_videos_json);
+  res.render("admin/hero-video", {
+    title: "Hero Video",
+    message: req.query.ok === "1" ? "Saved." : null,
+    errorMsg: req.query.error || "",
+    videos,
+    current: settings.hero_video_current || "",
+    version: settings.hero_video_version || ""
+  });
+});
+
+app.post("/admin/hero-video/upload", requireAdmin, (req, res) => {
+  heroVideoUpload.single("heroVideo")(req, res, (err) => {
+    if (err) return res.redirect("/admin/hero-video?error=" + encodeURIComponent(err.message));
+    if (!req.file?.filename) return res.redirect("/admin/hero-video?error=" + encodeURIComponent("No video uploaded."));
+
+    const currentList = parseJsonArray(getSetting("hero_videos_json"));
+    const item = {
+      filename: req.file.filename,
+      original: req.file.originalname,
+      uploadedAt: Date.now()
+    };
+    currentList.unshift(item); // newest first
+    writeJsonArraySetting("hero_videos_json", currentList);
+
+    // auto-select the newly uploaded one
+    setSetting("hero_video_current", req.file.filename);
+    setSetting("hero_video_version", String(Date.now()));
+
+    res.redirect("/admin/hero-video?ok=1");
+  });
+});
+
+app.post("/admin/hero-video/select", requireAdmin, (req, res) => {
+  const filename = safeFilename(req.body.filename);
+  if (!filename) return res.redirect("/admin/hero-video?error=" + encodeURIComponent("Invalid selection."));
+
+  const list = parseJsonArray(getSetting("hero_videos_json"));
+  const exists = list.some(v => v && v.filename === filename);
+  if (!exists) return res.redirect("/admin/hero-video?error=" + encodeURIComponent("That video no longer exists."));
+
+  setSetting("hero_video_current", filename);
+  setSetting("hero_video_version", String(Date.now()));
+  res.redirect("/admin/hero-video?ok=1");
+});
+
+app.post("/admin/hero-video/clear", requireAdmin, (_req, res) => {
+  setSetting("hero_video_current", "");
+  setSetting("hero_video_version", String(Date.now()));
+  res.redirect("/admin/hero-video?ok=1");
+});
+
+app.post("/admin/hero-video/:filename/delete", requireAdmin, (req, res) => {
+  const filename = safeFilename(req.params.filename);
+  if (!filename) return res.redirect("/admin/hero-video?error=" + encodeURIComponent("Invalid filename."));
+
+  const list = parseJsonArray(getSetting("hero_videos_json")).filter(v => v && v.filename !== filename);
+  writeJsonArraySetting("hero_videos_json", list);
+
+  try { fs.unlinkSync(path.join(UPLOAD_DIR, filename)); } catch {}
+
+  const current = String(getSetting("hero_video_current") || "");
+  if (current === filename) {
+    // if current deleted, pick next available or clear
+    const next = list[0]?.filename || "";
+    setSetting("hero_video_current", next);
+  }
+  setSetting("hero_video_version", String(Date.now()));
+
+  res.redirect("/admin/hero-video?ok=1");
 });
 
 // --------------------
