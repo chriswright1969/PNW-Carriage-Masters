@@ -18,7 +18,7 @@
         </div>
         <div>
           <label for="phone">Phone</label>
-          <input id="phone" name="phone" type="text" value="<%= settings.phone %>" maxlength="40"/>
+          <input id="phone" name="phone" type="text" value="<%= settings.phone %>" maxlength="40" placeholder="07503 608944"/>
         </div>
       </div>
 
@@ -33,12 +33,11 @@
 
       <hr/>
 
+      <div class="grid-3">
+        <div>
           <label for="facebook_link">Facebook link</label>
           <input id="facebook_link" name="facebook_link" type="url" value="<%= settings.facebook_link %>"/>
         </div>
-      </div>
-
-      <div class="grid-3">
         <div>
           <label for="instagram_link">Instagram link</label>
           <input id="instagram_link" name="instagram_link" type="url" value="<%= settings.instagram_link %>"/>
@@ -47,10 +46,15 @@
           <label for="tiktok_link">TikTok link</label>
           <input id="tiktok_link" name="tiktok_link" type="url" value="<%= settings.tiktok_link %>"/>
         </div>
+      </div>
+
+      <div class="grid-3" style="margin-top:10px">
         <div>
           <label for="youtube_link">YouTube link</label>
           <input id="youtube_link" name="youtube_link" type="url" value="<%= settings.youtube_link %>"/>
         </div>
+        <div></div>
+        <div></div>
       </div>
 
       <div style="height:10px"></div>
