@@ -2,87 +2,75 @@
 <%- include('partials/header') %>
 
 <%
-  // Set your logo path here (recommended location: /public/brand/...)
-  // Put the SVG file at: /public/brand/pnw-logo.svg
-  // so it loads at: /public/brand/pnw-logo.svg
-  const logoSrc =
-    (settings && settings.logo_url && String(settings.logo_url).trim())
-      ? String(settings.logo_url).trim()
-      : "/brand/pnw-logo.png";
+  const s = settings || {};
+  const heroFile = s.home_video_file || "";
+  const heroVer = s.home_video_version || "";
+  const phoneRaw = String(s.phone || "").trim();
+  const phoneTel = phoneRaw.replace(/\s+/g, "");
 %>
 
-<!-- BIG LOGO HERO -->
-<section class="home-hero">
-  <div class="wrap home-hero__inner">
-    <img
-      class="home-hero__logo"
-      src="<%= logoSrc %>"
-      alt="PNW Carriage Masters"
-      loading="eager"
-      decoding="async"
-    />
-
-    <h1 class="home-hero__title"><%= pageTitle %></h1>
-
-    <div class="home-hero__tagline">
-      Respectful, professional alternative hearse hire for unique send-offs.
+<div class="wrap home">
+  <section class="hero">
+    <div class="hero-media">
+      <% if (heroFile) { %>
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" controls>
+          <source src="/uploads/<%= heroFile %>?v=<%= heroVer %>">
+        </video>
+      <% } else { %>
+        <div class="hero-fallback">
+          <div class="muted">No hero video set yet.</div>
+        </div>
+      <% } %>
     </div>
 
-    <div class="home-hero__meta">
-      <div class="meta-pill">
-        <span class="small muted">Covering:</span>
-        <strong><%= settings.coverage %></strong>
+    <div class="hero-copy">
+      <h1><%= pageTitle %></h1>
+      <div class="lead">Exclusive truck hearse hire for unique send-offs.</div>
+
+      <div class="cta">
+        <a class="btn" href="/gallery">Photo gallery</a>
+        <a class="btn" href="/contact">Enquire</a>
+        <% if (phoneTel) { %>
+          <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+        <% } %>
       </div>
 
-      <div class="meta-pill">
-        <span class="small muted">Call:</span>
-        <a href="tel:<%= settings.phone.replace(/\s/g,'') %>"><%= settings.phone %></a>
+      <div class="rich"><%- contentHtml %></div>
+    </div>
+  </section>
+
+  <% if (thumbs && thumbs.length) { %>
+    <section class="thumbs">
+      <h2>Our truck hearses</h2>
+      <div class="thumb-grid">
+        <% thumbs.forEach(fn => { %>
+          <a class="thumb" href="/gallery" title="Open gallery">
+            <img src="/uploads/<%= fn %>" alt="Truck hearse">
+          </a>
+        <% }) %>
       </div>
-    </div>
+    </section>
+  <% } %>
 
-    <div class="home-hero__cta">
-      <a class="btn" href="/contact">Contact / Find us</a>
-      <a class="btn btn-outline" href="/gallery">View gallery</a>
-    </div>
-  </div>
-</section>
-
-<!-- CONTENT + VEHICLES (clean split) -->
-<div class="wrap">
-  <div class="home-split">
-    <div class="card home-copy">
-      <div><%- contentHtml %></div>
-    </div>
-
-    <div class="card">
-      <h2 class="section-title">Our vehicles</h2>
-      <ul class="muted">
-        <li>Bespoke truck hearse</li>
-      </ul>
-      <hr/>
-      <div class="muted small">
-        Discreet service, immaculate presentation, and considerate support for families and funeral directors.
+  <% if (montage && montage.length) { %>
+    <section class="montage">
+      <div class="marquee">
+        <div class="marquee-track">
+          <% montage.concat(montage).forEach(fn => { %>
+            <img src="/uploads/<%= fn %>" alt="Montage image">
+          <% }) %>
+        </div>
       </div>
+    </section>
+  <% } %>
+
+  <footer class="footer">
+    <div class="socials">
+      <% if (s.facebook_link) { %><a href="<%= s.facebook_link %>" target="_blank" rel="noopener">Facebook</a><% } %>
+      <% if (s.instagram_link) { %><a href="<%= s.instagram_link %>" target="_blank" rel="noopener">Instagram</a><% } %>
+      <% if (s.tiktok_link) { %><a href="<%= s.tiktok_link %>" target="_blank" rel="noopener">TikTok</a><% } %>
+      <% if (s.youtube_link) { %><a href="<%= s.youtube_link %>" target="_blank" rel="noopener">YouTube</a><% } %>
+      <a href="/contact">Email</a>
     </div>
-  </div>
+  </footer>
 </div>
-
-<!-- 3 KEY POINTS -->
-<div class="wrap">
-  <div class="grid-3">
-    <div class="card">
-      <h3 class="section-title">Sombre & professional</h3>
-      <div class="muted">A calm, respectful presence on the day — your arrangements carried out with care.</div>
-    </div>
-    <div class="card">
-      <h3 class="section-title">Flexible hire</h3>
-      <div class="muted">Work with us directly or through your funeral director to suit the service.</div>
-    </div>
-    <div class="card">
-      <h3 class="section-title">UK coverage</h3>
-      <div class="muted">We cover all of the UK mainland.</div>
-    </div>
-  </div>
-</div>
-
-<%- include('partials/footer') %>
