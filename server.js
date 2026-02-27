@@ -15,9 +15,11 @@ import nodemailer from "nodemailer";
 import sanitizeHtml from "sanitize-html";
 import dns from "dns/promises";
 
-import adminHomeTrucksRoutes from "./src/routes/adminHomeTrucksRoutes.js";
-
 import createSqliteStore from "better-sqlite3-session-store";
+
+import adminHomeTrucksRoutes from "./src/routes/adminHomeTrucksRoutes.js";
+// NOTE: if your actual filename is misspelled (e.g. adminHomeTrcuksRoutes.js),
+// either rename the file or change this import to match exactly.
 
 import {
   db,
@@ -59,9 +61,6 @@ fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 app.set("view engine", "ejs");
 app.set("views", path.join(ROOT_DIR, "views"));
 
-
-app.use("/admin", adminHomeTrucksRoutes);
-
 // --------------------
 // Middleware
 // --------------------
@@ -76,12 +75,7 @@ app.set("trust proxy", 1);
 // --------------------
 // Static assets
 // --------------------
-// Serve /public at the site root so these work:
-//   /css/site.css  -> public/css/site.css
-//   /images/logo.png -> public/images/logo.png
 app.use(express.static(PUBLIC_DIR));
-
-// Also keep explicit mounts (fine either way; these help clarity)
 app.use("/css", express.static(path.join(PUBLIC_DIR, "css")));
 app.use("/js", express.static(path.join(PUBLIC_DIR, "js")));
 app.use("/images", express.static(path.join(PUBLIC_DIR, "images")));
@@ -97,7 +91,7 @@ app.use(
   })
 );
 
-// Compatibility redirects for common old/typo paths
+// Compatibility redirects
 app.get("/css.site.css", (_req, res) => res.redirect(301, "/css/site.css"));
 app.get("/site.css", (_req, res) => res.redirect(301, "/css/site.css"));
 
@@ -163,7 +157,6 @@ function formatPageContent(raw, settings) {
     }
   });
 
-  // If there are no <p> tags, turn blank-line separated text into paragraphs
   if (!cleaned.includes("<p")) {
     const parts = cleaned
       .split(/\n\n+/)
@@ -200,16 +193,13 @@ function buildTransport() {
   });
 }
 
-// Robust admin lookup (avoids “Invalid login” due to email case/space mismatch)
 function findAdminByEmail(email) {
   const e = String(email || "").trim().toLowerCase();
   if (!e) return null;
 
-  // 1) Use your helper (if it already normalizes, great)
   const a = getAdminByEmail(e);
   if (a) return a;
 
-  // 2) Fallback to case/trim-insensitive lookup
   return db
     .prepare(
       `SELECT * FROM admins
@@ -221,7 +211,7 @@ function findAdminByEmail(email) {
 }
 
 // ======================================================
-// 3) Ensure branding defaults exist (do not overwrite)
+// 3) Ensure branding + home defaults exist (do not overwrite)
 // ======================================================
 function ensureSetting(key, value) {
   const existing = getSetting(key);
@@ -230,26 +220,29 @@ function ensureSetting(key, value) {
   }
 }
 
-ensureSetting("logo_file", ""); // empty means "use fallback in /public"
-ensureSetting("logo_version", String(Date.now())); // cache-bust query string
+ensureSetting("logo_file", "");
+ensureSetting("logo_version", String(Date.now()));
 ensureSetting("logo_home_px", "600");
 ensureSetting("logo_home_vw", "90");
 ensureSetting("logo_header_h", "44");
 ensureSetting("phone", "07503 608944");
 
 // Hero video library
-ensureSetting("hero_videos_json", "[]");                 // [{ filename, original, uploadedAt }]
-ensureSetting("hero_video_current", "");                 // filename of selected clip
-ensureSetting("hero_video_version", String(Date.now())); // cache-bust
-ensureSetting("home_thumbs_json", "[]");   // array of image filenames
-ensureSetting("home_montage_json", "[]");  // array of image filenames
+ensureSetting("hero_videos_json", "[]");
+ensureSetting("hero_video_current", "");
+ensureSetting("hero_video_version", String(Date.now()));
 
+// Home media collections
+ensureSetting("home_thumbs_json", "[]");
+ensureSetting("home_montage_json", "[]");
+
+// NEW: 2 truck placeholders under video
 ensureSetting("home_truck_power_img", "");
 ensureSetting("home_truck_power_ver", String(Date.now()));
 ensureSetting("home_truck_glory_img", "");
 ensureSetting("home_truck_glory_ver", String(Date.now()));
 
-// Settings available everywhere
+// Settings available everywhere (must be AFTER session so we can read req.session)
 app.use((req, res, next) => {
   const settings = listSettings([
     "company_name",
@@ -261,34 +254,41 @@ app.use((req, res, next) => {
     "tiktok_link",
     "youtube_link",
 
-    // Branding settings
+    // Branding
     "logo_file",
     "logo_version",
     "logo_home_px",
     "logo_home_vw",
     "logo_header_h",
+
+    // Home media (older admin page)
     "home_video_file",
     "home_video_version",
     "home_thumbs_json",
     "home_montage_json",
-     // NEW hero video keys (next section)
+
+    // Hero video (current home.ejs uses these)
     "hero_videos_json",
     "hero_video_current",
     "hero_video_version",
 
+    // NEW truck placeholders
     "home_truck_power_img",
     "home_truck_power_ver",
     "home_truck_glory_img",
     "home_truck_glory_ver"
-    
   ]);
+
   res.locals.settings = settings;
   res.locals.admin = currentAdmin(req);
   next();
 });
 
+// NOW mount the admin trucks router (needs session + locals)
+app.use("/admin", adminHomeTrucksRoutes);
+
 // ======================================================
-// 2) Multer config for logo uploads (PNG/JPG/WebP, 2MB)
+// 4) Multer configs
 // ======================================================
 const logoUpload = multer({
   storage: multer.diskStorage({
@@ -298,7 +298,7 @@ const logoUpload = multer({
       cb(null, `logo-${Date.now()}${ext}`);
     }
   }),
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const ok = ["image/png", "image/jpeg", "image/webp"].includes(file.mimetype);
     if (!ok) return cb(new Error("Only PNG, JPG, or WebP files are allowed"));
@@ -314,7 +314,7 @@ const homeVideoUpload = multer({
       cb(null, `home-video-${Date.now()}${ext}`);
     }
   }),
-  limits: { fileSize: 1024 * 1024 * 250 }, // 250MB
+  limits: { fileSize: 1024 * 1024 * 250 },
   fileFilter: (_req, file, cb) => {
     const ok = file.mimetype.startsWith("video/");
     if (!ok) return cb(new Error("Hero clip must be a video file (mp4/webm)."));
@@ -330,7 +330,7 @@ const homeImageUpload = multer({
       cb(null, `home-img-${Date.now()}-${crypto.randomBytes(4).toString("hex")}${ext}`);
     }
   }),
-  limits: { fileSize: 1024 * 1024 * 12 }, // 12MB per image
+  limits: { fileSize: 1024 * 1024 * 12 },
   fileFilter: (_req, file, cb) => {
     const ok = file.mimetype.startsWith("image/");
     if (!ok) return cb(new Error("Only image files are allowed."));
@@ -346,16 +346,17 @@ const heroVideoUpload = multer({
       cb(null, `hero-${Date.now()}-${crypto.randomBytes(4).toString("hex")}${ext}`);
     }
   }),
-  limits: { fileSize: 1024 * 1024 * 300 }, // 300MB
+  limits: { fileSize: 1024 * 1024 * 300 },
   fileFilter: (_req, file, cb) => {
-    const ok = ["video/mp4", "video/webm", "video/quicktime"].includes(file.mimetype) || file.mimetype.startsWith("video/");
+    const ok =
+      ["video/mp4", "video/webm", "video/quicktime"].includes(file.mimetype) ||
+      file.mimetype.startsWith("video/");
     if (!ok) return cb(new Error("Please upload a video file (MP4/WebM)."));
     cb(null, true);
   }
 });
 
 function safeFilename(name) {
-  // prevent path traversal
   const s = String(name || "");
   return /^[a-zA-Z0-9._-]+$/.test(s) ? s : "";
 }
@@ -392,12 +393,9 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/gallery", (req, res) => {
+app.get("/gallery", (_req, res) => {
   const media = listMedia();
-  res.render("gallery", {
-    title: "Gallery",
-    media
-  });
+  res.render("gallery", { title: "Gallery", media });
 });
 
 // Uploads (admin only) - gallery media
@@ -410,7 +408,7 @@ const upload = multer({
       cb(null, name);
     }
   }),
-  limits: { fileSize: 1024 * 1024 * 200 }, // 200MB
+  limits: { fileSize: 1024 * 1024 * 200 },
   fileFilter: (_req, file, cb) => {
     const okImage = file.mimetype.startsWith("image/");
     const okVideo = file.mimetype.startsWith("video/");
@@ -445,9 +443,7 @@ app.post("/admin/media/:id/delete", requireAdmin, (req, res) => {
 
   try {
     fs.unlinkSync(path.join(UPLOAD_DIR, item.filename));
-  } catch {
-    // ignore
-  }
+  } catch {}
 
   deleteMedia(id);
   res.redirect("/gallery");
@@ -456,6 +452,7 @@ app.post("/admin/media/:id/delete", requireAdmin, (req, res) => {
 app.get("/contact", (req, res) => {
   const page = getPage("contact");
   const settings = res.locals.settings;
+
   res.render("contact", {
     title: "Contact Us / Find Us",
     pageTitle: page?.title || "Contact Us / Find Us",
@@ -475,17 +472,13 @@ app.post("/contact", async (req, res) => {
   if (!first_name || !last_name || !phone || !email) {
     return res.redirect("/contact?error=" + encodeURIComponent("Please complete all required fields."));
   }
-
   if (!validator.isEmail(email)) {
     return res.redirect("/contact?error=" + encodeURIComponent("Please enter a valid email address."));
   }
 
   const hasMx = await emailDomainHasMX(email);
   if (!hasMx) {
-    return res.redirect(
-      "/contact?error=" +
-        encodeURIComponent("Email domain does not appear to accept email. Please double-check the address.")
-    );
+    return res.redirect("/contact?error=" + encodeURIComponent("Email domain does not appear to accept email."));
   }
 
   db.prepare("INSERT INTO contact_messages(first_name,last_name,phone,email,message) VALUES(?,?,?,?,?)").run(
@@ -499,9 +492,7 @@ app.post("/contact", async (req, res) => {
   const forwardTo = getSetting("forward_to_email") || process.env.CONTACT_FORWARD_TO || "chris@chriswright.info";
   const transport = buildTransport();
   if (!transport) {
-    return res.redirect(
-      "/contact?error=" + encodeURIComponent("Email sending is not configured. Please call us instead.")
-    );
+    return res.redirect("/contact?error=" + encodeURIComponent("Email sending is not configured. Please call us instead."));
   }
 
   const from = process.env.SMTP_FROM || `no-reply@${process.env.PUBLIC_HOST || "truckhearse.co.uk"}`;
@@ -511,9 +502,9 @@ app.post("/contact", async (req, res) => {
     from,
     replyTo: email,
     subject: "Contact From truckhearse.co.uk Website",
-    text: `New website contact\n\nName: ${first_name} ${last_name}\nPhone: ${phone}\nEmail: ${email}\n\nMessage:\n${
-      message || "(none)"
-    }`
+    text:
+      `New website contact\n\nName: ${first_name} ${last_name}\nPhone: ${phone}\nEmail: ${email}\n\nMessage:\n` +
+      (message || "(none)")
   });
 
   res.redirect("/contact?success=1");
@@ -537,8 +528,6 @@ app.post("/login", (req, res) => {
   if (!ok) return res.redirect("/login?error=" + encodeURIComponent("Invalid login"));
 
   req.session.adminId = admin.id;
-
-  // ensure session is saved before redirect (helps on some hosts)
   req.session.save(() => res.redirect("/admin"));
 });
 
@@ -572,9 +561,7 @@ app.post("/setup", (req, res) => {
   const last_name = String(req.body.last_name || "").trim();
 
   if (!validator.isEmail(email) || password.length < 10) {
-    return res.redirect(
-      "/setup?error=" + encodeURIComponent("Please provide a valid email and a strong password (10+ characters).")
-    );
+    return res.redirect("/setup?error=" + encodeURIComponent("Valid email + strong password (10+ chars) required."));
   }
 
   const hash = bcrypt.hashSync(password, 12);
@@ -593,11 +580,7 @@ app.get("/admin/pages/:slug", requireAdmin, (req, res) => {
   const slug = req.params.slug;
   const page = getPage(slug);
   if (!page) return res.status(404).send("Not found");
-  res.render("admin/edit-page", {
-    title: `Edit page: ${slug}`,
-    slug,
-    page
-  });
+  res.render("admin/edit-page", { title: `Edit page: ${slug}`, slug, page });
 });
 
 app.post("/admin/pages/:slug", requireAdmin, (req, res) => {
@@ -640,7 +623,7 @@ app.post("/admin/settings", requireAdmin, (req, res) => {
 });
 
 // ======================================================
-// 4) Admin branding routes (logo upload + size settings)
+// Branding routes (logo upload + size settings)
 // ======================================================
 app.get("/admin/branding", requireAdmin, (req, res) => {
   res.render("admin/branding", {
@@ -655,7 +638,6 @@ app.get("/admin/branding", requireAdmin, (req, res) => {
 });
 
 app.post("/admin/branding", requireAdmin, (req, res) => {
-  // capture multer errors so the user sees a nice message
   logoUpload.single("logo")(req, res, (err) => {
     if (err) {
       return res.status(400).render("admin/branding", {
@@ -675,12 +657,10 @@ app.post("/admin/branding", requireAdmin, (req, res) => {
       return String(Math.max(min, Math.min(max, n)));
     };
 
-    // sizes (save even if no file uploaded)
     setSetting("logo_home_px", clampInt(req.body.logo_home_px, 120, 1200, 600));
     setSetting("logo_home_vw", clampInt(req.body.logo_home_vw, 20, 100, 90));
     setSetting("logo_header_h", clampInt(req.body.logo_header_h, 20, 120, 44));
 
-    // if a new logo was uploaded, store filename + bump version to bust caches
     if (req.file?.filename) {
       setSetting("logo_file", req.file.filename);
       setSetting("logo_version", String(Date.now()));
@@ -689,235 +669,6 @@ app.post("/admin/branding", requireAdmin, (req, res) => {
     res.redirect("/admin/branding?ok=1");
   });
 });
-
-app.get("/admin/admins", requireAdmin, (req, res) => {
-  const admins = listAdmins();
-  res.render("admin/admins", { title: "Manage Admins", admins, error: req.query.error || "" });
-});
-
-app.post("/admin/admins/add", requireAdmin, (req, res) => {
-  const email = String(req.body.email || "").trim().toLowerCase();
-  const password = String(req.body.password || "");
-  const first_name = String(req.body.first_name || "").trim();
-  const last_name = String(req.body.last_name || "").trim();
-
-  if (!validator.isEmail(email) || password.length < 10) {
-    return res.redirect("/admin/admins?error=" + encodeURIComponent("Valid email and 10+ character password required"));
-  }
-
-  const hash = bcrypt.hashSync(password, 12);
-  try {
-    createAdmin({ email, password_hash: hash, first_name, last_name });
-  } catch {
-    return res.redirect("/admin/admins?error=" + encodeURIComponent("That email is already an admin"));
-  }
-
-  res.redirect("/admin/admins");
-});
-
-app.post("/admin/admins/:id/reset-password", requireAdmin, (req, res) => {
-  const id = Number(req.params.id);
-  const password = String(req.body.password || "");
-  if (password.length < 10) {
-    return res.redirect("/admin/admins?error=" + encodeURIComponent("Password must be 10+ characters"));
-  }
-
-  const hash = bcrypt.hashSync(password, 12);
-  updateAdminPassword(id, hash);
-  res.redirect("/admin/admins");
-});
-
-app.post("/admin/admins/:id/deactivate", requireAdmin, (req, res) => {
-  const id = Number(req.params.id);
-
-  const active = db.prepare("SELECT COUNT(*) as c FROM admins WHERE is_active=1").get().c;
-  const target = db.prepare("SELECT * FROM admins WHERE id=?").get(id);
-  if (!target) return res.redirect("/admin/admins");
-
-  if (target.is_active === 1 && active <= 1) {
-    return res.redirect("/admin/admins?error=" + encodeURIComponent("You cannot remove the last admin user."));
-  }
-
-  deactivateAdmin(id);
-
-  if (req.admin.id === id) {
-    req.session.destroy(() => res.redirect("/"));
-    return;
-  }
-
-  res.redirect("/admin/admins");
-});
-
-app.get("/admin/home-media", requireAdmin, (_req, res) => {
-  const settings = res.locals.settings;
-  res.render("admin/home-media", {
-    title: "Home Media",
-    message: _req.query.ok === "1" ? "Saved." : null,
-    errorMsg: _req.query.error || "",
-    videoFile: settings.home_video_file || "",
-    videoVer: settings.home_video_version || "",
-    thumbs: parseJsonArray(settings.home_thumbs_json),
-    montage: parseJsonArray(settings.home_montage_json)
-  });
-});
-
-app.post("/admin/home-media/video", requireAdmin, (req, res) => {
-  homeVideoUpload.single("heroVideo")(req, res, (err) => {
-    if (err) return res.redirect("/admin/home-media?error=" + encodeURIComponent(err.message));
-
-    if (!req.file?.filename) {
-      return res.redirect("/admin/home-media?error=" + encodeURIComponent("No video uploaded."));
-    }
-
-    setSetting("home_video_file", req.file.filename);
-    setSetting("home_video_version", String(Date.now())); // cache-bust
-
-    return res.redirect("/admin/home-media?ok=1");
-  });
-});
-
-app.post("/admin/home-media/video/clear", requireAdmin, (_req, res) => {
-  // Optional: delete old file too
-  const old = getSetting("home_video_file") || "";
-  if (old) {
-    try { fs.unlinkSync(path.join(UPLOAD_DIR, old)); } catch {}
-  }
-  setSetting("home_video_file", "");
-  setSetting("home_video_version", String(Date.now()));
-  res.redirect("/admin/home-media?ok=1");
-});
-
-app.post("/admin/home-media/thumbs/add", requireAdmin, (req, res) => {
-  homeImageUpload.array("thumbs", 24)(req, res, (err) => {
-    if (err) return res.redirect("/admin/home-media?error=" + encodeURIComponent(err.message));
-    const files = (req.files || []).map(f => f.filename).filter(Boolean);
-    if (!files.length) return res.redirect("/admin/home-media?error=" + encodeURIComponent("No images uploaded."));
-
-    const current = parseJsonArray(getSetting("home_thumbs_json"));
-    const next = current.concat(files).slice(0, 60); // cap
-    setSetting("home_thumbs_json", JSON.stringify(next));
-
-    res.redirect("/admin/home-media?ok=1");
-  });
-});
-
-app.post("/admin/home-media/montage/add", requireAdmin, (req, res) => {
-  homeImageUpload.array("montage", 60)(req, res, (err) => {
-    if (err) return res.redirect("/admin/home-media?error=" + encodeURIComponent(err.message));
-    const files = (req.files || []).map(f => f.filename).filter(Boolean);
-    if (!files.length) return res.redirect("/admin/home-media?error=" + encodeURIComponent("No images uploaded."));
-
-    const current = parseJsonArray(getSetting("home_montage_json"));
-    const next = current.concat(files).slice(0, 200); // cap
-    setSetting("home_montage_json", JSON.stringify(next));
-
-    res.redirect("/admin/home-media?ok=1");
-  });
-});
-
-app.post("/admin/home-media/thumbs/:name/delete", requireAdmin, (req, res) => {
-  const name = safeFilename(req.params.name);
-  if (!name) return res.redirect("/admin/home-media?error=" + encodeURIComponent("Invalid filename."));
-
-  const current = parseJsonArray(getSetting("home_thumbs_json"));
-  const next = current.filter(x => x !== name);
-  setSetting("home_thumbs_json", JSON.stringify(next));
-
-  try { fs.unlinkSync(path.join(UPLOAD_DIR, name)); } catch {}
-  res.redirect("/admin/home-media?ok=1");
-});
-
-app.post("/admin/home-media/montage/:name/delete", requireAdmin, (req, res) => {
-  const name = safeFilename(req.params.name);
-  if (!name) return res.redirect("/admin/home-media?error=" + encodeURIComponent("Invalid filename."));
-
-  const current = parseJsonArray(getSetting("home_montage_json"));
-  const next = current.filter(x => x !== name);
-  setSetting("home_montage_json", JSON.stringify(next));
-
-  try { fs.unlinkSync(path.join(UPLOAD_DIR, name)); } catch {}
-  res.redirect("/admin/home-media?ok=1");
-});
-
-app.get("/admin/hero-video", requireAdmin, (req, res) => {
-  const settings = res.locals.settings;
-  const videos = parseJsonArray(settings.hero_videos_json);
-  res.render("admin/hero-video", {
-    title: "Hero Video",
-    message: req.query.ok === "1" ? "Saved." : null,
-    errorMsg: req.query.error || "",
-    videos,
-    current: settings.hero_video_current || "",
-    version: settings.hero_video_version || ""
-  });
-});
-
-app.get("/admin/gallery", requireAdmin, (_req, res) => {
-  const media = listMedia();
-  res.render("admin/gallery", { title: "Manage Gallery", media });
-});
-
-app.post("/admin/hero-video/upload", requireAdmin, (req, res) => {
-  heroVideoUpload.single("heroVideo")(req, res, (err) => {
-    if (err) return res.redirect("/admin/hero-video?error=" + encodeURIComponent(err.message));
-    if (!req.file?.filename) return res.redirect("/admin/hero-video?error=" + encodeURIComponent("No video uploaded."));
-
-    const currentList = parseJsonArray(getSetting("hero_videos_json"));
-    const item = {
-      filename: req.file.filename,
-      original: req.file.originalname,
-      uploadedAt: Date.now()
-    };
-    currentList.unshift(item); // newest first
-    writeJsonArraySetting("hero_videos_json", currentList);
-
-    // auto-select the newly uploaded one
-    setSetting("hero_video_current", req.file.filename);
-    setSetting("hero_video_version", String(Date.now()));
-
-    res.redirect("/admin/hero-video?ok=1");
-  });
-});
-
-app.post("/admin/hero-video/select", requireAdmin, (req, res) => {
-  const filename = safeFilename(req.body.filename);
-  if (!filename) return res.redirect("/admin/hero-video?error=" + encodeURIComponent("Invalid selection."));
-
-  const list = parseJsonArray(getSetting("hero_videos_json"));
-  const exists = list.some(v => v && v.filename === filename);
-  if (!exists) return res.redirect("/admin/hero-video?error=" + encodeURIComponent("That video no longer exists."));
-
-  setSetting("hero_video_current", filename);
-  setSetting("hero_video_version", String(Date.now()));
-  res.redirect("/admin/hero-video?ok=1");
-});
-
-app.post("/admin/hero-video/clear", requireAdmin, (_req, res) => {
-  setSetting("hero_video_current", "");
-  setSetting("hero_video_version", String(Date.now()));
-  res.redirect("/admin/hero-video?ok=1");
-});
-
-app.post("/admin/hero-video/:filename/delete", requireAdmin, (req, res) => {
-  const filename = safeFilename(req.params.filename);
-  if (!filename) return res.redirect("/admin/hero-video?error=" + encodeURIComponent("Invalid filename."));
-
-  const list = parseJsonArray(getSetting("hero_videos_json")).filter(v => v && v.filename !== filename);
-  writeJsonArraySetting("hero_videos_json", list);
-
-  try { fs.unlinkSync(path.join(UPLOAD_DIR, filename)); } catch {}
-
-  const current = String(getSetting("hero_video_current") || "");
-  if (current === filename) {
-    // if current deleted, pick next available or clear
-    const next = list[0]?.filename || "";
-    setSetting("hero_video_current", next);
-  }
-  setSetting("hero_video_version", String(Date.now()));
-
-  res.redirect("/admin/hero-video?ok=1");
-});
-
 
 // --------------------
 // Health check
