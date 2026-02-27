@@ -836,6 +836,11 @@ app.get("/admin/hero-video", requireAdmin, (req, res) => {
   });
 });
 
+app.get("/admin/gallery", requireAdmin, (_req, res) => {
+  const media = listMedia();
+  res.render("admin/gallery", { title: "Manage Gallery", media });
+});
+
 app.post("/admin/hero-video/upload", requireAdmin, (req, res) => {
   heroVideoUpload.single("heroVideo")(req, res, (err) => {
     if (err) return res.redirect("/admin/hero-video?error=" + encodeURIComponent(err.message));
@@ -896,6 +901,7 @@ app.post("/admin/hero-video/:filename/delete", requireAdmin, (req, res) => {
 
   res.redirect("/admin/hero-video?ok=1");
 });
+
 
 // --------------------
 // Health check
