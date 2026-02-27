@@ -146,8 +146,9 @@ function formatPageContent(raw, settings) {
   };
 
   let text = String(raw || "");
-  for (const [k, v] of Object.entries(tokens)) text = text.split(k).join(String(v || ""));
-}
+  for (const [k, v] of Object.entries(tokens)) {
+    text = text.split(k).join(String(v || ""));
+  }
 
   const cleaned = sanitizeHtml(text, {
     allowedTags: ["b", "strong", "i", "em", "u", "br", "p", "ul", "ol", "li", "a"],
@@ -156,6 +157,20 @@ function formatPageContent(raw, settings) {
       a: sanitizeHtml.simpleTransform("a", { rel: "noopener noreferrer", target: "_blank" }, true)
     }
   });
+
+  // If there are no <p> tags, turn blank-line separated text into paragraphs
+  if (!cleaned.includes("<p")) {
+    const parts = cleaned
+      .split(/\n\n+/)
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`)
+      .join("\n");
+    return parts || "";
+  }
+
+  return cleaned;
+}
 
   if (!cleaned.includes("<p")) {
     const parts = cleaned
