@@ -1,0 +1,56 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/header') %>
+
+<div class="wrap">
+  <div class="card">
+    <h1 class="section-title">Manage gallery</h1>
+    <p class="muted">Upload new photos/videos and delete existing items.</p>
+
+    <form action="/admin/upload" method="post" enctype="multipart/form-data" class="card" style="margin-bottom:16px">
+      <h2 style="margin:0 0 10px">Upload</h2>
+
+      <label for="media">File (image or video)</label>
+      <input id="media" name="media" type="file" accept="image/*,video/*" required>
+
+      <label for="caption">Caption (optional)</label>
+      <input id="caption" name="caption" type="text" maxlength="200" placeholder="e.g., Black truck hearse – side view">
+
+      <div style="height:10px"></div>
+      <button class="btn" type="submit">Upload to gallery</button>
+    </form>
+
+    <h2 style="margin:0 0 10px">Current gallery</h2>
+
+    <% if (!media || !media.length) { %>
+      <div class="muted">No media uploaded yet.</div>
+    <% } else { %>
+      <div class="thumb-grid">
+        <% media.forEach(item => { %>
+          <div class="thumb" style="overflow:hidden">
+            <% if (item.type === "video") { %>
+              <video src="/uploads/<%= item.filename %>" controls></video>
+            <% } else { %>
+              <img src="/uploads/<%= item.filename %>" alt="<%= item.caption || '' %>">
+            <% } %>
+
+            <div class="cap">
+              <div class="small muted"><%= item.caption || '(no caption)' %></div>
+
+              <form method="post" action="/admin/media/<%= item.id %>/delete"
+                    onsubmit="return confirm('Delete this item?');"
+                    style="margin-top:10px">
+                <button class="btn danger" type="submit">Delete</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <div style="height:12px"></div>
+    <a class="btn" href="/gallery">View public gallery</a>
+    <a class="btn" href="/admin" style="margin-left:8px">Back</a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
