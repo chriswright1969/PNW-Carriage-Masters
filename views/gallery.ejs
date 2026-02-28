@@ -2,37 +2,83 @@
 <%- include('partials/header') %>
 
 <%
-  const items = (media || []).filter(m => m.type === "image");
-  const first = items[0];
+  const items = Array.isArray(media) ? media : [];
+  const first = items[0] || null;
+
+  const isVideo = (it) => (it && String(it.type) === "video");
+  const srcOf = (it) => it ? `/uploads/${it.filename}` : "";
 %>
 
 <div class="wrap gallery">
-  <div class="gallery-main">
-    <% if (first) { %>
-      <img id="galleryMain" src="/uploads/<%= first.filename %>" alt="<%= first.caption || 'Gallery image' %>">
-    <% } else { %>
-      <div class="card"><div class="muted">No gallery images yet.</div></div>
-    <% } %>
-  </div>
+  <h1>Gallery</h1>
 
-  <% if (items.length) { %>
+  <% if (!items.length) { %>
+    <div class="card"><div class="muted">No gallery items yet.</div></div>
+  <% } else { %>
+
+    <div class="gallery-main" id="galleryMain">
+      <% if (first && isVideo(first)) { %>
+        <video controls playsinline preload="metadata" class="gallery-media">
+          <source src="<%= srcOf(first) %>">
+        </video>
+      <% } else { %>
+        <img class="gallery-media" src="<%= srcOf(first) %>" alt="Gallery image">
+      <% } %>
+    </div>
+
     <div class="gallery-strip" id="galleryStrip">
       <% items.forEach((it, idx) => { %>
-        <button class="gthumb <%= idx===0 ? 'active' : '' %>"
-                type="button"
-                data-src="/uploads/<%= it.filename %>"
-                data-alt="<%= (it.caption || 'Gallery image') %>">
-          <img src="/uploads/<%= it.filename %>" alt="">
+        <button
+          type="button"
+          class="gthumb <%= idx === 0 ? 'active' : '' %>"
+          data-type="<%= it.type %>"
+          data-src="<%= srcOf(it) %>"
+          aria-label="<%= it.type === 'video' ? 'Open video' : 'Open image' %>"
+          title="<%= it.caption || it.original_name || it.filename %>"
+        >
+          <% if (isVideo(it)) { %>
+            <video muted playsinline preload="metadata">
+              <source src="<%= srcOf(it) %>">
+            </video>
+            <span class="gthumb-badge">VIDEO</span>
+          <% } else { %>
+            <img src="<%= srcOf(it) %>" alt="">
+          <% } %>
         </button>
       <% }) %>
     </div>
+
+    <script>
+      (function(){
+        const main = document.getElementById("galleryMain");
+        const strip = document.getElementById("galleryStrip");
+        if (!main || !strip) return;
+
+        strip.addEventListener("click", (e) => {
+          const btn = e.target.closest(".gthumb");
+          if (!btn) return;
+
+          strip.querySelectorAll(".gthumb").forEach(x => x.classList.remove("active"));
+          btn.classList.add("active");
+
+          const type = btn.dataset.type;
+          const src = btn.dataset.src;
+
+          // Swap main media
+          if (type === "video") {
+            main.innerHTML =
+              '<video class="gallery-media" controls playsinline preload="metadata">' +
+              '<source src="' + src + '">' +
+              '</video>';
+          } else {
+            main.innerHTML =
+              '<img class="gallery-media" src="' + src + '" alt="Gallery image">';
+          }
+        });
+      })();
+    </script>
+
   <% } %>
-
-  <div style="margin-top:16px">
-    <a class="btn" href="/contact">Enquire</a>
-  </div>
 </div>
-
-<script src="/js/gallery.js" defer></script>
 
 <%- include('partials/footer') %>
