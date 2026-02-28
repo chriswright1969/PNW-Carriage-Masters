@@ -615,8 +615,8 @@ app.post("/admin/branding", requireAdmin, (req, res) => {
 const pick = String(req.body.logo_pick || "").trim();
 if (pick) {
   const allowed = new Set([
-    "/public/images/logo.svg",
-    "/public/images/logo.png",
+    "/images/logo.svg",
+    "/images/logo.png",
   ]);
   if (!allowed.has(pick)) return res.status(400).send("Invalid logo selection.");
   setSetting("logo_file", pick);
