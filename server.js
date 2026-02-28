@@ -575,33 +575,9 @@ app.post("/admin/settings", requireAdmin, (req, res) => {
   res.redirect("/admin/settings");
 });
 
-// Branding routes
-// helper
-function clampInt(v, min, max, fallback) {
-  const n = Number.parseInt(String(v ?? ""), 10);
-  if (!Number.isFinite(n)) return String(fallback);
-  return String(Math.max(min, Math.min(max, n)));
-}
-
-function brandingModel(req, extra = {}) {
-  return {
-    title: "Branding",
-    message: extra.message ?? (req.query.ok === "1" ? "Saved." : null),
-    errorMsg: extra.errorMsg ?? null,
-    // IMPORTANT: provide a settings object so the view can use settings.logo_*
-    settings: {
-      logo_file: getSetting("logo_file") || "",
-      logo_version: getSetting("logo_version") || "",
-      logo_home_px: getSetting("logo_home_px") || "600",
-      logo_home_vw: getSetting("logo_home_vw") || "90",
-      logo_header_h: getSetting("logo_header_h") || "44",
-    },
-  };
-}
-
-// Branding routes (redirect back to /admin/settings#branding because there is no branding.ejs)
+// Branding routes (you don't have views/admin/branding.ejs, so redirect back to settings)
 app.get("/admin/branding", requireAdmin, (req, res) => {
-  return res.redirect(302, "/admin/settings#branding");
+  res.redirect(302, "/admin/settings#branding");
 });
 
 app.post("/admin/branding", requireAdmin, (req, res) => {
@@ -613,10 +589,11 @@ app.post("/admin/branding", requireAdmin, (req, res) => {
     };
 
     if (err) {
-      return res.redirect(
+      res.redirect(
         303,
         "/admin/settings?brand_err=" + encodeURIComponent(err.message || "Upload failed") + "#branding"
       );
+      return;
     }
 
     setSetting("logo_home_px", clampInt(req.body.logo_home_px, 120, 1200, 600));
@@ -625,12 +602,10 @@ app.post("/admin/branding", requireAdmin, (req, res) => {
 
     const pick = String(req.body.logo_pick || "").trim();
     if (pick) {
-      const allowed = new Set([
-        "/images/logo.svg",
-        "/images/logo.png",
-      ]);
+      const allowed = new Set(["/images/logo.svg", "/images/logo.png"]);
       if (!allowed.has(pick)) {
-        return res.redirect(303, "/admin/settings?brand_err=" + encodeURIComponent("Invalid logo selection.") + "#branding");
+        res.redirect(303, "/admin/settings?brand_err=" + encodeURIComponent("Invalid logo selection.") + "#branding");
+        return;
       }
       setSetting("logo_file", pick);
       setSetting("logo_version", String(Date.now()));
@@ -639,19 +614,8 @@ app.post("/admin/branding", requireAdmin, (req, res) => {
       setSetting("logo_version", String(Date.now()));
     }
 
-    return res.redirect(303, "/admin/settings?brand_ok=1#branding");
+    res.redirect(303, "/admin/settings?brand_ok=1#branding");
   });
-});
-
-  // upload file
-  if (req.file) {
-    setSetting("logo_file", req.file.filename);
-    setSetting("logo_version", String(Date.now()));
-    return res.redirect("/admin/branding?ok=1");
-  }
-
-  // nothing changed
-  return res.redirect("/admin/branding?ok=1");
 });
 
 // ======================================================
