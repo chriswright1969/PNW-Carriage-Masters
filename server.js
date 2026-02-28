@@ -612,10 +612,19 @@ app.post("/admin/branding", requireAdmin, (req, res) => {
     setSetting("logo_home_vw", clampInt(req.body.logo_home_vw, 20, 100, 90));
     setSetting("logo_header_h", clampInt(req.body.logo_header_h, 20, 120, 44));
 
-    if (req.file?.filename) {
-      setSetting("logo_file", req.file.filename);
-      setSetting("logo_version", String(Date.now()));
-    }
+const pick = String(req.body.logo_pick || "").trim();
+if (pick) {
+  const allowed = new Set([
+    "/public/images/logo.svg",
+    "/public/images/logo.png",
+  ]);
+  if (!allowed.has(pick)) return res.status(400).send("Invalid logo selection.");
+  setSetting("logo_file", pick);
+  setSetting("logo_version", String(Date.now()));
+} else if (req.file) {
+  setSetting("logo_file", req.file.filename);
+  setSetting("logo_version", String(Date.now()));
+}
 
     res.redirect("/admin/branding?ok=1");
   });
