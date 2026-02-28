@@ -4,7 +4,7 @@
       // Use admin-changeable logo if set, otherwise fall back to /images/logo.png
       const logoFile = (settings && settings.logo_file) ? String(settings.logo_file) : "";
       const logoVer  = (settings && settings.logo_version) ? String(settings.logo_version) : "";
-      const logoSrc  = logoFile ? (`/uploads/${logoFile}${logoVer ? `?v=${logoVer}` : ""}`) : "/images/logo.png";
+      const logoSrc  = logoFile ? (`/uploads/${logoFile}${logoVer ? `?v=${logoVer}` : ""}`) : "/images/logo.svg";
 
       // Admin-changeable header logo height (px)
       const headerH = Number(settings?.logo_header_h || 44);
