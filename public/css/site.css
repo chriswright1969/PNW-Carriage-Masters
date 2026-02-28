@@ -1,9 +1,9 @@
 /* =========================
-   PNW Carriage Masters — site.css (corrected)
-   Key fixes:
-   - Truck tiles gap tightened (ONLY affects the two truck images)
-   - Right-hand “Welcome” column made MUCH wider (desktop)
-   - Hero block centred, media column kept a fixed width
+   PNW Carriage Masters — site.css (rewritten)
+   Key changes for HOME truck tiles:
+   - Truck images show FULLY (no cropping): object-fit: contain + padding + dark backdrop
+   - Two tiles are equal width, with a clear gap, and centered under the hero video
+   - Removed the conflicting “HOME HERO FIX” overrides at the bottom (they were fighting each other)
 ========================= */
 
 /* ---------- Design tokens ---------- */
@@ -24,14 +24,14 @@
   --shadow: 0 14px 40px rgba(0,0,0,.35);
   --radius: 16px;
 
-  /* Home hero truck sizing */
-  --hero-truck-tile-h: 140px;   /* tile height */
-  --hero-truck-maxw: 500px;     /* keeps the two tiles compact under the video */
+  /* Home hero sizing */
+  --home-maxw: 1200px;         /* overall landing page width */
+  --hero-maxw: 1200px;         /* hero block width */
+  --hero-media-w: 620px;       /* left media column width (desktop) */
 
-  /* Desktop hero layout */
-  --hero-media-w: 560px;        /* FIXED width for video + trucks column */
-  --home-maxw: 1500px;          /* wider landing page wrapper */
-  --hero-maxw: 1460px;          /* centred hero “table” width */
+  /* Make video + tiles align */
+  --hero-media-inner-max: 560px;  /* the visible width of the video and the tile pair */
+  --hero-truck-tile-h: 180px;     /* consistent tile height while still showing full image */
 }
 
 /* ---------- Base / reset ---------- */
@@ -169,13 +169,13 @@ table th,.table th{color:var(--muted);font-weight:600}
 /* Mobile/tablet: single column (media above text) */
 .hero{
   display:grid;
-  row-gap:18px;
-  column-gap:14px; /* controls the gap BETWEEN media and text on desktop too */
   grid-template-columns: 1fr;
+  row-gap:18px;
+  column-gap:18px;
   align-items:start;
 }
 
-/* Desktop: centre the whole hero and make the RIGHT column much wider */
+/* Desktop: two columns, media fixed width, text flexible, centered overall */
 @media (min-width: 980px){
   .wrap.home{
     max-width: var(--home-maxw);
@@ -183,8 +183,9 @@ table th,.table th{color:var(--muted);font-weight:600}
   }
   .wrap.home .hero{
     max-width: var(--hero-maxw);
-    margin: 0 auto;                        /* centres the “table” */
-    grid-template-columns: var(--hero-media-w) 1fr; /* media fixed; text takes the rest */
+    margin: 0 auto;
+    grid-template-columns: var(--hero-media-w) 1fr;
+    column-gap: 16px;
   }
 }
 
@@ -195,14 +196,23 @@ table th,.table th{color:var(--muted);font-weight:600}
   border:1px solid var(--border);
 }
 
-/* Ensures hero video + truck tiles stack vertically (not side-by-side) */
+/* Ensures hero video + truck tiles stack vertically */
 .hero-media-stack{
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:12px;
+  padding: 0;
 }
 
-.hero-video{width:100%;height:auto;display:block}
+/* Make the video and the truck tile pair share the same visible width and be centered */
+.hero-video{
+  width:100%;
+  height:auto;
+  display:block;
+
+  max-width: var(--hero-media-inner-max);
+  margin-inline: auto;
+}
 
 .hero-fallback{
   padding:42px 18px;
@@ -216,15 +226,15 @@ table th,.table th{color:var(--muted);font-weight:600}
 .hero-copy .cta{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
 .hero-copy .rich{margin-top:10px}
 
-/* --- Truck tiles under hero video (tight gap) --- */
+/* --- Truck tiles under hero video (FULL IMAGE shown + centered pair) --- */
 .hero-truck-grid{
-  margin-top:6px;
   display:grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap:6px;
-   width: 100%; /* tighter gap BETWEEN the two tiles */
-  max-width: none;      /* keeps the pair compact */
-  margin-inline:auto;                     /* centred under video */
+  gap: 14px;
+
+  width: 100%;
+  max-width: var(--hero-media-inner-max);
+  margin-inline: auto; /* centers underneath video */
 }
 
 .hero-truck-card{
@@ -238,11 +248,16 @@ table th,.table th{color:var(--muted);font-weight:600}
 
 .hero-truck-link{display:block;text-decoration:none;color:inherit}
 
+/* IMPORTANT: show the FULL truck image (no cropping) */
 .hero-truck-card img{
   width:100%;
   height:var(--hero-truck-tile-h);
-  object-fit:cover;
+
+  object-fit: contain;          /* <-- full image visible */
   object-position:center;
+
+  background:#07090d;           /* letterbox backdrop */
+  padding: 10px;                /* breathing space so it doesn’t touch edges */
   display:block;
 }
 
@@ -265,11 +280,12 @@ table th,.table th{color:var(--muted);font-weight:600}
   font-size:14px;
 }
 
+/* Mobile: stack the two tiles, still centered under the video */
 @media (max-width: 720px){
   .hero-truck-grid{
-    grid-template-columns:1fr;
+    grid-template-columns: 1fr;
     max-width: 520px;
-    gap:8px;
+    gap: 12px;
   }
 }
 
@@ -387,9 +403,11 @@ table th,.table th{color:var(--muted);font-weight:600}
   background:transparent;
   cursor:pointer;
   flex:0 0 auto;
+  position:relative;
 }
 
-.gthumb img{
+.gthumb img,
+.gthumb video{
   height:84px;
   width:120px;
   object-fit:cover;
@@ -399,15 +417,6 @@ table th,.table th{color:var(--muted);font-weight:600}
 
 .gthumb.active{outline:2px solid var(--accent)}
 
-.gthumb video{
-  height:84px;
-  width:120px;
-  object-fit:cover;
-  border-radius:14px;
-  display:block;
-}
-
-.gthumb{ position:relative; }
 .gthumb-badge{
   position:absolute;
   right:6px;
@@ -418,83 +427,4 @@ table th,.table th{color:var(--muted);font-weight:600}
   border:1px solid var(--border);
   background:rgba(0,0,0,0.55);
   color:var(--text);
-}
-
-/* ==============================
-   HOME HERO FIX (put at bottom)
-   ============================== */
-
-/* Reduce the gap between the left media column and right text column */
-.wrap.home .hero{
-  column-gap: 20px !important; /* was effectively larger */
-}
-
-/* Make the right column much wider (desktop) while keeping media size the same */
-@media (min-width: 980px){
-  /* Let the landing page actually be wider than the global .wrap max-width */
-  .wrap.home{
-    max-width: 1200px !important;  /* increase page width */
-    margin: 0 auto !important;
-  }
-
-  .wrap.home .hero{
-    max-width: 1200px !important;  /* centre the hero block */
-    margin: 0 auto !important;
-
-    /* Keep the video/trucks column fixed; give everything else to the text */
-    grid-template-columns: 450px 1fr !important;
-
-    /* Tighten the gap even more if needed */
-    column-gap: 8px !important;
-  }
-
-  /* Ensure nothing is capping the text column width */
-  .wrap.home .hero-copy{
-    max-width: none !important;
-    min-width: 0;
-  }
-}
-/* Wider truck tiles without making the video bigger */
-@media (min-width: 980px){
-  .wrap.home .hero{
-    grid-template-columns: 640px 1fr;  /* gives the tiles more width */
-    column-gap: 8px;
-  }
-
-  /* Keep the video the same size as before */
-  .wrap.home .hero-video{
-    max-width: 560px;
-    margin-inline: auto;
-  }
-
-  /* Let the truck grid use the full column width */
-  .wrap.home .hero-truck-grid{
-    max-width: none;
-    width: 100%;
-    margin-inline: 0;
-  }
-}
-
-/* Wider Power/Glory tiles without making the hero video bigger */
-@media (min-width: 980px){
-  /* Give the left column more width (this is what makes each tile wider) */
-  .wrap.home .hero{
-    grid-template-columns: 700px 1fr; /* was ~560px; try 660–760 */
-    column-gap: 10px;
-  }
-
-  /* Keep the video visually the same width as before */
-  .wrap.home .hero-video{
-    max-width: 800px;
-    margin-inline: auto;
-  }
-
-  /* Make sure the truck grid can use the full left column width */
-  .wrap.home .hero-media-stack{ align-items: stretch; }
-
-  .wrap.home .hero-truck-grid{
-    width: 100%;
-    max-width: none;
-    margin-inline: 0;
-  }
 }
