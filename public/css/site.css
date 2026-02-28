@@ -361,12 +361,14 @@ table th,.table th{color:var(--muted);font-weight:600}
 .wrap.gallery{padding-top:18px}
 
 .gallery-main{display:flex;justify-content:center}
-.gallery-main img{
+.gallery-main .gallery-media{
   max-width:min(1100px, 95vw);
   max-height:70vh;
-  width:auto;height:auto;
+  width:auto;
+  height:auto;
   border-radius:18px;
   border:1px solid var(--border);
+  display:block;
 }
 
 .gallery-strip{
@@ -396,6 +398,27 @@ table th,.table th{color:var(--muted);font-weight:600}
 }
 
 .gthumb.active{outline:2px solid var(--accent)}
+
+.gthumb video{
+  height:84px;
+  width:120px;
+  object-fit:cover;
+  border-radius:14px;
+  display:block;
+}
+
+.gthumb{ position:relative; }
+.gthumb-badge{
+  position:absolute;
+  right:6px;
+  bottom:6px;
+  font-size:11px;
+  padding:2px 6px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,0.55);
+  color:var(--text);
+}
 
 /* ==============================
    HOME HERO FIX (put at bottom)
