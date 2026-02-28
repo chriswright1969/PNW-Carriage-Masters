@@ -418,7 +418,7 @@ table th,.table th{color:var(--muted);font-weight:600}
     margin: 0 auto !important;
 
     /* Keep the video/trucks column fixed; give everything else to the text */
-    grid-template-columns: 400px 1fr !important;
+    grid-template-columns: 450px 1fr !important;
 
     /* Tighten the gap even more if needed */
     column-gap: 8px !important;
