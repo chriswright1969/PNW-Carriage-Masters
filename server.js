@@ -576,58 +576,64 @@ app.post("/admin/settings", requireAdmin, (req, res) => {
 });
 
 // Branding routes
-app.get("/admin/branding", requireAdmin, (req, res) => {
-  res.render("admin/branding", {
-    title: "Branding",
-    message: req.query.ok === "1" ? "Saved." : null,
-    errorMsg: null,
-    logo_file: getSetting("logo_file") || "",
-    logo_home_px: getSetting("logo_home_px") || "600",
-    logo_home_vw: getSetting("logo_home_vw") || "90",
-    logo_header_h: getSetting("logo_header_h") || "44"
-  });
-});
-
-app.post("/admin/branding", requireAdmin, (req, res) => {
-  logoUpload.single("logo")(req, res, (err) => {
-    if (err) {
-      return res.status(400).render("admin/branding", {
-        title: "Branding",
-        message: null,
-        errorMsg: err.message || "Upload failed",
-        logo_file: getSetting("logo_file") || "",
-        logo_home_px: getSetting("logo_home_px") || "600",
-        logo_home_vw: getSetting("logo_home_vw") || "90",
-        logo_header_h: getSetting("logo_header_h") || "44"
-      });
-    }
-
-    const clampInt = (v, min, max, fallback) => {
-      const n = Number.parseInt(String(v ?? ""), 10);
-      if (!Number.isFinite(n)) return String(fallback);
-      return String(Math.max(min, Math.min(max, n)));
-    };
-
-    setSetting("logo_home_px", clampInt(req.body.logo_home_px, 120, 1200, 600));
-    setSetting("logo_home_vw", clampInt(req.body.logo_home_vw, 20, 100, 90));
-    setSetting("logo_header_h", clampInt(req.body.logo_header_h, 20, 120, 44));
-
-const pick = String(req.body.logo_pick || "").trim();
-if (pick) {
-  const allowed = new Set([
-    "/images/logo.svg",
-    "/images/logo.png",
-  ]);
-  if (!allowed.has(pick)) return res.status(400).send("Invalid logo selection.");
-  setSetting("logo_file", pick);
-  setSetting("logo_version", String(Date.now()));
-} else if (req.file) {
-  setSetting("logo_file", req.file.filename);
-  setSetting("logo_version", String(Date.now()));
+// helper
+function clampInt(v, min, max, fallback) {
+  const n = Number.parseInt(String(v ?? ""), 10);
+  if (!Number.isFinite(n)) return String(fallback);
+  return String(Math.max(min, Math.min(max, n)));
 }
 
-    res.redirect("/admin/branding?ok=1");
-  });
+function brandingModel(req, extra = {}) {
+  return {
+    title: "Branding",
+    message: extra.message ?? (req.query.ok === "1" ? "Saved." : null),
+    errorMsg: extra.errorMsg ?? null,
+    // IMPORTANT: provide a settings object so the view can use settings.logo_*
+    settings: {
+      logo_file: getSetting("logo_file") || "",
+      logo_version: getSetting("logo_version") || "",
+      logo_home_px: getSetting("logo_home_px") || "600",
+      logo_home_vw: getSetting("logo_home_vw") || "90",
+      logo_header_h: getSetting("logo_header_h") || "44",
+    },
+  };
+}
+
+app.get("/admin/branding", requireAdmin, (req, res) => {
+  res.render("admin/branding", brandingModel(req));
+});
+
+// IMPORTANT: use multer as middleware (simpler + more reliable)
+app.post("/admin/branding", requireAdmin, logoUpload.single("logo"), (req, res) => {
+  // save sizing
+  setSetting("logo_home_px", clampInt(req.body.logo_home_px, 120, 1200, 600));
+  setSetting("logo_home_vw", clampInt(req.body.logo_home_vw, 20, 100, 90));
+  setSetting("logo_header_h", clampInt(req.body.logo_header_h, 20, 120, 44));
+
+  // built-in pick (NOTE: your working paths are /images/... NOT /public/images/...)
+  const pick = String(req.body.logo_pick || "").trim();
+  if (pick) {
+    const allowed = new Set([
+      "/images/logo.svg",
+      "/images/logo.png",
+    ]);
+    if (!allowed.has(pick)) {
+      return res.status(400).render("admin/branding", brandingModel(req, { errorMsg: "Invalid logo selection." }));
+    }
+    setSetting("logo_file", pick);
+    setSetting("logo_version", String(Date.now()));
+    return res.redirect("/admin/branding?ok=1");
+  }
+
+  // upload file
+  if (req.file) {
+    setSetting("logo_file", req.file.filename);
+    setSetting("logo_version", String(Date.now()));
+    return res.redirect("/admin/branding?ok=1");
+  }
+
+  // nothing changed
+  return res.redirect("/admin/branding?ok=1");
 });
 
 // ======================================================
