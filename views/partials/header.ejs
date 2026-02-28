@@ -8,7 +8,7 @@
       const logoVer  = String(s.logo_version || "").trim();
       const verQ     = logoVer ? `?v=${encodeURIComponent(logoVer)}` : "";
 
-      // If logo_file starts with "/", treat it as a direct path (e.g. "/public/images/logo.svg")
+      // If logo_file starts with "/", treat it as a direct path (e.g. "/images/logo.svg")
       // Otherwise treat it as an uploaded filename under /uploads
       const logoSrc = logoFile
         ? (logoFile.startsWith("/") ? `${logoFile}${verQ}` : `/uploads/${logoFile}${verQ}`)
