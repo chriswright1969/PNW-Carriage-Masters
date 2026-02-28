@@ -6,7 +6,8 @@
     <h1 class="section-title">Site settings</h1>
     <p class="muted">These values appear across the site. The contact form is forwarded to the email below.</p>
 
-    <form action="/admin/settings" method="post">
+    <!-- NOTE: enctype added to allow logo upload -->
+    <form action="/admin/settings" method="post" enctype="multipart/form-data">
       <div class="grid-3">
         <div>
           <label for="company_name">Company name</label>
@@ -24,6 +25,36 @@
 
       <label for="coverage">Coverage areas</label>
       <input id="coverage" name="coverage" type="text" value="<%= settings.coverage %>" maxlength="240"/>
+
+      <hr/>
+
+      <!-- Header logo controls -->
+      <h2 style="margin:0 0 10px;">Header logo</h2>
+
+      <div class="grid-3">
+        <div>
+          <label for="logo_header_h">Header logo height (px)</label>
+          <input id="logo_header_h" name="logo_header_h" type="number"
+                 value="<%= settings.logo_header_h %>" min="20" max="120"/>
+          <div class="small muted">Recommended: 40–70px depending on your logo proportions.</div>
+        </div>
+
+        <div>
+          <label for="logo_pick">Choose built-in logo</label>
+          <select id="logo_pick" name="logo_pick">
+            <option value="">(no change)</option>
+            <option value="/public/images/logo.svg" <%= settings.logo_file === "/public/images/logo.svg" ? "selected" : "" %>>logo.svg</option>
+            <option value="/public/images/logo.png" <%= settings.logo_file === "/public/images/logo.png" ? "selected" : "" %>>logo.png</option>
+          </select>
+          <div class="small muted">This uses the file already in <span class="code">/public/images/</span>.</div>
+        </div>
+
+        <div>
+          <label for="logo">Or upload a new logo</label>
+          <input id="logo" name="logo" type="file" accept=".svg,.png,.jpg,.jpeg,.webp"/>
+          <div class="small muted">Upload will set the new file as the active logo.</div>
+        </div>
+      </div>
 
       <hr/>
 
