@@ -6,8 +6,8 @@
     <h1 class="section-title">Site settings</h1>
     <p class="muted">These values appear across the site. The contact form is forwarded to the email below.</p>
 
-    <!-- NOTE: enctype added to allow logo upload -->
-    <form action="/admin/settings" method="post" enctype="multipart/form-data">
+    <!-- IMPORTANT: keep this as a normal POST so req.body is parsed -->
+    <form action="/admin/settings" method="post">
       <div class="grid-3">
         <div>
           <label for="company_name">Company name</label>
@@ -25,36 +25,6 @@
 
       <label for="coverage">Coverage areas</label>
       <input id="coverage" name="coverage" type="text" value="<%= settings.coverage %>" maxlength="240"/>
-
-      <hr/>
-
-      <!-- Header logo controls -->
-      <h2 style="margin:0 0 10px;">Header logo</h2>
-
-      <div class="grid-3">
-        <div>
-          <label for="logo_header_h">Header logo height (px)</label>
-          <input id="logo_header_h" name="logo_header_h" type="number"
-                 value="<%= settings.logo_header_h %>" min="20" max="120"/>
-          <div class="small muted">Recommended: 40–70px depending on your logo proportions.</div>
-        </div>
-
-        <div>
-          <label for="logo_pick">Choose built-in logo</label>
-          <select id="logo_pick" name="logo_pick">
-            <option value="">(no change)</option>
-            <option value="/public/images/logo.svg" <%= settings.logo_file === "/images/logo.svg" ? "selected" : "" %>>logo.svg</option>
-            <option value="/public/images/logo.png" <%= settings.logo_file === "/images/logo.png" ? "selected" : "" %>>logo.png</option>
-          </select>
-          <div class="small muted">This uses the file already in <span class="code">/public/images/</span>.</div>
-        </div>
-
-        <div>
-          <label for="logo">Or upload a new logo</label>
-          <input id="logo" name="logo" type="file" accept=".svg,.png,.jpg,.jpeg,.webp"/>
-          <div class="small muted">Upload will set the new file as the active logo.</div>
-        </div>
-      </div>
 
       <hr/>
 
@@ -91,6 +61,46 @@
       <div style="height:10px"></div>
       <button class="btn" type="submit">Save settings</button>
       <a class="btn" href="/admin" style="margin-left:8px">Back</a>
+    </form>
+
+    <hr/>
+
+    <!-- Branding form: multipart, handled by your existing /admin/branding POST -->
+    <h2 class="section-title" style="margin-top:6px;">Branding</h2>
+    <p class="muted">Logo and sizing controls are saved separately.</p>
+
+    <form action="/admin/branding" method="post" enctype="multipart/form-data">
+      <div class="grid-3">
+        <div>
+          <label for="logo_header_h">Header logo height (px)</label>
+          <input id="logo_header_h" name="logo_header_h" type="number"
+                 value="<%= settings.logo_header_h || 44 %>" min="20" max="120"/>
+        </div>
+
+        <div>
+          <label for="logo_pick">Choose built-in logo</label>
+          <select id="logo_pick" name="logo_pick">
+            <option value="">(no change)</option>
+            <option value="/images/logo.svg">logo.svg</option>
+            <option value="/images/logo.png">logo.png</option>
+          </select>
+          <div class="small muted">Built-in files live in <span class="code">/public/images</span> and are served from <span class="code">/images/...</span>.</div>
+        </div>
+
+        <div>
+          <label for="logo">Or upload a new logo</label>
+          <input id="logo" name="logo" type="file" accept=".svg,.png,.jpg,.jpeg,.webp"/>
+          <div class="small muted">Uploads are served from <span class="code">/uploads/...</span>.</div>
+        </div>
+      </div>
+
+      <!-- your /admin/branding route expects these too -->
+      <input type="hidden" name="logo_home_px" value="<%= settings.logo_home_px || 600 %>">
+      <input type="hidden" name="logo_home_vw" value="<%= settings.logo_home_vw || 90 %>">
+
+      <div style="height:10px"></div>
+      <button class="btn" type="submit">Save branding</button>
+      <a class="btn" href="/admin/branding" style="margin-left:8px">Open Branding page</a>
     </form>
 
     <hr/>
