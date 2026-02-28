@@ -599,31 +599,49 @@ function brandingModel(req, extra = {}) {
   };
 }
 
+// Branding routes (redirect back to /admin/settings#branding because there is no branding.ejs)
 app.get("/admin/branding", requireAdmin, (req, res) => {
-  res.render("admin/branding", brandingModel(req));
+  return res.redirect(302, "/admin/settings#branding");
 });
 
-// IMPORTANT: use multer as middleware (simpler + more reliable)
-app.post("/admin/branding", requireAdmin, logoUpload.single("logo"), (req, res) => {
-  // save sizing
-  setSetting("logo_home_px", clampInt(req.body.logo_home_px, 120, 1200, 600));
-  setSetting("logo_home_vw", clampInt(req.body.logo_home_vw, 20, 100, 90));
-  setSetting("logo_header_h", clampInt(req.body.logo_header_h, 20, 120, 44));
+app.post("/admin/branding", requireAdmin, (req, res) => {
+  logoUpload.single("logo")(req, res, (err) => {
+    const clampInt = (v, min, max, fallback) => {
+      const n = Number.parseInt(String(v ?? ""), 10);
+      if (!Number.isFinite(n)) return String(fallback);
+      return String(Math.max(min, Math.min(max, n)));
+    };
 
-  // built-in pick (NOTE: your working paths are /images/... NOT /public/images/...)
-  const pick = String(req.body.logo_pick || "").trim();
-  if (pick) {
-    const allowed = new Set([
-      "/images/logo.svg",
-      "/images/logo.png",
-    ]);
-    if (!allowed.has(pick)) {
-      return res.status(400).render("admin/branding", brandingModel(req, { errorMsg: "Invalid logo selection." }));
+    if (err) {
+      return res.redirect(
+        303,
+        "/admin/settings?brand_err=" + encodeURIComponent(err.message || "Upload failed") + "#branding"
+      );
     }
-    setSetting("logo_file", pick);
-    setSetting("logo_version", String(Date.now()));
-    return res.redirect("/admin/branding?ok=1");
-  }
+
+    setSetting("logo_home_px", clampInt(req.body.logo_home_px, 120, 1200, 600));
+    setSetting("logo_home_vw", clampInt(req.body.logo_home_vw, 20, 100, 90));
+    setSetting("logo_header_h", clampInt(req.body.logo_header_h, 20, 120, 44));
+
+    const pick = String(req.body.logo_pick || "").trim();
+    if (pick) {
+      const allowed = new Set([
+        "/images/logo.svg",
+        "/images/logo.png",
+      ]);
+      if (!allowed.has(pick)) {
+        return res.redirect(303, "/admin/settings?brand_err=" + encodeURIComponent("Invalid logo selection.") + "#branding");
+      }
+      setSetting("logo_file", pick);
+      setSetting("logo_version", String(Date.now()));
+    } else if (req.file) {
+      setSetting("logo_file", req.file.filename);
+      setSetting("logo_version", String(Date.now()));
+    }
+
+    return res.redirect(303, "/admin/settings?brand_ok=1#branding");
+  });
+});
 
   // upload file
   if (req.file) {
