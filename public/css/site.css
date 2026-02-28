@@ -221,8 +221,9 @@ table th,.table th{color:var(--muted);font-weight:600}
   margin-top:6px;
   display:grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap:6px;                                /* tighter gap BETWEEN the two tiles */
-  max-width: var(--hero-truck-maxw);      /* keeps the pair compact */
+  gap:6px;
+   width: 100%; /* tighter gap BETWEEN the two tiles */
+  max-width: none;      /* keeps the pair compact */
   margin-inline:auto;                     /* centred under video */
 }
 
