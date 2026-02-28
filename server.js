@@ -826,13 +826,18 @@ app.post("/admin/home-media/montage/:name/delete", requireAdmin, (req, res) => {
 // ======================================================
 app.get("/admin/hero-video", requireAdmin, (req, res) => {
   const settings = res.locals.settings;
+
   const videos = parseJsonArray(settings.hero_videos_json);
+
+  // NEW: pull video items from the gallery (media table)
+  const galleryVideos = listMedia().filter(m => String(m.type) === "video");
 
   res.render("admin/hero-video", {
     title: "Hero Video",
     message: req.query.ok === "1" ? "Saved." : null,
     errorMsg: req.query.error || "",
     videos,
+    galleryVideos, // NEW
     current: settings.hero_video_current || "",
     version: settings.hero_video_version || ""
   });
@@ -853,6 +858,21 @@ app.post("/admin/hero-video/upload", requireAdmin, (req, res) => {
 
     res.redirect("/admin/hero-video?ok=1");
   });
+});
+
+app.post("/admin/hero-video/select-gallery", requireAdmin, (req, res) => {
+  const id = Number(req.body.media_id || 0);
+  if (!id) return res.redirect("/admin/hero-video?error=" + encodeURIComponent("Choose a gallery video."));
+
+  const item = getMedia(id);
+  if (!item || String(item.type) !== "video") {
+    return res.redirect("/admin/hero-video?error=" + encodeURIComponent("That gallery item is not a video."));
+  }
+
+  // Use the same filename stored in /uploads
+  setSetting("hero_video_current", item.filename);
+  setSetting("hero_video_version", String(Date.now())); // cache-bust
+  return res.redirect("/admin/hero-video?ok=1");
 });
 
 app.post("/admin/hero-video/select", requireAdmin, (req, res) => {
