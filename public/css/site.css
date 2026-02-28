@@ -395,3 +395,38 @@ table th,.table th{color:var(--muted);font-weight:600}
 }
 
 .gthumb.active{outline:2px solid var(--accent)}
+
+/* ==============================
+   HOME HERO FIX (put at bottom)
+   ============================== */
+
+/* Reduce the gap between the left media column and right text column */
+.wrap.home .hero{
+  column-gap: 10px !important; /* was effectively larger */
+}
+
+/* Make the right column much wider (desktop) while keeping media size the same */
+@media (min-width: 980px){
+  /* Let the landing page actually be wider than the global .wrap max-width */
+  .wrap.home{
+    max-width: 1700px !important;  /* increase page width */
+    margin: 0 auto !important;
+  }
+
+  .wrap.home .hero{
+    max-width: 1660px !important;  /* centre the hero block */
+    margin: 0 auto !important;
+
+    /* Keep the video/trucks column fixed; give everything else to the text */
+    grid-template-columns: 560px 1fr !important;
+
+    /* Tighten the gap even more if needed */
+    column-gap: 8px !important;
+  }
+
+  /* Ensure nothing is capping the text column width */
+  .wrap.home .hero-copy{
+    max-width: none !important;
+    min-width: 0;
+  }
+}
