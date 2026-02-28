@@ -494,7 +494,7 @@ table th,.table th{color:var(--muted);font-weight:600}
 
   .wrap.home .hero-truck-grid{
     width: 100%;
-    max-width: none;
+    max-width: 400px;
     margin-inline: 0;
   }
 }
