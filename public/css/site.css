@@ -26,7 +26,7 @@
 
   /* Home hero truck sizing */
   --hero-truck-tile-h: 140px;   /* tile height */
-  --hero-truck-maxw: 600px;     /* keeps the two tiles compact under the video */
+  --hero-truck-maxw: 500px;     /* keeps the two tiles compact under the video */
 
   /* Desktop hero layout */
   --hero-media-w: 560px;        /* FIXED width for video + trucks column */
