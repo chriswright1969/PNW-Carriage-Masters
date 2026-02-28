@@ -431,3 +431,23 @@ table th,.table th{color:var(--muted);font-weight:600}
     min-width: 0;
   }
 }
+/* Wider truck tiles without making the video bigger */
+@media (min-width: 980px){
+  .wrap.home .hero{
+    grid-template-columns: 640px 1fr;  /* gives the tiles more width */
+    column-gap: 8px;
+  }
+
+  /* Keep the video the same size as before */
+  .wrap.home .hero-video{
+    max-width: 560px;
+    margin-inline: auto;
+  }
+
+  /* Let the truck grid use the full column width */
+  .wrap.home .hero-truck-grid{
+    max-width: none;
+    width: 100%;
+    margin-inline: 0;
+  }
+}
