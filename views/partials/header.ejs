@@ -1,17 +1,13 @@
 <header class="site-header">
   <div class="header-inner">
-    <%
+   <%
   const logoFile = (settings && settings.logo_file) ? String(settings.logo_file) : "";
   const logoVer  = (settings && settings.logo_version) ? String(settings.logo_version) : "";
   const verQ     = logoVer ? `?v=${logoVer}` : "";
 
-  // If logo_file starts with "/", treat it as a direct URL path (e.g. "/public/images/logo.svg")
-  // Otherwise treat it as an uploaded filename in /uploads
-  const logoSrc  = logoFile
+  const logoSrc = logoFile
     ? (logoFile.startsWith("/") ? `${logoFile}${verQ}` : `/uploads/${logoFile}${verQ}`)
     : "/public/images/logo.svg";
-
-  const headerH = Number(settings?.logo_header_h || 44);
 %>
 
     <a class="brand" href="/" aria-label="Home">
