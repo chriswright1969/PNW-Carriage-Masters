@@ -30,6 +30,27 @@
       <button class="btn" type="submit">Upload (and select)</button>
     </form>
 
+    <% if (galleryVideos && galleryVideos.length) { %>
+  <div class="card" style="margin-top:14px;">
+    <h2 style="margin-top:0;">Select from Gallery Videos</h2>
+
+    <form method="post" action="/admin/hero-video/select-gallery">
+      <label>Gallery video</label>
+      <select name="media_id" required>
+        <option value="">— Choose a video —</option>
+        <% galleryVideos.forEach(v => { %>
+          <option value="<%= v.id %>">
+            <%= (v.caption || v.original_name || v.filename) %>
+          </option>
+        <% }) %>
+      </select>
+
+      <div style="height:12px;"></div>
+      <button class="btn" type="submit">Use as landing page video</button>
+    </form>
+  </div>
+<% } %>
+
     <hr>
 
     <h2>Video library (select which shows)</h2>
