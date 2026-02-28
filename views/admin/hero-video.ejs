@@ -11,9 +11,10 @@
     <h2>Current landing page video</h2>
 
     <% if (current) { %>
-      <video controls muted style="width:100%; max-width:900px; border-radius:16px; border:1px solid var(--line);">
+      <video controls muted playsinline style="width:100%; max-width:900px; border-radius:16px; border:1px solid var(--line);">
         <source src="/uploads/<%= current %>?v=<%= version %>">
       </video>
+
       <form method="post" action="/admin/hero-video/clear" style="margin-top:10px">
         <button class="btn" type="submit">Remove hero video from landing page</button>
       </form>
@@ -31,29 +32,34 @@
     </form>
 
     <% if (galleryVideos && galleryVideos.length) { %>
-  <div class="card" style="margin-top:14px;">
-    <h2 style="margin-top:0;">Select from Gallery Videos</h2>
+      <hr>
 
-    <form method="post" action="/admin/hero-video/select-gallery">
-      <label>Gallery video</label>
-      <select name="media_id" required>
-        <option value="">— Choose a video —</option>
-        <% galleryVideos.forEach(v => { %>
-          <option value="<%= v.id %>">
-            <%= (v.caption || v.original_name || v.filename) %>
-          </option>
-        <% }) %>
-      </select>
+      <h2>Select from Gallery Videos</h2>
 
-      <div style="height:12px;"></div>
-      <button class="btn" type="submit">Use as landing page video</button>
-    </form>
-  </div>
-<% } %>
+      <form method="post" action="/admin/hero-video/select-gallery">
+        <label>Gallery video</label>
+        <select name="media_id" required>
+          <option value="">— Choose a video —</option>
+          <% galleryVideos.forEach(v => { %>
+            <option value="<%= v.id %>">
+              <%= (v.caption || v.original_name || v.filename) %>
+              <% if (v.filename === current) { %> (Currently selected)<% } %>
+            </option>
+          <% }) %>
+        </select>
+
+        <div style="height:12px;"></div>
+        <button class="btn" type="submit">Use as landing page video</button>
+      </form>
+
+      <div class="small muted" style="margin-top:10px;">
+        Note: Gallery videos selected here will play on the landing page hero section.
+      </div>
+    <% } %>
 
     <hr>
 
-    <h2>Video library (select which shows)</h2>
+    <h2>Video library (uploaded via this page)</h2>
 
     <% if (!videos || !videos.length) { %>
       <div class="muted">No videos uploaded yet.</div>
@@ -63,10 +69,12 @@
           <div style="border:1px solid var(--line); border-radius:16px; padding:12px;">
             <div class="small muted" style="margin-bottom:8px;">
               <%= v.original || v.filename %>
-              <% if (v.filename === current) { %> — <strong style="color:var(--accent)">Selected</strong><% } %>
+              <% if (v.filename === current) { %>
+                — <strong style="color:var(--accent)">Selected</strong>
+              <% } %>
             </div>
 
-            <video controls muted style="width:100%; max-width:900px; border-radius:14px;">
+            <video controls muted playsinline style="width:100%; max-width:900px; border-radius:14px;">
               <source src="/uploads/<%= v.filename %>?v=<%= version %>">
             </video>
 
