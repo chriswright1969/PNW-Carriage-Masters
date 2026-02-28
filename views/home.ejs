@@ -13,9 +13,9 @@
     <div class="hero-media">
   <div class="hero-media-stack">
     <% if (heroFile) { %>
-      <video class="hero-video" autoplay muted loop playsinline controls>
-        <source src="/uploads/<%= heroFile %>?v=<%= heroVer %>">
-      </video>
+     <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+  <source src="/uploads/<%= heroFile %>?v=<%= heroVer %>">
+</video>
     <% } else { %>
       <div class="hero-fallback"><div class="muted">No hero video selected.</div></div>
     <% } %>
@@ -99,5 +99,14 @@
     </section>
   <% } %>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const v = document.querySelector(".hero-video");
+    if (!v) return;
+    const p = v.play();
+    if (p && p.catch) p.catch(() => {});
+  });
+</script>
 
 <%- include('partials/footer') %>
