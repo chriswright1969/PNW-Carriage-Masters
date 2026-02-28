@@ -414,7 +414,7 @@ table th,.table th{color:var(--muted);font-weight:600}
   }
 
   .wrap.home .hero{
-    max-width: 1200px !important;  /* centre the hero block */
+    max-width: 1000px !important;  /* centre the hero block */
     margin: 0 auto !important;
 
     /* Keep the video/trucks column fixed; give everything else to the text */
