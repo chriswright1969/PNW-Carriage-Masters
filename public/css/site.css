@@ -479,13 +479,13 @@ table th,.table th{color:var(--muted);font-weight:600}
 @media (min-width: 980px){
   /* Give the left column more width (this is what makes each tile wider) */
   .wrap.home .hero{
-    grid-template-columns: 800px 1fr; /* was ~560px; try 660–760 */
-    column-gap: 8px;
+    grid-template-columns: 400px 1fr; /* was ~560px; try 660–760 */
+    column-gap: 10px;
   }
 
   /* Keep the video visually the same width as before */
   .wrap.home .hero-video{
-    max-width: 560px;
+    max-width: 800px;
     margin-inline: auto;
   }
 
