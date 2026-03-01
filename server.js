@@ -180,14 +180,21 @@ async function emailDomainHasMX(email) {
 }
 
 function buildTransport() {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE } = process.env;
   if (!SMTP_HOST || !SMTP_PORT) return null;
+
+  const port = Number(SMTP_PORT);
+  const secure =
+    (String(SMTP_SECURE || "").toLowerCase() === "true") || port === 465;
+
+  const hasUser = !!(SMTP_USER && String(SMTP_USER).trim());
+  const hasPass = !!(SMTP_PASS && String(SMTP_PASS).trim());
 
   return nodemailer.createTransport({
     host: SMTP_HOST,
-    port: Number(SMTP_PORT),
-    secure: Number(SMTP_PORT) === 465,
-    auth: SMTP_USER ? { user: SMTP_USER, pass: SMTP_PASS } : undefined
+    port,
+    secure,
+    auth: (hasUser || hasPass) ? { user: SMTP_USER, pass: SMTP_PASS } : undefined
   });
 }
 
@@ -418,51 +425,77 @@ app.get("/contact", (req, res) => {
 });
 
 app.post("/contact", async (req, res) => {
-  const first_name = String(req.body.first_name || "").trim();
-  const last_name = String(req.body.last_name || "").trim();
-  const phone = String(req.body.phone || "").trim();
-  const email = String(req.body.email || "").trim();
-  const message = String(req.body.message || "").trim();
+  try {
+    // Honeypot (only works if you add <input name="website"> in contact.ejs)
+    if (String(req.body.website || "").trim()) {
+      return res.redirect("/contact?success=1");
+    }
 
-  if (!first_name || !last_name || !phone || !email) {
-    return res.redirect("/contact?error=" + encodeURIComponent("Please complete all required fields."));
+    const first_name = String(req.body.first_name || "").trim();
+    const last_name = String(req.body.last_name || "").trim();
+    const phone = String(req.body.phone || "").trim();
+    const email = String(req.body.email || "").trim();
+    const message = String(req.body.message || "").trim();
+
+    if (!first_name || !last_name || !phone || !email) {
+      return res.redirect("/contact?error=" + encodeURIComponent("Please complete all required fields."));
+    }
+    if (!validator.isEmail(email)) {
+      return res.redirect("/contact?error=" + encodeURIComponent("Please enter a valid email address."));
+    }
+
+    const hasMx = await emailDomainHasMX(email);
+    if (!hasMx) {
+      return res.redirect("/contact?error=" + encodeURIComponent("Email domain does not appear to accept email."));
+    }
+
+    // Save message
+    db.prepare("INSERT INTO contact_messages(first_name,last_name,phone,email,message) VALUES(?,?,?,?,?)").run(
+      first_name,
+      last_name,
+      phone,
+      email,
+      message
+    );
+
+    // Who receives the enquiry:
+    // - prefer Admin Settings "forward_to_email"
+    // - then env var CONTACT_TO (recommended)
+    // - then your old env var CONTACT_FORWARD_TO (kept for compatibility)
+    const forwardTo =
+      getSetting("forward_to_email") ||
+      process.env.CONTACT_TO ||
+      process.env.CONTACT_FORWARD_TO ||
+      "chris@chriswright.info";
+
+    const transport = buildTransport();
+    if (!transport) {
+      return res.redirect("/contact?error=" + encodeURIComponent("Email sending is not configured. Please call us instead."));
+    }
+
+    // IMPORTANT: From should be YOUR domain mailbox/address (SMTP providers often reject user email as From)
+    const from =
+      process.env.MAIL_FROM ||
+      process.env.SMTP_FROM ||
+      `PNW Carriage Masters <no-reply@truckhearse.co.uk>`;
+
+    await transport.sendMail({
+      to: forwardTo,
+      from,
+      replyTo: email,
+      subject: "Contact from truckhearse.co.uk website",
+      text:
+        `New website contact\n\nName: ${first_name} ${last_name}\nPhone: ${phone}\nEmail: ${email}\n\nMessage:\n` +
+        (message || "(none)")
+    });
+
+    return res.redirect("/contact?success=1");
+  } catch (err) {
+    console.error("Contact form failed:", err);
+    return res.redirect(
+      "/contact?error=" + encodeURIComponent("Sorry — we couldn’t send your message right now. Please try again or call us.")
+    );
   }
-  if (!validator.isEmail(email)) {
-    return res.redirect("/contact?error=" + encodeURIComponent("Please enter a valid email address."));
-  }
-
-  const hasMx = await emailDomainHasMX(email);
-  if (!hasMx) {
-    return res.redirect("/contact?error=" + encodeURIComponent("Email domain does not appear to accept email."));
-  }
-
-  db.prepare("INSERT INTO contact_messages(first_name,last_name,phone,email,message) VALUES(?,?,?,?,?)").run(
-    first_name,
-    last_name,
-    phone,
-    email,
-    message
-  );
-
-  const forwardTo = getSetting("forward_to_email") || process.env.CONTACT_FORWARD_TO || "chris@chriswright.info";
-  const transport = buildTransport();
-  if (!transport) {
-    return res.redirect("/contact?error=" + encodeURIComponent("Email sending is not configured. Please call us instead."));
-  }
-
-  const from = process.env.SMTP_FROM || `no-reply@${process.env.PUBLIC_HOST || "truckhearse.co.uk"}`;
-
-  await transport.sendMail({
-    to: forwardTo,
-    from,
-    replyTo: email,
-    subject: "Contact From truckhearse.co.uk Website",
-    text:
-      `New website contact\n\nName: ${first_name} ${last_name}\nPhone: ${phone}\nEmail: ${email}\n\nMessage:\n` +
-      (message || "(none)")
-  });
-
-  res.redirect("/contact?success=1");
 });
 
 // ======================================================
