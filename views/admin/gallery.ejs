@@ -1,10 +1,15 @@
 <%- include('../partials/head', { title }) %>
 <%- include('../partials/header') %>
 
+<%
+  // featuredId is passed from server.js (fallback safe)
+  const _featuredId = Number((typeof featuredId !== "undefined" && featuredId) ? featuredId : 0);
+%>
+
 <div class="wrap">
   <div class="card">
     <h1 class="section-title">Manage gallery</h1>
-    <p class="muted">Upload new photos/videos and delete existing items.</p>
+    <p class="muted">Upload new photos/videos, choose which photo shows first on the public gallery, and delete existing items.</p>
 
     <form action="/admin/upload" method="post" enctype="multipart/form-data" class="card" style="margin-bottom:16px">
       <h2 style="margin:0 0 10px">Upload</h2>
@@ -19,13 +24,28 @@
       <button class="btn" type="submit">Upload to gallery</button>
     </form>
 
-    <h2 style="margin:0 0 10px">Current gallery</h2>
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 10px">
+      <h2 style="margin:0">Current gallery</h2>
+
+      <form method="post" action="/admin/gallery/featured/clear"
+            onsubmit="return confirm('Clear the featured (first) image on the public gallery?');"
+            style="margin:0">
+        <button class="btn" type="submit" <% if (!_featuredId) { %>disabled<% } %>>
+          Clear first image
+        </button>
+      </form>
+    </div>
 
     <% if (!media || !media.length) { %>
       <div class="muted">No media uploaded yet.</div>
     <% } else { %>
       <div class="thumb-grid">
         <% media.forEach(item => { %>
+          <%
+            const isImg = String(item.type) === "image";
+            const isFeatured = isImg && _featuredId && Number(item.id) === _featuredId;
+          %>
+
           <div class="thumb" style="overflow:hidden">
             <% if (item.type === "video") { %>
               <video src="/uploads/<%= item.filename %>" controls></video>
@@ -35,6 +55,20 @@
 
             <div class="cap">
               <div class="small muted"><%= item.caption || '(no caption)' %></div>
+
+              <% if (isImg) { %>
+                <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+                  <% if (isFeatured) { %>
+                    <span class="small" style="padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:rgba(215,180,106,0.10); color:var(--accent);">
+                      First on public gallery
+                    </span>
+                  <% } else { %>
+                    <form method="post" action="/admin/gallery/featured/<%= item.id %>" style="margin:0">
+                      <button class="btn" type="submit">Make first</button>
+                    </form>
+                  <% } %>
+                </div>
+              <% } %>
 
               <form method="post" action="/admin/media/<%= item.id %>/delete"
                     onsubmit="return confirm('Delete this item?');"
