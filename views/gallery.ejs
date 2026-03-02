@@ -3,10 +3,13 @@
 
 <%
   const items = Array.isArray(media) ? media : [];
-  const first = items[0] || null;
 
   const isVideo = (it) => (it && String(it.type) === "video");
   const srcOf = (it) => it ? `/uploads/${it.filename}` : "";
+
+  // Prefer first IMAGE for the "main" display; fall back to first item
+  const firstImage = items.find(it => it && String(it.type) === "image") || null;
+  const first = firstImage || items[0] || null;
 %>
 
 <div class="wrap gallery">
