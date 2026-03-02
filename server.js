@@ -407,7 +407,25 @@ app.get("/", (_req, res) => {
 });
 
 app.get("/gallery", (_req, res) => {
-  const media = listMedia();
+  const mediaAll = listMedia();
+
+  // Only reorder images (leave videos/other types alone if you have them)
+  const images = (mediaAll || []).filter(m => m && m.type === "image");
+  const others = (mediaAll || []).filter(m => !m || m.type !== "image");
+
+  const featuredId = Number(getSetting("gallery_featured_media_id") || 0);
+
+  if (featuredId) {
+    const idx = images.findIndex(m => Number(m.id) === featuredId);
+    if (idx > 0) {
+      // move featured image to the front
+      images.unshift(images.splice(idx, 1)[0]);
+    }
+  }
+
+  // Recombine (images first, then everything else)
+  const media = [...images, ...others];
+
   res.render("gallery", { title: "Gallery", media });
 });
 
