@@ -734,8 +734,43 @@ app.post("/admin/admins/:id/deactivate", requireAdmin, (req, res) => {
 // Admin: gallery management + uploads
 // ======================================================
 app.get("/admin/gallery", requireAdmin, (_req, res) => {
-  const media = listMedia();
-  res.render("admin/gallery", { title: "Manage Gallery", media });
+  const mediaAll = listMedia();
+
+  // Current featured image (by media.id)
+  const featuredId = Number(getSetting("gallery_featured_media_id") || 0);
+
+  // Optional: show featured image first in the admin list too
+  const images = (mediaAll || []).filter(m => m && m.type === "image");
+  const others = (mediaAll || []).filter(m => !m || m.type !== "image");
+
+  if (featuredId) {
+    const idx = images.findIndex(m => Number(m.id) === featuredId);
+    if (idx > 0) images.unshift(images.splice(idx, 1)[0]);
+  }
+
+  const media = [...images, ...others];
+
+  res.render("admin/gallery", { title: "Manage Gallery", media, featuredId });
+});
+
+// Set featured/first public gallery image (admin only)
+app.post("/admin/gallery/featured/:id", requireAdmin, (req, res) => {
+  const id = Number(req.params.id || 0);
+  if (!id) return res.redirect("/admin/gallery");
+
+  const item = getMedia(id);
+  if (!item || String(item.type) !== "image") {
+    return res.redirect("/admin/gallery");
+  }
+
+  setSetting("gallery_featured_media_id", String(id));
+  return res.redirect("/admin/gallery");
+});
+
+// Optional: clear featured image
+app.post("/admin/gallery/featured/clear", requireAdmin, (_req, res) => {
+  setSetting("gallery_featured_media_id", "0");
+  return res.redirect("/admin/gallery");
 });
 
 // Uploads (admin only) - gallery media
@@ -786,6 +821,13 @@ app.post("/admin/media/:id/delete", requireAdmin, (req, res) => {
   } catch {}
 
   deleteMedia(id);
+
+  // If the deleted item was the featured image, clear the setting
+  const featuredId = Number(getSetting("gallery_featured_media_id") || 0);
+  if (featuredId && featuredId === id) {
+    setSetting("gallery_featured_media_id", "0");
+  }
+
   res.redirect("/admin/gallery");
 });
 
