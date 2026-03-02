@@ -67,8 +67,8 @@ header.site-header{
 
 .brand{display:flex;align-items:center;gap:14px;min-width:0}
 .brand img{
-  width:150px;      /* <-- change this */
-  height:150px;     /* <-- and this */
+  width:200px;      /* <-- change this */
+  height:200px;     /* <-- and this */
   object-fit:contain;
 }
 
