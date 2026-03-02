@@ -16,7 +16,7 @@
 
       // Safe header height (px)
       const headerHRaw = Number(s.logo_header_h || 44);
-      const headerH = Number.isFinite(headerHRaw) ? Math.min(200, Math.max(20, headerHRaw)) : 44;
+      const headerH = Number.isFinite(headerHRaw) ? Math.min(200, Math.max(200, headerHRaw)) : 44;
 
       const companyName = String(s.company_name || "PNW Carriage Masters");
       const tagline = String(s.tagline || "");
