@@ -383,7 +383,7 @@ table th,.table th{color:var(--muted);font-weight:600}
 .socials a:hover{opacity:1}
 
 .social-icon{
-  width:42px;height:42px;
+  width:100px;height:100px;
   display:inline-flex;
   align-items:center;justify-content:center;
   border:1px solid var(--line);
