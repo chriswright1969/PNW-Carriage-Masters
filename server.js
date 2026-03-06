@@ -499,7 +499,7 @@ app.post("/contact", async (req, res) => {
       getSetting("forward_to_email") ||
       process.env.CONTACT_TO ||
       process.env.CONTACT_FORWARD_TO ||
-      "chris@chriswright.info";
+      "info@truckhearse.co.uk";
 
     const transport = buildTransport();
     if (!transport) {
