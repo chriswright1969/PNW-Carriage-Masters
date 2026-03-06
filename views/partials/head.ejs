@@ -1,10 +1,43 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#0b0f14"/>
-  <title><%= title %></title>
+
+  <title><%= title ? `${title} | PNW Carriage Masters` : 'PNW Carriage Masters | Alternative Hearse & Truck Hearse Hire UK' %></title>
+
+  <meta
+    name="description"
+    content="Bespoke truck hearses exclusive to the funeral profession and available for funeral hire across the UK. Alternative hearse, truck hearse, funeral cars and funeral transport for a unique and personal final journey."
+  />
+  <meta
+    name="keywords"
+    content="alternative hearse, truck hearse, funeral cars, funeral transport, bespoke hearse, funeral hire UK, unique funeral vehicle, custom hearse, funeral profession, final journey, PNW Carriage Masters"
+  />
+  <meta name="robots" content="index, follow"/>
+  <meta name="author" content="PNW Carriage Masters"/>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="<%= title ? `${title} | PNW Carriage Masters` : 'PNW Carriage Masters | Alternative Hearse & Truck Hearse Hire UK' %>"/>
+  <meta
+    property="og:description"
+    content="Bespoke truck hearses for funeral hire across the UK. Unique alternative funeral transport to help make the final journey personal and perfect."
+  />
+  <meta property="og:image" content="/images/logo.svg"/>
+  <meta property="og:site_name" content="PNW Carriage Masters"/>
+  <meta property="og:locale" content="en_GB"/>
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="<%= title ? `${title} | PNW Carriage Masters` : 'PNW Carriage Masters | Alternative Hearse & Truck Hearse Hire UK' %>"/>
+  <meta
+    name="twitter:description"
+    content="Bespoke truck hearses for funeral hire across the UK. Alternative hearse and funeral transport for a unique final journey."
+  />
+  <meta name="twitter:image" content="/images/logo.svg"/>
+
   <link rel="stylesheet" href="/css/site.css"/>
   <link rel="icon" href="/images/logo.svg"/>
 </head>
