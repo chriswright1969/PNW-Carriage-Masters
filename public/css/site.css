@@ -232,10 +232,9 @@ table th,.table th{color:var(--muted);font-weight:600}
 .hero-media-stack{
   display:flex;
   flex-direction:column;
-   padding:12px;
+  padding:12px;
   gap:12px;
   border-radius:18px;
-  padding: 0;
 }
 
 /* Make the video and the truck tile pair share the same visible width and be centered */
