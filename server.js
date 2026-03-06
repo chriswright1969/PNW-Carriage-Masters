@@ -510,7 +510,7 @@ app.post("/contact", async (req, res) => {
     const from =
       process.env.MAIL_FROM ||
       process.env.SMTP_FROM ||
-      `PNW Carriage Masters <no-reply@truckhearse.co.uk>`;
+      `PNW Carriage Masters <info@truckhearse.co.uk>`;
 
     await transport.sendMail({
       to: forwardTo,
