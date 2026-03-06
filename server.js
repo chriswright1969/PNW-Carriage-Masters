@@ -59,6 +59,21 @@ fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 app.set("view engine", "ejs");
 app.set("views", path.join(ROOT_DIR, "views"));
 
+// ======================================================
+// Ensure contact_messages table exists
+// ======================================================
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS contact_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name  TEXT NOT NULL,
+    phone      TEXT NOT NULL,
+    email      TEXT NOT NULL,
+    message    TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )
+`).run();
+
 // --------------------
 // Middleware
 // --------------------
