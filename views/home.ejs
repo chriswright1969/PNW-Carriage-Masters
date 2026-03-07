@@ -1,4 +1,9 @@
-<%- include('partials/head', { title }) %>
+<%- include('partials/head', {
+  title,
+  metaTitle: 'Truck Hearse & Lorry Hearse Hire UK | PNW Carriage Masters',
+  metaDescription: 'Bespoke truck hearse and lorry hearse hire across the UK. Alternative funeral transport by PNW Carriage Masters, exclusive for the funeral profession. Contact us direct for a quote.',
+  canonicalPath: '/'
+}) %>
 <%- include('partials/header') %>
 
 <%
@@ -7,57 +12,65 @@
   const heroVer  = s.hero_video_version || "";
   const phoneRaw = String(s.phone || "").trim();
   const phoneTel = phoneRaw.replace(/\s+/g, "");
+
+  const powerFile = String(s.home_truck_power_img || "").trim();
+  const gloryFile = String(s.home_truck_glory_img || "").trim();
+  const powerVer  = String(s.home_truck_power_ver || "").trim();
+  const gloryVer  = String(s.home_truck_glory_ver || "").trim();
 %>
+
 <div class="wrap home">
   <section class="hero">
     <div class="hero-media">
-  <div class="hero-media-stack">
-    <% if (heroFile) { %>
-     <video class="hero-video" autoplay muted loop playsinline preload="metadata">
-  <source src="/uploads/<%= heroFile %>?v=<%= heroVer %>">
-</video>
-    <% } else { %>
-      <div class="hero-fallback"><div class="muted">No hero video selected.</div></div>
-    <% } %>
+      <div class="hero-media-stack">
+        <% if (heroFile) { %>
+          <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+            <source src="/uploads/<%= heroFile %>?v=<%= heroVer %>">
+          </video>
+        <% } else { %>
+          <div class="hero-fallback">
+            <div class="muted">No hero video selected.</div>
+          </div>
+        <% } %>
 
-    <%
-      const powerFile = String(s.home_truck_power_img || "").trim();
-      const gloryFile = String(s.home_truck_glory_img || "").trim();
-      const powerVer  = String(s.home_truck_power_ver || "").trim();
-      const gloryVer  = String(s.home_truck_glory_ver || "").trim();
-    %>
+        <div class="hero-truck-grid">
+          <figure class="hero-truck-card">
+            <a href="/gallery" class="hero-truck-link">
+              <% if (powerFile) { %>
+                <img
+                  src="/uploads/<%= powerFile %>?v=<%= powerVer %>"
+                  alt="Renault Magnum truck hearse available for funeral hire in the UK"
+                >
+              <% } else { %>
+                <div class="hero-truck-fallback">
+                  <div class="muted">Image placeholder</div>
+                  <div class="hero-truck-name">Renault Magnum</div>
+                </div>
+              <% } %>
+            </a>
+            <figcaption>Renault Magnum</figcaption>
+          </figure>
 
-    <div class="hero-truck-grid">
-      <figure class="hero-truck-card">
-        <a href="/gallery" class="hero-truck-link">
-          <% if (powerFile) { %>
-            <img src="/uploads/<%= powerFile %>?v=<%= powerVer %>" alt="The Power — truck hearse">
-          <% } else { %>
-            <div class="hero-truck-fallback">
-              <div class="muted">Image placeholder</div>
-              <div class="hero-truck-name">Renault Magnum</div>
-            </div>
-          <% } %>
-        </a>
-        <figcaption>Renault Magnum</figcaption>
-      </figure>
-
-      <figure class="hero-truck-card">
-        <a href="/gallery" class="hero-truck-link">
-          <% if (gloryFile) { %>
-            <img src="/uploads/<%= gloryFile %>?v=<%= gloryVer %>" alt="The Glory — truck hearse">
-          <% } else { %>
-            <div class="hero-truck-fallback">
-              <div class="muted">Image placeholder</div>
-              <div class="hero-truck-name">ERF EC12</div>
-            </div>
-          <% } %>
-        </a>
-        <figcaption>ERF EC12</figcaption>
-      </figure>
+          <figure class="hero-truck-card">
+            <a href="/gallery" class="hero-truck-link">
+              <% if (gloryFile) { %>
+                <img
+                  src="/uploads/<%= gloryFile %>?v=<%= gloryVer %>"
+                  alt="ERF EC12 lorry hearse available for bespoke funeral transport in the UK"
+                >
+              <% } else { %>
+                <div class="hero-truck-fallback">
+                  <div class="muted">Image placeholder</div>
+                  <div class="hero-truck-name">ERF EC12</div>
+                </div>
+              <% } %>
+            </a>
+            <figcaption>ERF EC12</figcaption>
+          </figure>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+
     <div class="hero-copy">
       <h1><%= pageTitle %></h1>
 
@@ -79,7 +92,7 @@
       <div class="thumb-grid">
         <% thumbs.forEach(fn => { %>
           <a class="thumb" href="/gallery" title="Open gallery">
-            <img src="/uploads/<%= fn %>" alt="Truck hearse">
+            <img src="/uploads/<%= fn %>" alt="Truck hearse gallery image">
           </a>
         <% }) %>
       </div>
@@ -91,7 +104,7 @@
       <div class="marquee">
         <div class="marquee-track">
           <% montage.concat(montage).forEach(fn => { %>
-            <img src="/uploads/<%= fn %>" alt="Montage image">
+            <img src="/uploads/<%= fn %>" alt="Truck hearse montage image">
           <% }) %>
         </div>
       </div>
