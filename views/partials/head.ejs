@@ -4,90 +4,84 @@
   <%
     const siteName = "PNW Carriage Masters";
     const siteUrl = "https://www.truckhearse.co.uk";
-    const defaultTitle = "Truck Hearse & Lorry Hearse Hire UK | PNW Carriage Masters";
     const defaultDescription =
       "Bespoke truck hearse and lorry hearse hire across the UK. Alternative funeral transport by PNW Carriage Masters, exclusive for the funeral profession. Contact us direct for a quote.";
     const defaultImage = `${siteUrl}/images/logo.svg`;
 
-    let rawTitle = defaultTitle;
-    if (typeof metaTitle !== "undefined" && metaTitle) {
-      rawTitle = String(metaTitle).trim();
-    } else if (typeof title !== "undefined" && title) {
-      rawTitle = String(title).trim();
-    }
-
-    const pageTitle = /PNW Carriage Masters/i.test(rawTitle)
-      ? rawTitle
-      : `${rawTitle} | ${siteName}`;
+    const pageTitle = String(
+      (typeof metaTitle !== "undefined" && metaTitle) ? metaTitle : (title || siteName)
+    ).trim();
 
     const pageDescription = String(
-      (typeof metaDescription !== "undefined" && metaDescription)
-        ? metaDescription
-        : defaultDescription
+      (typeof metaDescription !== "undefined" && metaDescription) ? metaDescription : defaultDescription
     ).trim();
 
     const pageImage = String(
-      (typeof metaImage !== "undefined" && metaImage)
-        ? metaImage
-        : defaultImage
+      (typeof metaImage !== "undefined" && metaImage) ? metaImage : defaultImage
     ).trim();
 
-    const hasCanonical = (typeof canonicalPath !== "undefined");
+    const hasCanonical = (typeof canonicalPath !== "undefined" && canonicalPath !== null);
     const canonicalUrl = hasCanonical
-      ? `${siteUrl}${String(canonicalPath || "").trim()}`
+      ? `${siteUrl}${String(canonicalPath).trim()}`
       : "";
+
+    /*
+      Safe behaviour:
+      - If a page passes metaRobots, use it.
+      - Else, if a canonicalPath is provided, assume it is a public SEO page and allow indexing.
+      - Else output no robots tag at all, so existing admin/shared pages are not changed unexpectedly.
+    */
+    const robotsContent =
+      (typeof metaRobots !== "undefined" && metaRobots)
+        ? String(metaRobots).trim()
+        : (hasCanonical ? "index,follow" : "");
+
+    /*
+      Only emit structured data for the homepage by default.
+      This avoids changing admin pages or other shared pages unexpectedly.
+    */
+    const isHomePage = canonicalUrl === `${siteUrl}/`;
 
     const phoneValue =
       (typeof settings !== "undefined" && settings && settings.phone)
         ? String(settings.phone).trim()
         : undefined;
 
-    const jsonLd = JSON.stringify(
-      [
-        {
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": siteName,
-          "url": siteUrl,
-          "logo": defaultImage,
-          "telephone": phoneValue,
-          "description": defaultDescription
-        },
-        {
-          "@context": "https://schema.org",
-          "@type": "Service",
-          "name": "Truck hearse and lorry hearse hire",
-          "serviceType": "Alternative funeral transport",
-          "provider": {
-            "@type": "Organization",
-            "name": siteName,
-            "url": siteUrl
-          },
-          "areaServed": {
-            "@type": "Country",
-            "name": "United Kingdom"
-          },
-          "description": defaultDescription
-        },
-        {
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": siteName,
-          "url": siteUrl
-        }
-      ],
-      null,
-      2
-    ).replace(/</g, "\\u003c");
+    const jsonLd = isHomePage
+      ? JSON.stringify(
+          [
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": siteName,
+              "url": siteUrl,
+              "logo": defaultImage,
+              "telephone": phoneValue,
+              "description": defaultDescription
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": siteName,
+              "url": siteUrl
+            }
+          ],
+          null,
+          2
+        ).replace(/</g, "\\u003c")
+      : "";
   %>
 
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#0b0f14"/>
-  <meta name="robots" content="index,follow"/>
 
   <title><%= pageTitle %></title>
   <meta name="description" content="<%= pageDescription %>"/>
+
+  <% if (robotsContent) { %>
+    <meta name="robots" content="<%= robotsContent %>"/>
+  <% } %>
 
   <% if (hasCanonical) { %>
     <link rel="canonical" href="<%= canonicalUrl %>"/>
@@ -110,6 +104,8 @@
   <link rel="stylesheet" href="/css/site.css"/>
   <link rel="icon" href="/images/logo.svg"/>
 
-  <script type="application/ld+json"><%- jsonLd %></script>
+  <% if (jsonLd) { %>
+    <script type="application/ld+json"><%- jsonLd %></script>
+  <% } %>
 </head>
 <body>
