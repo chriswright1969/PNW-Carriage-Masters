@@ -407,6 +407,79 @@ table th,.table th{color:var(--muted);font-weight:600}
 }
 
 /* ---------- Gallery (main image + thumbnail scroller) ---------- */
+.gallery-strip-wrap{
+  display:grid;
+  grid-template-columns: 52px minmax(0, 1fr) 52px;
+  align-items:center;
+  gap:12px;
+  margin-top:18px;
+}
+
+.gallery-strip-viewport{
+  overflow:hidden; /* hides the scrollbar area completely */
+  min-width:0;
+}
+
+.gallery-strip{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scroll-behavior:smooth;
+  scrollbar-width:none;      /* Firefox */
+  -ms-overflow-style:none;   /* old Edge / IE */
+  padding:4px 0;
+}
+
+.gallery-strip::-webkit-scrollbar{
+  display:none;              /* Chrome / Safari */
+}
+
+.gallery-arrow{
+  width:52px;
+  height:52px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--panel);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  line-height:1;
+  cursor:pointer;
+  transition:transform .15s ease, border-color .15s ease, background .15s ease, opacity .15s ease;
+}
+
+.gallery-arrow:hover:not(:disabled){
+  transform:translateY(-1px);
+  background:var(--panel-2);
+  border-color:var(--brand);
+}
+
+.gallery-arrow:disabled{
+  opacity:.35;
+  cursor:default;
+}
+
+.gthumb{
+  position:relative;
+  flex:0 0 auto;
+}
+
+@media (max-width: 640px){
+  .gallery-strip-wrap{
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    gap:8px;
+  }
+
+  .gallery-arrow{
+    width:42px;
+    height:42px;
+    font-size:22px;
+  }
+}
+
 .wrap.gallery{padding-top:18px}
 
 .gallery-main{display:flex;justify-content:center}
