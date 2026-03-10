@@ -45,27 +45,61 @@
     const phoneValue =
       (typeof settings !== "undefined" && settings && settings.phone)
         ? String(settings.phone).trim()
-        : undefined;
+        : "";
+
+      // Replace these with your real public profile URLs
+      const sameAs = [
+      "https://www.facebook.com/PNWCarriageMasters",
+      "https://www.instagram.com/pnwcarriagemasters/",
+      "https://www.tiktok.com/@truckhearse",
+      "https://www.youtube.com/@pnwcarriagemasters1612"
+    ];
 
     const jsonLd = isHomePage
       ? JSON.stringify(
-          [
-            {
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": siteName,
-              "url": siteUrl,
-              "logo": defaultImage,
-              "telephone": phoneValue,
-              "description": defaultDescription
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": siteName,
-              "url": siteUrl
-            }
-          ],
+          {
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": `${siteUrl}/#organization`,
+                "name": siteName,
+                "url": siteUrl,
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": defaultImage
+                },
+                "telephone": phoneValue,
+                "sameAs": sameAs
+              },
+              {
+                "@type": "LocalBusiness",
+                "@id": `${siteUrl}/#localbusiness`,
+                "name": siteName,
+                "url": siteUrl,
+                "telephone": phoneValue,
+                "image": defaultImage,
+                "logo": defaultImage,
+                "sameAs": sameAs,
+                "areaServed": {
+                  "@type": "Country",
+                  "name": "United Kingdom"
+                },
+                "parentOrganization": {
+                  "@id": `${siteUrl}/#organization`
+                }
+              },
+              {
+                "@type": "WebSite",
+                "@id": `${siteUrl}/#website`,
+                "name": siteName,
+                "url": siteUrl,
+                "publisher": {
+                  "@id": `${siteUrl}/#organization`
+                }
+              }
+            ]
+          },
           null,
           2
         ).replace(/</g, "\\u003c")
