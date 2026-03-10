@@ -10,6 +10,7 @@
   // Prefer first IMAGE for the "main" display; fall back to first item
   const firstImage = items.find(it => it && String(it.type) === "image") || null;
   const first = firstImage || items[0] || null;
+  const firstFilename = first ? String(first.filename) : "";
 %>
 
 <div class="wrap gallery">
@@ -29,29 +30,60 @@
       <% } %>
     </div>
 
-    <div class="gallery-strip" id="galleryStrip">
-      <% items.forEach((it, idx) => { %>
-        <button
-          type="button"
-          class="gthumb <%= idx === 0 ? 'active' : '' %>"
-          data-type="<%= it.type %>"
-          data-src="<%= srcOf(it) %>"
-          aria-label="<%= it.type === 'video' ? 'Open video' : 'Open image' %>"
-          title="<%= it.caption || it.original_name || it.filename %>"
-        >
-          <% if (isVideo(it)) { %>
-            <video muted playsinline preload="metadata">
-              <source src="<%= srcOf(it) %>">
-            </video>
-            <span class="gthumb-badge">VIDEO</span>
-          <% } else { %>
-            <img src="<%= srcOf(it) %>" alt="">
-          <% } %>
-        </button>
-      <% }) %>
+    <div class="gallery-strip-shell">
+      <button
+        type="button"
+        class="gallery-arrow gallery-arrow-left"
+        aria-label="Scroll thumbnails left"
+        onclick="scrollGalleryStrip(-1)"
+      >
+        &#10094;
+      </button>
+
+      <div class="gallery-strip" id="galleryStrip">
+        <% items.forEach((it) => { %>
+          <button
+            type="button"
+            class="gthumb <%= String(it.filename) === firstFilename ? 'active' : '' %>"
+            data-type="<%= it.type %>"
+            data-src="<%= srcOf(it) %>"
+            aria-label="<%= it.type === 'video' ? 'Open video' : 'Open image' %>"
+            title="<%= it.caption || it.original_name || it.filename %>"
+          >
+            <% if (isVideo(it)) { %>
+              <video muted playsinline preload="metadata">
+                <source src="<%= srcOf(it) %>">
+              </video>
+              <span class="gthumb-badge">VIDEO</span>
+            <% } else { %>
+              <img src="<%= srcOf(it) %>" alt="">
+            <% } %>
+          </button>
+        <% }) %>
+      </div>
+
+      <button
+        type="button"
+        class="gallery-arrow gallery-arrow-right"
+        aria-label="Scroll thumbnails right"
+        onclick="scrollGalleryStrip(1)"
+      >
+        &#10095;
+      </button>
     </div>
 
     <script>
+      function scrollGalleryStrip(direction) {
+        const strip = document.getElementById("galleryStrip");
+        if (!strip) return;
+
+        const amount = Math.round(strip.clientWidth * 0.75);
+        strip.scrollBy({
+          left: direction * amount,
+          behavior: "smooth"
+        });
+      }
+
       (function(){
         const main = document.getElementById("galleryMain");
         const strip = document.getElementById("galleryStrip");
@@ -67,7 +99,6 @@
           const type = btn.dataset.type;
           const src = btn.dataset.src;
 
-          // Swap main media
           if (type === "video") {
             main.innerHTML =
               '<video class="gallery-media" controls playsinline preload="metadata">' +
