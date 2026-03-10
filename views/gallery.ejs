@@ -30,66 +30,84 @@
       <% } %>
     </div>
 
-    <div class="gallery-strip-shell">
+    <div class="gallery-strip-wrap">
       <button
         type="button"
         class="gallery-arrow gallery-arrow-left"
-        aria-label="Scroll thumbnails left"
-        onclick="scrollGalleryStrip(-1)"
+        id="galleryArrowLeft"
+        aria-label="Previous thumbnails"
       >
         &#10094;
       </button>
 
-      <div class="gallery-strip" id="galleryStrip">
-        <% items.forEach((it) => { %>
-          <button
-            type="button"
-            class="gthumb <%= String(it.filename) === firstFilename ? 'active' : '' %>"
-            data-type="<%= it.type %>"
-            data-src="<%= srcOf(it) %>"
-            aria-label="<%= it.type === 'video' ? 'Open video' : 'Open image' %>"
-            title="<%= it.caption || it.original_name || it.filename %>"
-          >
-            <% if (isVideo(it)) { %>
-              <video muted playsinline preload="metadata">
-                <source src="<%= srcOf(it) %>">
-              </video>
-              <span class="gthumb-badge">VIDEO</span>
-            <% } else { %>
-              <img src="<%= srcOf(it) %>" alt="">
-            <% } %>
-          </button>
-        <% }) %>
+      <div class="gallery-strip-viewport">
+        <div class="gallery-strip" id="galleryStrip">
+          <% items.forEach((it) => { %>
+            <button
+              type="button"
+              class="gthumb <%= String(it.filename) === firstFilename ? 'active' : '' %>"
+              data-type="<%= it.type %>"
+              data-src="<%= srcOf(it) %>"
+              aria-label="<%= it.type === 'video' ? 'Open video' : 'Open image' %>"
+              title="<%= it.caption || it.original_name || it.filename %>"
+            >
+              <% if (isVideo(it)) { %>
+                <video muted playsinline preload="metadata">
+                  <source src="<%= srcOf(it) %>">
+                </video>
+                <span class="gthumb-badge">VIDEO</span>
+              <% } else { %>
+                <img src="<%= srcOf(it) %>" alt="">
+              <% } %>
+            </button>
+          <% }) %>
+        </div>
       </div>
 
       <button
         type="button"
         class="gallery-arrow gallery-arrow-right"
-        aria-label="Scroll thumbnails right"
-        onclick="scrollGalleryStrip(1)"
+        id="galleryArrowRight"
+        aria-label="Next thumbnails"
       >
         &#10095;
       </button>
     </div>
 
     <script>
-      function scrollGalleryStrip(direction) {
-        const strip = document.getElementById("galleryStrip");
-        if (!strip) return;
-
-        const amount = Math.round(strip.clientWidth * 0.75);
-        strip.scrollBy({
-          left: direction * amount,
-          behavior: "smooth"
-        });
-      }
-
-      (function(){
+      (function () {
         const main = document.getElementById("galleryMain");
         const strip = document.getElementById("galleryStrip");
-        if (!main || !strip) return;
+        const leftBtn = document.getElementById("galleryArrowLeft");
+        const rightBtn = document.getElementById("galleryArrowRight");
 
-        strip.addEventListener("click", (e) => {
+        if (!main || !strip || !leftBtn || !rightBtn) return;
+
+        function updateArrowState() {
+          const maxScroll = strip.scrollWidth - strip.clientWidth;
+          const current = strip.scrollLeft;
+
+          leftBtn.disabled = current <= 4;
+          rightBtn.disabled = current >= (maxScroll - 4);
+        }
+
+        function scrollStrip(direction) {
+          const step = Math.max(220, Math.round(strip.clientWidth * 0.7));
+          strip.scrollBy({
+            left: direction * step,
+            behavior: "smooth"
+          });
+        }
+
+        leftBtn.addEventListener("click", function () {
+          scrollStrip(-1);
+        });
+
+        rightBtn.addEventListener("click", function () {
+          scrollStrip(1);
+        });
+
+        strip.addEventListener("click", function (e) {
           const btn = e.target.closest(".gthumb");
           if (!btn) return;
 
@@ -109,6 +127,11 @@
               '<img class="gallery-media" src="' + src + '" alt="Gallery image">';
           }
         });
+
+        strip.addEventListener("scroll", updateArrowState);
+        window.addEventListener("resize", updateArrowState);
+
+        updateArrowState();
       })();
     </script>
 
