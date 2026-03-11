@@ -1,0 +1,173 @@
+<%- include('partials/head', {
+  title,
+  metaTitle,
+  metaDescription,
+  canonicalPath
+}) %>
+
+<%- include('partials/header') %>
+
+<%
+  const s = settings || {};
+  const phoneRaw = String(s.phone || "").trim();
+  const phoneTel = phoneRaw.replace(/\s+/g, "");
+%>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Truck Hearse FAQ</h1>
+    <p class="lead">
+      Answers to common questions about truck hearse hire, lorry hearse hire, alternative funeral transport,
+      and our specialist hearses available across the UK.
+    </p>
+
+    <div class="cta" style="margin: 18px 0 8px;">
+      <a class="btn" href="/contact">Enquire</a>
+      <a class="btn" href="/gallery">View gallery</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">What is a truck hearse?</h2>
+    <div class="rich">
+      <p>
+        A truck hearse is an alternative funeral vehicle based on a heavy goods vehicle or large truck,
+        adapted and presented for funeral use. A truck hearse offers families and funeral directors a distinctive
+        and respectful alternative to a traditional hearse, especially when the person being remembered had a strong
+        connection to haulage, transport, mechanics, road life, or HGVs.
+      </p>
+      <p>
+        For many families, a truck hearse creates a final journey that feels more personal and meaningful than a
+        standard vehicle. It can reflect a loved one’s career, interests, or personality while still maintaining
+        dignity, professionalism, and visual impact on the day of the funeral.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Truck hearse vs traditional hearse</h2>
+    <div class="rich">
+      <p>
+        A traditional hearse is usually a long, purpose-built funeral vehicle designed in the familiar style seen
+        at most funerals. A truck hearse, by contrast, provides a more individual and memorable alternative.
+        Both are respectful funeral vehicles, but a truck hearse is chosen when families want the final journey
+        to reflect a life connected to the road, haulage, engineering, transport, or a love of large vehicles.
+      </p>
+      <p>
+        The difference is not about reducing dignity or professionalism. It is about creating a more personal tribute.
+        Where a traditional hearse offers convention, a truck hearse offers individuality. For some funerals,
+        that difference is exactly what makes the service feel right.
+      </p>
+      <p>
+        Families often compare a truck hearse and a traditional hearse when deciding how best to honour someone’s life.
+        If the person was known for trucking, logistics, mechanics, or HGV driving, a truck hearse can be a fitting
+        and powerful choice.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Lorry hearse hire for funerals across the UK</h2>
+    <div class="rich">
+      <p>
+        PNW Carriage Masters offers lorry hearse hire for funerals across the UK, providing alternative funeral
+        transport for funeral directors and families looking for something distinctive, personal, and memorable.
+        Our specialist vehicles are available to support funerals throughout the UK mainland, helping create a
+        final journey that stands apart from the ordinary.
+      </p>
+      <p>
+        Lorry hearse hire is particularly suited to funerals for people who worked in haulage, transport,
+        construction, engineering, recovery, agriculture, or related industries. It is also chosen by families
+        who simply want a funeral vehicle that feels more personal than a traditional hearse.
+      </p>
+      <p>
+        We work with the funeral profession to provide a respectful and professional service from enquiry through
+        to the day itself. For pricing and availability, we recommend contacting us direct.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Case studies of completed services</h2>
+    <div class="rich">
+      <p>
+        Families often want reassurance that alternative funeral transport can still be dignified, reliable,
+        and professionally delivered. Our completed services demonstrate how a truck hearse or lorry hearse can
+        become a meaningful part of a funeral while preserving the respect the occasion deserves.
+      </p>
+      <p>
+        In many services, the vehicle becomes more than transport. It becomes part of the tribute itself.
+        For drivers, mechanics, transport managers, and lifelong truck enthusiasts, the vehicle can reflect
+        identity, pride, and a personal connection to the road.
+      </p>
+      <p>
+        As this section develops, it can feature examples of completed funeral services, the type of vehicle used,
+        the area covered, and why the chosen hearse was especially fitting. This kind of content is valuable both
+        for families and for search visibility because it shows real-world relevance for truck hearse hire and
+        lorry hearse hire across the UK.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Vehicle spotlight pages for each hearse</h2>
+    <div class="rich">
+      <p>
+        Each specialist hearse has its own character, appearance, and presence. Vehicle spotlight pages help explain
+        what makes each hearse unique and why it may be the right choice for a particular funeral.
+      </p>
+      <p>
+        A good vehicle spotlight page can include the vehicle name, model, photographs, styling details,
+        where it is available, and what type of tribute it suits best. These pages are also useful for SEO because
+        they allow more detailed content around individual specialist hearses rather than keeping everything on one page.
+      </p>
+      <p>
+        Over time, dedicated pages for each hearse can be added to expand the site further. For example, one page could
+        focus on the Renault Magnum, while another could focus on the ERF EC12, each with its own gallery, description,
+        and enquiry route.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Frequently asked questions</h2>
+
+    <h3>Do you offer truck hearse hire across the UK?</h3>
+    <p>
+      Yes. We offer truck hearse and lorry hearse hire across the UK mainland for funeral directors and families
+      seeking alternative funeral transport.
+    </p>
+
+    <h3>Who chooses a lorry hearse for a funeral?</h3>
+    <p>
+      Lorry hearse hire is often chosen for someone with a connection to trucking, haulage, transport, mechanics,
+      road life, or heavy vehicles. It is also chosen by families who want a unique and personal final journey.
+    </p>
+
+    <h3>Is a truck hearse still respectful for a funeral?</h3>
+    <p>
+      Yes. A truck hearse is chosen to add personality and meaning to the funeral while maintaining a respectful,
+      dignified, and professional presentation.
+    </p>
+
+    <h3>How do I enquire about availability?</h3>
+    <p>
+      You can enquire through our contact page or by phone to discuss the date, location, and the type of specialist
+      hearse required.
+    </p>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Explore more</h2>
+    <div class="cta">
+      <a class="btn" href="/gallery">Photo gallery</a>
+      <a class="btn" href="/contact">Get a quote</a>
+      <a class="btn" href="/">Back to home</a>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
