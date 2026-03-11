@@ -1,0 +1,107 @@
+<%- include('partials/head', {
+  title,
+  metaTitle,
+  metaDescription,
+  canonicalPath
+}) %>
+
+<%- include('partials/header') %>
+
+<%
+  const s = settings || {};
+  const phoneRaw = String(s.phone || "").trim();
+  const phoneTel = phoneRaw.replace(/\s+/g, "");
+%>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Truck Hearse vs Traditional Hearse</h1>
+    <p class="lead">
+      Choosing between a truck hearse and a traditional hearse is often about finding the funeral vehicle
+      that best reflects the life, personality, and story of the person being remembered.
+    </p>
+
+    <div class="cta" style="margin:18px 0 8px;">
+      <a class="btn" href="/contact">Enquire</a>
+      <a class="btn" href="/gallery">View gallery</a>
+      <a class="btn" href="/faq">FAQ</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">What is the difference between a truck hearse and a traditional hearse?</h2>
+    <div class="rich">
+      <p>
+        A traditional hearse is the familiar funeral vehicle most people expect to see at a service. It offers
+        a classic and conventional appearance that suits many funerals. A truck hearse, by contrast, provides
+        a more individual and visually distinctive alternative while still maintaining dignity, respect, and professionalism.
+      </p>
+      <p>
+        The choice between a truck hearse and a traditional hearse often depends on the person being remembered.
+        For someone whose life was closely linked to haulage, transport, engineering, logistics, or heavy vehicles,
+        a truck hearse can feel far more personal and meaningful than a conventional funeral car.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">When a truck hearse may be the right choice</h2>
+    <div class="rich">
+      <p>
+        Families often choose a truck hearse when they want the final journey to reflect a loved one’s character,
+        career, or lifelong interests. It can be especially fitting for professional drivers, mechanics, transport
+        workers, haulage business owners, and people who simply loved trucks and life on the road.
+      </p>
+      <p>
+        In these situations, a truck hearse becomes more than transport. It becomes part of the tribute itself,
+        helping the funeral feel more personal and more closely connected to the life being celebrated.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">When a traditional hearse may be preferred</h2>
+    <div class="rich">
+      <p>
+        A traditional hearse may be preferred where families want a more familiar and understated style.
+        For some funerals, convention and simplicity feel most appropriate, and a traditional hearse delivers that
+        classic appearance.
+      </p>
+      <p>
+        Choosing a traditional hearse does not mean the funeral is any less personal. It simply reflects a different
+        preference in tone and presentation. The right choice is the one that feels most appropriate for the person
+        and the family.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">A more personal final journey</h2>
+    <div class="rich">
+      <p>
+        For many families, the key benefit of a truck hearse is that it helps create a final journey that stands apart
+        from the ordinary. It offers real presence, individuality, and a strong visual tribute while still supporting
+        a respectful funeral service.
+      </p>
+      <p>
+        If you are comparing a truck hearse with a traditional hearse, the most helpful question is often not which is
+        better in general, but which is more fitting for the person being remembered.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Explore related pages</h2>
+    <div class="rich">
+      <p><a href="/lorry-hearse-hire-uk">Lorry hearse hire across the UK</a></p>
+      <p><a href="/renault-magnum-hearse">Renault Magnum hearse</a></p>
+      <p><a href="/erf-ec12-hearse">ERF EC12 hearse</a></p>
+      <p><a href="/case-studies">Truck hearse case studies</a></p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
