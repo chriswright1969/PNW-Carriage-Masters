@@ -1,0 +1,97 @@
+<%- include('partials/head', {
+  title,
+  metaTitle,
+  metaDescription,
+  canonicalPath
+}) %>
+
+<%- include('partials/header') %>
+
+<%
+  const s = settings || {};
+  const phoneRaw = String(s.phone || "").trim();
+  const phoneTel = phoneRaw.replace(/\s+/g, "");
+  const gloryFile = String(s.home_truck_glory_img || "").trim();
+  const gloryVer  = String(s.home_truck_glory_ver || "").trim();
+%>
+
+<div class="wrap">
+  <div class="card">
+    <h1>ERF EC12 Hearse</h1>
+    <p class="lead">
+      Our ERF EC12 hearse is a distinctive lorry hearse designed for funerals where families want a final journey with individuality and real presence.
+    </p>
+
+    <div class="cta" style="margin:18px 0 8px;">
+      <a class="btn" href="/contact">Enquire about this hearse</a>
+      <a class="btn" href="/gallery">View gallery</a>
+      <a class="btn" href="/lorry-hearse-hire-uk">Lorry hearse hire</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
+    </div>
+  </div>
+
+  <% if (gloryFile) { %>
+    <div class="card" style="margin-top:20px;">
+      <img
+        src="/uploads/<%= gloryFile %>?v=<%= gloryVer %>"
+        alt="ERF EC12 lorry hearse for funeral hire in the UK"
+        style="display:block; width:100%; max-width:100%; border-radius:16px;"
+      >
+    </div>
+  <% } %>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">A distinctive ERF EC12 lorry hearse</h2>
+    <div class="rich">
+      <p>
+        The ERF EC12 hearse offers a striking and respectful alternative to a traditional hearse. It is suited to funerals
+        where families want the final journey to reflect a loved one’s connection to trucks, transport, engineering,
+        heavy vehicles, or life on the road.
+      </p>
+      <p>
+        As part of our specialist fleet, the ERF EC12 hearse helps create a memorable and personal tribute without losing
+        the dignity and professionalism that matter on the day of the funeral.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Why families choose the ERF EC12 hearse</h2>
+    <div class="rich">
+      <p>
+        A specialist hearse like the ERF EC12 is often chosen because it feels more personal than a conventional funeral vehicle.
+        For someone whose life or interests were closely connected to haulage or heavy vehicles, it can be a fitting and meaningful choice.
+      </p>
+      <p>
+        The vehicle becomes part of the tribute, helping the funeral feel individual, memorable, and true to the person being remembered.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Funeral hire across the UK</h2>
+    <div class="rich">
+      <p>
+        Our ERF EC12 hearse is available for funeral hire across the UK mainland. We work with funeral directors and families
+        to provide a professional service and to help make the final journey as fitting and personal as possible.
+      </p>
+      <p>
+        For pricing and availability, please contact us direct.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Related pages</h2>
+    <div class="rich">
+      <p><a href="/renault-magnum-hearse">Renault Magnum hearse</a></p>
+      <p><a href="/truck-hearse-vs-traditional-hearse">Truck hearse vs traditional hearse</a></p>
+      <p><a href="/case-studies">Case studies</a></p>
+      <p><a href="/faq">FAQ</a></p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
