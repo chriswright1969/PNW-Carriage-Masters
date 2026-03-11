@@ -1,0 +1,102 @@
+<%- include('partials/head', {
+  title,
+  metaTitle,
+  metaDescription,
+  canonicalPath
+}) %>
+
+<%- include('partials/header') %>
+
+<%
+  const s = settings || {};
+  const phoneRaw = String(s.phone || "").trim();
+  const phoneTel = phoneRaw.replace(/\s+/g, "");
+  const gloryFile = String(s.home_truck_glory_img || "").trim();
+  const gloryVer  = String(s.home_truck_glory_ver || "").trim();
+%>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Lorry Hearse Hire Across the UK</h1>
+    <p class="lead">
+      PNW Carriage Masters offers lorry hearse hire across the UK for funerals that call for something distinctive,
+      personal, and memorable.
+    </p>
+
+    <div class="cta" style="margin:18px 0 8px;">
+      <a class="btn" href="/contact">Get a quote</a>
+      <a class="btn" href="/gallery">View gallery</a>
+      <a class="btn" href="/faq">FAQ</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
+    </div>
+  </div>
+
+  <% if (gloryFile) { %>
+    <div class="card" style="margin-top:20px;">
+      <img
+        src="/uploads/<%= gloryFile %>?v=<%= gloryVer %>"
+        alt="ERF EC12 lorry hearse available for funeral hire across the UK"
+        style="display:block; width:100%; max-width:100%; border-radius:16px;"
+      >
+    </div>
+  <% } %>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Professional lorry hearse hire for a personal final journey</h2>
+    <div class="rich">
+      <p>
+        A lorry hearse offers a respectful and visually striking alternative to a traditional funeral vehicle.
+        It is often chosen when families want the final journey to reflect a loved one’s connection to haulage,
+        transport, engineering, logistics, road life, or heavy vehicles.
+      </p>
+      <p>
+        Our lorry hearse hire service is available across the UK mainland and is provided for the funeral profession
+        and families seeking a more personal and memorable funeral tribute.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Why families choose a lorry hearse</h2>
+    <div class="rich">
+      <p>
+        For many funerals, a standard hearse does not fully reflect the life that has been lived. A lorry hearse
+        can be especially meaningful for someone who worked with trucks, loved heavy vehicles, or simply wanted
+        a send-off with real individuality and presence.
+      </p>
+      <p>
+        The aim is not to reduce formality. It is to make the funeral feel more fitting and more personal while
+        maintaining the dignity expected on such an important day.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Lorry hearse hire throughout the UK</h2>
+    <div class="rich">
+      <p>
+        We provide lorry hearse hire across the UK mainland and work closely with funeral directors to help deliver
+        a smooth and professional service. Whether the requirement is local or involves longer travel, we aim to provide
+        a specialist vehicle that supports a dignified and memorable final journey.
+      </p>
+      <p>
+        For pricing and availability, please contact us direct so we can discuss the date, location, and the most
+        suitable vehicle for the funeral.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Related vehicle pages</h2>
+    <div class="rich">
+      <p><a href="/erf-ec12-hearse">View the ERF EC12 hearse</a></p>
+      <p><a href="/renault-magnum-hearse">View the Renault Magnum hearse</a></p>
+      <p><a href="/truck-hearse-vs-traditional-hearse">Truck hearse vs traditional hearse</a></p>
+      <p><a href="/case-studies">Case studies</a></p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
