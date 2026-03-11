@@ -1,0 +1,98 @@
+<%- include('partials/head', {
+  title,
+  metaTitle,
+  metaDescription,
+  canonicalPath
+}) %>
+
+<%- include('partials/header') %>
+
+<%
+  const s = settings || {};
+  const phoneRaw = String(s.phone || "").trim();
+  const phoneTel = phoneRaw.replace(/\s+/g, "");
+  const powerFile = String(s.home_truck_power_img || "").trim();
+  const powerVer  = String(s.home_truck_power_ver || "").trim();
+%>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Renault Magnum Hearse</h1>
+    <p class="lead">
+      Our Renault Magnum hearse is a distinctive truck hearse available as part of our bespoke alternative funeral transport service.
+    </p>
+
+    <div class="cta" style="margin:18px 0 8px;">
+      <a class="btn" href="/contact">Enquire about this hearse</a>
+      <a class="btn" href="/gallery">View gallery</a>
+      <a class="btn" href="/lorry-hearse-hire-uk">Lorry hearse hire</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
+    </div>
+  </div>
+
+  <% if (powerFile) { %>
+    <div class="card" style="margin-top:20px;">
+      <img
+        src="/uploads/<%= powerFile %>?v=<%= powerVer %>"
+        alt="Renault Magnum truck hearse for funeral hire in the UK"
+        style="display:block; width:100%; max-width:100%; border-radius:16px;"
+      >
+    </div>
+  <% } %>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">A specialist Renault Magnum truck hearse</h2>
+    <div class="rich">
+      <p>
+        The Renault Magnum hearse is chosen for funerals where families want a final journey with real character,
+        presence, and individuality. As a specialist truck hearse, it offers an alternative to a conventional funeral vehicle
+        while still delivering the dignity and professionalism expected on the day of the service.
+      </p>
+      <p>
+        It can be especially fitting for someone who worked in transport, haulage, engineering, recovery, logistics,
+        or who simply had a lifelong connection with trucks and road life.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Why choose the Renault Magnum hearse?</h2>
+    <div class="rich">
+      <p>
+        Families choose this hearse when they want a funeral vehicle that feels more personal than a traditional hearse.
+        The Renault Magnum hearse creates a powerful and memorable impression while helping the final journey reflect
+        the life and interests of the person being remembered.
+      </p>
+      <p>
+        For many families, that added sense of individuality is what turns the vehicle into an important part of the tribute itself.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Available for funerals across the UK</h2>
+    <div class="rich">
+      <p>
+        Our Renault Magnum hearse is available for funeral hire across the UK mainland. We work with the funeral profession
+        to provide a respectful and dependable service and to help ensure the chosen vehicle is the right fit for the day.
+      </p>
+      <p>
+        To discuss availability, location, and the most suitable option for the funeral, please contact us direct.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Related pages</h2>
+    <div class="rich">
+      <p><a href="/erf-ec12-hearse">ERF EC12 hearse</a></p>
+      <p><a href="/truck-hearse-vs-traditional-hearse">Truck hearse vs traditional hearse</a></p>
+      <p><a href="/case-studies">Case studies</a></p>
+      <p><a href="/faq">FAQ</a></p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
