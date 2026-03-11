@@ -541,6 +541,81 @@ app.post("/contact", async (req, res) => {
     return res.status(500).send("Internal Server Error (faq)");
   }
 });
+
+app.get("/truck-hearse-vs-traditional-hearse", (req, res) => {
+  try {
+    return res.render("truck-hearse-vs-traditional-hearse", {
+      title: "Truck Hearse vs Traditional Hearse | PNW Carriage Masters",
+      metaTitle: "Truck Hearse vs Traditional Hearse | PNW Carriage Masters",
+      metaDescription:
+        "Compare a truck hearse with a traditional hearse and see why families choose bespoke alternative funeral transport for a more personal final journey.",
+      canonicalPath: "/truck-hearse-vs-traditional-hearse"
+    });
+  } catch (e) {
+    console.error("truck-hearse-vs-traditional-hearse GET failed:", e);
+    return res.status(500).send("Internal Server Error (truck-hearse-vs-traditional-hearse)");
+  }
+});
+
+app.get("/lorry-hearse-hire-uk", (req, res) => {
+  try {
+    return res.render("lorry-hearse-hire-uk", {
+      title: "Lorry Hearse Hire UK | PNW Carriage Masters",
+      metaTitle: "Lorry Hearse Hire UK | PNW Carriage Masters",
+      metaDescription:
+        "Professional lorry hearse hire across the UK. Bespoke alternative funeral transport for families and funeral directors seeking a distinctive final journey.",
+      canonicalPath: "/lorry-hearse-hire-uk"
+    });
+  } catch (e) {
+    console.error("lorry-hearse-hire-uk GET failed:", e);
+    return res.status(500).send("Internal Server Error (lorry-hearse-hire-uk)");
+  }
+});
+
+app.get("/renault-magnum-hearse", (req, res) => {
+  try {
+    return res.render("renault-magnum-hearse", {
+      title: "Renault Magnum Hearse | Truck Hearse Hire | PNW Carriage Masters",
+      metaTitle: "Renault Magnum Hearse | Truck Hearse Hire | PNW Carriage Masters",
+      metaDescription:
+        "Discover our Renault Magnum hearse, a striking truck hearse available for funerals across the UK as part of our bespoke alternative funeral transport service.",
+      canonicalPath: "/renault-magnum-hearse"
+    });
+  } catch (e) {
+    console.error("renault-magnum-hearse GET failed:", e);
+    return res.status(500).send("Internal Server Error (renault-magnum-hearse)");
+  }
+});
+
+app.get("/erf-ec12-hearse", (req, res) => {
+  try {
+    return res.render("erf-ec12-hearse", {
+      title: "ERF EC12 Hearse | Lorry Hearse Hire | PNW Carriage Masters",
+      metaTitle: "ERF EC12 Hearse | Lorry Hearse Hire | PNW Carriage Masters",
+      metaDescription:
+        "Discover our ERF EC12 hearse, a distinctive lorry hearse available for funeral hire across the UK through PNW Carriage Masters.",
+      canonicalPath: "/erf-ec12-hearse"
+    });
+  } catch (e) {
+    console.error("erf-ec12-hearse GET failed:", e);
+    return res.status(500).send("Internal Server Error (erf-ec12-hearse)");
+  }
+});
+
+app.get("/case-studies", (req, res) => {
+  try {
+    return res.render("case-studies", {
+      title: "Truck Hearse Case Studies | PNW Carriage Masters",
+      metaTitle: "Truck Hearse Case Studies | PNW Carriage Masters",
+      metaDescription:
+        "Read about the type of completed services supported by our truck hearses and lorry hearses, and how bespoke funeral transport creates a more personal final journey.",
+      canonicalPath: "/case-studies"
+    });
+  } catch (e) {
+    console.error("case-studies GET failed:", e);
+    return res.status(500).send("Internal Server Error (case-studies)");
+  }
+});
 // ======================================================
 // Admin auth
 // ======================================================
