@@ -492,9 +492,6 @@ app.post("/contact", async (req, res) => {
     );
 
     // Who receives the enquiry:
-    // - prefer Admin Settings "forward_to_email"
-    // - then env var CONTACT_TO (recommended)
-    // - then your old env var CONTACT_FORWARD_TO (kept for compatibility)
     const forwardTo =
       getSetting("forward_to_email") ||
       process.env.CONTACT_TO ||
@@ -506,7 +503,6 @@ app.post("/contact", async (req, res) => {
       return res.redirect("/contact?error=" + encodeURIComponent("Email sending is not configured. Please call us instead."));
     }
 
-    // IMPORTANT: From should be YOUR domain mailbox/address (SMTP providers often reject user email as From)
     const from =
       process.env.MAIL_FROM ||
       process.env.SMTP_FROM ||
@@ -531,6 +527,20 @@ app.post("/contact", async (req, res) => {
   }
 });
 
+  app.get("/faq", (req, res) => {
+  try {
+    return res.render("faq", {
+      title: "Truck Hearse FAQ | PNW Carriage Masters",
+      metaTitle: "Truck Hearse FAQ | Lorry Hearse Hire UK | PNW Carriage Masters",
+      metaDescription:
+        "Answers to common questions about truck hearses, lorry hearse hire across the UK, traditional hearse comparisons, completed service examples, and our specialist funeral vehicles.",
+      canonicalPath: "/faq"
+    });
+  } catch (e) {
+    console.error("faq GET failed:", e);
+    return res.status(500).send("Internal Server Error (faq)");
+  }
+});
 // ======================================================
 // Admin auth
 // ======================================================
