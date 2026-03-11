@@ -1,0 +1,106 @@
+<%- include('partials/head', {
+  title,
+  metaTitle,
+  metaDescription,
+  canonicalPath
+}) %>
+
+<%- include('partials/header') %>
+
+<%
+  const s = settings || {};
+  const phoneRaw = String(s.phone || "").trim();
+  const phoneTel = phoneRaw.replace(/\s+/g, "");
+%>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Truck Hearse Case Studies</h1>
+    <p class="lead">
+      This page is designed to showcase real completed services involving our truck hearses and lorry hearses,
+      and will continue to grow as additional case studies are published.
+    </p>
+
+    <div class="cta" style="margin:18px 0 8px;">
+      <a class="btn" href="/contact">Enquire</a>
+      <a class="btn" href="/gallery">View gallery</a>
+      <a class="btn" href="/faq">FAQ</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Why case studies matter</h2>
+    <div class="rich">
+      <p>
+        Case studies help families and funeral directors understand how alternative funeral transport can be used
+        in a respectful, professional, and meaningful way. They show the type of funeral each vehicle may suit,
+        the kind of tribute it helps create, and why a specialist hearse may feel more fitting than a traditional option.
+      </p>
+      <p>
+        For many people, reading about real completed services provides reassurance that a truck hearse or lorry hearse
+        can become an important and dignified part of the final journey.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">What future case studies will include</h2>
+    <div class="rich">
+      <p>
+        As this page develops, each case study can include the vehicle used, the general area served, the type of tribute
+        requested, and the reason the chosen hearse was especially suitable. This helps demonstrate how different vehicles
+        support different kinds of funerals across the UK.
+      </p>
+      <p>
+        It also creates useful, relevant content for families searching for truck hearse hire, lorry hearse hire,
+        and alternative funeral transport that feels more personal and distinctive.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Current specialist vehicles</h2>
+    <div class="rich">
+      <p><a href="/renault-magnum-hearse">Renault Magnum hearse</a></p>
+      <p><a href="/erf-ec12-hearse">ERF EC12 hearse</a></p>
+      <p><a href="/lorry-hearse-hire-uk">Lorry hearse hire across the UK</a></p>
+      <p><a href="/truck-hearse-vs-traditional-hearse">Truck hearse vs traditional hearse</a></p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Preparing real completed service write-ups</h2>
+    <div class="rich">
+      <p>
+        When you are ready, this page can be expanded with individual case study entries based on real completed services.
+        That is the best long-term approach for both trust and SEO, because it adds original content based on genuine work
+        rather than generic wording alone.
+      </p>
+      <p>
+        A good case study can describe the type of funeral, the chosen hearse, the reason it suited the service,
+        and the area covered, while keeping the write-up respectful and appropriate.
+      </p>
+    </div>
+  </div>
+
+  <% /* 
+    Future real case study template — duplicate this block and replace with genuine details only.
+
+    <div class="card" style="margin-top:20px;">
+      <h2 class="section-title">Case study: [Vehicle] for a funeral in [Area]</h2>
+      <div class="rich">
+        <p>
+          [Write a factual summary of the completed service. Avoid private or sensitive details unless you have permission.]
+        </p>
+        <p>
+          [Explain why the chosen vehicle was fitting and how it supported a personal final journey.]
+        </p>
+      </div>
+    </div>
+  */ %>
+</div>
+
+<%- include('partials/footer') %>
