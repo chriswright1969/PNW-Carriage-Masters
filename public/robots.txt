@@ -1,2 +1,7 @@
-https://www.truckhearse.co.uk/robots.txt
-https://www.truckhearse.co.uk/sitemap.xml
+User-agent: *
+Disallow: /admin/
+Disallow: /login
+Disallow: /forgot-password
+Disallow: /reset-password
+
+Sitemap: https://www.truckhearse.co.uk/sitemap.xml
