@@ -268,6 +268,10 @@ ensureSetting("home_truck_power_ver", String(Date.now()));
 ensureSetting("home_truck_glory_img", "");
 ensureSetting("home_truck_glory_ver", String(Date.now()));
 
+// Setting default for renault magnum image
+ensureSetting("renault_magnum_img", "");
+ensureSetting("renault_magnum_ver", String(Date.now()));
+
 // Settings available everywhere (must be AFTER session so we can read req.session)
 app.use((req, res, next) => {
   const settings = listSettings([
@@ -303,7 +307,11 @@ app.use((req, res, next) => {
     "home_truck_power_img",
     "home_truck_power_ver",
     "home_truck_glory_img",
-    "home_truck_glory_ver"
+    "home_truck_glory_ver",
+
+    //Renualt Magnum image
+    "renault_magnum_img",
+    "renault_magnum_ver"
   ]);
 
   res.locals.settings = settings;
@@ -878,6 +886,29 @@ app.post("/admin/gallery/featured/:id", requireAdmin, (req, res) => {
 app.post("/admin/gallery/featured/clear", requireAdmin, (_req, res) => {
   setSetting("gallery_featured_media_id", "0");
   return res.redirect("/admin/gallery");
+});
+
+//Admin route to set Renault Magnum image
+app.post("/admin/gallery/renault-magnum/:id", requireAdmin, (req, res) => {
+  const id = Number(req.params.id || 0);
+  if (!id) return res.redirect("/admin/gallery?err=Invalid%20image");
+
+  const item = getMedia(id);
+  if (!item || String(item.type) !== "image") {
+    return res.redirect("/admin/gallery?err=That%20item%20is%20not%20an%20image");
+  }
+
+  setSetting("renault_magnum_img", item.filename);
+  setSetting("renault_magnum_ver", String(Date.now()));
+
+  return res.redirect("/admin/gallery?msg=Renault%20Magnum%20page%20image%20updated");
+});
+
+// Clear route for Renault Magnum image
+app.post("/admin/gallery/renault-magnum/clear", requireAdmin, (_req, res) => {
+  setSetting("renault_magnum_img", "");
+  setSetting("renault_magnum_ver", String(Date.now()));
+  return res.redirect("/admin/gallery?msg=Renault%20Magnum%20page%20image%20cleared");
 });
 
 // Uploads (admin only) - gallery media
