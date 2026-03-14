@@ -932,6 +932,31 @@ app.post("/admin/media/:id/delete", requireAdmin, (req, res) => {
 });
 
 // ======================================================
+// Admin update caption text
+// ======================================================
+app.post("/admin/media/:id/caption", requireAdmin, (req, res) => {
+  try {
+    const id = Number(req.params.id || 0);
+    const caption = String(req.body?.caption || "").trim();
+
+    if (!id) {
+      return res.redirect("/admin/gallery?err=Invalid%20media%20item");
+    }
+
+    if (caption.length > 200) {
+      return res.redirect("/admin/gallery?err=Caption%20must%20be%20200%20characters%20or%20less");
+    }
+
+    db.updateMediaCaption(id, caption);
+
+    return res.redirect("/admin/gallery?msg=Caption%20saved");
+  } catch (e) {
+    console.error("admin media caption update failed:", e);
+    return res.redirect("/admin/gallery?err=Could%20not%20save%20caption");
+  }
+});
+
+// ======================================================
 // Admin: home media (thumbs + montage) - kept if you use it
 // ======================================================
 app.get("/admin/home-media", requireAdmin, (req, res) => {
