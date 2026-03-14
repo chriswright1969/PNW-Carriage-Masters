@@ -11,8 +11,6 @@
   const s = settings || {};
   const phoneRaw = String(s.phone || "").trim();
   const phoneTel = phoneRaw.replace(/\s+/g, "");
-  const powerFile = String(s.home_truck_power_img || "").trim();
-  const powerVer  = String(s.home_truck_power_ver || "").trim();
 %>
 
 <div class="wrap">
@@ -32,15 +30,13 @@
     </div>
   </div>
 
-  <% if (powerFile) { %>
-    <div class="card" style="margin-top:20px;">
-      <img
-        src="/uploads/<%= powerFile %>?v=<%= powerVer %>"
-        alt="Renault Magnum truck hearse for funeral hire in the UK"
-        style="display:block; width:100%; max-width:100%; border-radius:16px;"
-      >
-    </div>
-  <% } %>
+ <div class="card" style="margin-top:20px;">
+  <img
+    src="/uploads/1773062041110-cba30c7e5df6.jpg"
+    alt="Renault Magnum truck hearse for funeral hire in the UK"
+    style="display:block; width:100%; max-width:100%; border-radius:16px;"
+  >
+</div>
 
   <div class="card" style="margin-top:20px;">
     <h2 class="section-title" style="color: var(--accent);">A specialist Renault Magnum truck hearse</h2>
