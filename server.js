@@ -38,7 +38,8 @@ import {
   addMedia,
   listMedia,
   getMedia,
-  deleteMedia
+  deleteMedia,
+  updateMediaCaption
 } from "./src/db.js";
 
 const app = express();
@@ -833,7 +834,7 @@ app.post("/admin/admins/:id/deactivate", requireAdmin, (req, res) => {
 // ======================================================
 // Admin: gallery management + uploads
 // ======================================================
-app.get("/admin/gallery", requireAdmin, (_req, res) => {
+app.get("/admin/gallery", requireAdmin, (req, res) => {
   const mediaAll = listMedia();
 
   // Current featured image (by media.id)
@@ -953,7 +954,7 @@ app.post("/admin/media/:id/caption", requireAdmin, (req, res) => {
       return res.redirect("/admin/gallery?err=Caption%20must%20be%20200%20characters%20or%20less");
     }
 
-    db.updateMediaCaption(id, caption);
+    updateMediaCaption(id, caption);
 
     return res.redirect("/admin/gallery?msg=Caption%20saved");
   } catch (e) {
