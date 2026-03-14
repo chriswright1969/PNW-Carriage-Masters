@@ -11,8 +11,8 @@
   const s = settings || {};
   const phoneRaw = String(s.phone || "").trim();
   const phoneTel = phoneRaw.replace(/\s+/g, "");
-  const gloryFile = String(s.home_truck_glory_img || "").trim();
-  const gloryVer  = String(s.home_truck_glory_ver || "").trim();
+  const erfFile = String(s.erf_ec12_img || "").trim();
+  const erfVer  = String(s.erf_ec12_ver || "").trim();
 %>
 
 <div class="wrap">
@@ -32,10 +32,10 @@
     </div>
   </div>
 
-  <% if (gloryFile) { %>
+  <% if (erfFile) { %>
     <div class="card" style="margin-top:20px;">
       <img
-        src="/uploads/<%= gloryFile %>?v=<%= gloryVer %>"
+        src="/uploads/<%= erfFile %>?v=<%= erfVer %>"
         alt="ERF EC12 lorry hearse for funeral hire in the UK"
         style="display:block; width:100%; max-width:100%; border-radius:16px;"
       >
