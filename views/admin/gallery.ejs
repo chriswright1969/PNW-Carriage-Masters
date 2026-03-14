@@ -8,6 +8,13 @@
   const _errorMsg = (typeof errorMsg !== "undefined" && errorMsg) ? errorMsg : null;
 %>
 
+<%
+  const _featuredId = Number((typeof featuredId !== "undefined" && featuredId) ? featuredId : 0);
+  const _message = (typeof message !== "undefined" && message) ? message : null;
+  const _errorMsg = (typeof errorMsg !== "undefined" && errorMsg) ? errorMsg : null;
+  const _renaultMagnumImg = String((settings && settings.renault_magnum_img) || "").trim();
+%>
+
 <div class="wrap">
   <div class="card">
     <h1 class="section-title">Manage gallery</h1>
@@ -44,6 +51,13 @@
           Clear first image
         </button>
       </form>
+      <form method="post" action="/admin/gallery/renault-magnum/clear"
+      onsubmit="return confirm('Clear the Renault Magnum page image?');"
+      style="margin:0">
+  <button class="btn" type="submit" <% if (!_renaultMagnumImg) { %>disabled<% } %>>
+    Clear Renault image
+  </button>
+</form>
     </div>
 
     <% if (!media || !media.length) { %>
@@ -93,6 +107,17 @@
                       <button class="btn" type="submit">Make first</button>
                     </form>
                   <% } %>
+                    <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+  <% if (_renaultMagnumImg && item.filename === _renaultMagnumImg) { %>
+    <span class="small" style="padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:rgba(215,180,106,0.10); color:var(--accent);">
+      Renault Magnum page image
+    </span>
+  <% } else { %>
+    <form method="post" action="/admin/gallery/renault-magnum/<%= item.id %>" style="margin:0">
+      <button class="btn" type="submit">Use for Renault Magnum page</button>
+    </form>
+  <% } %>
+</div>
                 </div>
               <% } %>
 
