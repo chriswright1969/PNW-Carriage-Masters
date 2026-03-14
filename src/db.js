@@ -166,15 +166,11 @@ export function deleteMedia(id) {
   db.prepare('DELETE FROM media WHERE id=?').run(id);
 }
 
+export function updateMediaCaption(id, caption) {
+  db.prepare('UPDATE media SET caption=? WHERE id=?')
+    .run(String(caption || '').trim(), Number(id));
+}
+
 export { DATA_DIR, DB_PATH };
 
-updateMediaCaption: (id, caption) =>
-  db
-    .prepare(
-      `
-      UPDATE media
-      SET caption = ?
-      WHERE id = ?
-    `
-    )
-    .run(String(caption || "").trim(), Number(id)),
+
