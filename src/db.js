@@ -76,7 +76,7 @@ setDefault('tagline', 'Alternative Hearse Hire');
 setDefault('phone', '07503 608944');
 setDefault('address', 'The Barn, Groesffordd, CH8 8LS');
 setDefault('coverage', 'North Wales, Chester, Wrexham, Shrewsbury, Liverpool, Wirral and Warrington');
-setDefault('forward_to_email', 'chris@chriswright.info');
+setDefault('forward_to_email', 'info@pnwuk.com');
 setDefault('map_link', 'https://www.google.com/maps?q=The%20Barn,%20Groesffordd,%20CH8%208LS');
 setDefault('what3words_link', 'https://what3words.com/');
 setDefault('facebook_link', '');
@@ -167,3 +167,14 @@ export function deleteMedia(id) {
 }
 
 export { DATA_DIR, DB_PATH };
+
+updateMediaCaption: (id, caption) =>
+  db
+    .prepare(
+      `
+      UPDATE media
+      SET caption = ?
+      WHERE id = ?
+    `
+    )
+    .run(String(caption || "").trim(), Number(id)),
