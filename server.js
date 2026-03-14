@@ -272,6 +272,10 @@ ensureSetting("home_truck_glory_ver", String(Date.now()));
 ensureSetting("renault_magnum_img", "");
 ensureSetting("renault_magnum_ver", String(Date.now()));
 
+// Setting default for erf ec12 image
+ensureSetting("erf_ec12_img", "");
+ensureSetting("erf_ec12_ver", String(Date.now()));
+
 // Settings available everywhere (must be AFTER session so we can read req.session)
 app.use((req, res, next) => {
   const settings = listSettings([
@@ -311,7 +315,11 @@ app.use((req, res, next) => {
 
     //Renualt Magnum image
     "renault_magnum_img",
-    "renault_magnum_ver"
+    "renault_magnum_ver",
+
+    //ERF EC12 image
+    "erf_ec12_img",
+    "erf_ec12_ver",
   ]);
 
   res.locals.settings = settings;
@@ -909,6 +917,28 @@ app.post("/admin/gallery/renault-magnum/clear", requireAdmin, (_req, res) => {
   setSetting("renault_magnum_img", "");
   setSetting("renault_magnum_ver", String(Date.now()));
   return res.redirect("/admin/gallery?msg=Renault%20Magnum%20page%20image%20cleared");
+});
+
+//Admin route to set ERF EC12 image
+app.post("/admin/gallery/erf-ec12/:id", requireAdmin, (req, res) => {
+  const id = Number(req.params.id || 0);
+  if (!id) return res.redirect("/admin/gallery?err=Invalid%20image");
+
+  const item = getMedia(id);
+  if (!item || String(item.type) !== "image") {
+    return res.redirect("/admin/gallery?err=That%20item%20is%20not%20an%20image");
+  }
+
+  setSetting("erf_ec12_img", item.filename);
+  setSetting("erf_ec12_ver", String(Date.now()));
+
+  return res.redirect("/admin/gallery?msg=ERF%20EC12%20page%20image%20updated");
+});
+
+app.post("/admin/gallery/erf-ec12/clear", requireAdmin, (_req, res) => {
+  setSetting("erf_ec12_img", "");
+  setSetting("erf_ec12_ver", String(Date.now()));
+  return res.redirect("/admin/gallery?msg=ERF%20EC12%20page%20image%20cleared");
 });
 
 // Uploads (admin only) - gallery media
