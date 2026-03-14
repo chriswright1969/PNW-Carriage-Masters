@@ -850,7 +850,13 @@ app.get("/admin/gallery", requireAdmin, (_req, res) => {
 
   const media = [...images, ...others];
 
-  res.render("admin/gallery", { title: "Manage Gallery", media, featuredId });
+  res.render("admin/gallery", {
+    title: "Manage Gallery",
+    media,
+    featuredId,
+    message: req.query.msg || null,
+    errorMsg: req.query.err || null,
+  });
 });
 
 // Set featured/first public gallery image (admin only)
