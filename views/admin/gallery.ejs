@@ -4,12 +4,22 @@
 <%
   // featuredId is passed from server.js (fallback safe)
   const _featuredId = Number((typeof featuredId !== "undefined" && featuredId) ? featuredId : 0);
+  const _message = (typeof message !== "undefined" && message) ? message : null;
+  const _errorMsg = (typeof errorMsg !== "undefined" && errorMsg) ? errorMsg : null;
 %>
 
 <div class="wrap">
   <div class="card">
     <h1 class="section-title">Manage gallery</h1>
-    <p class="muted">Upload new photos/videos, choose which photo shows first on the public gallery, and delete existing items.</p>
+    <p class="muted">Upload new photos/videos, edit captions, choose which photo shows first on the public gallery, and delete existing items.</p>
+
+    <% if (_message) { %>
+      <div class="notice ok" style="margin:0 0 16px"><%= _message %></div>
+    <% } %>
+
+    <% if (_errorMsg) { %>
+      <div class="notice bad" style="margin:0 0 16px"><%= _errorMsg %></div>
+    <% } %>
 
     <form action="/admin/upload" method="post" enctype="multipart/form-data" class="card" style="margin-bottom:16px">
       <h2 style="margin:0 0 10px">Upload</h2>
@@ -54,7 +64,23 @@
             <% } %>
 
             <div class="cap">
-              <div class="small muted"><%= item.caption || '(no caption)' %></div>
+              <form method="post" action="/admin/media/<%= item.id %>/caption" style="margin:0 0 10px">
+                <label for="caption-<%= item.id %>" class="small muted" style="display:block; margin-bottom:6px;">
+                  Caption
+                </label>
+
+                <input
+                  id="caption-<%= item.id %>"
+                  name="caption"
+                  type="text"
+                  maxlength="200"
+                  value="<%= item.caption || '' %>"
+                  placeholder="Enter caption"
+                  style="width:100%; margin-bottom:10px;"
+                >
+
+                <button class="btn" type="submit">Save</button>
+              </form>
 
               <% if (isImg) { %>
                 <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
