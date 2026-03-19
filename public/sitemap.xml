@@ -11,17 +11,17 @@
     <loc>https://www.truckhearse.co.uk/gallery</loc>
 
     <video:video>
-      <video:thumbnail_loc>https://www.truckhearse.co.uk/images/1773063068894-c678c01226fd-thumb.jpg</video:thumbnail_loc>
-      <video:title><![CDATA[Renault Magnum Truck Hearse Video | Alternative Hearse Hire UK]]></video:title>
-      <video:description><![CDATA[Watch our Renault Magnum truck hearse in action. A bespoke alternative hearse available for funeral hire across the UK, offering a personal and memorable final journey.]]></video:description>
-      <video:content_loc>https://www.truckhearse.co.uk/uploads/1773063068894-c678c01226fd.mp4</video:content_loc>
-    </video:video>
-
-    <video:video>
       <video:thumbnail_loc>https://www.truckhearse.co.uk/images/1773063489300-3b34ad870659-thumb.jpg</video:thumbnail_loc>
       <video:title><![CDATA[ERF EC12 Hearse Video | Lorry Hearse Hire for UK Funerals]]></video:title>
       <video:description><![CDATA[Video of our ERF EC12 hearse, a distinctive lorry hearse available for funeral directors and families seeking alternative hearse hire and specialist funeral transport in the UK.]]></video:description>
       <video:content_loc>https://www.truckhearse.co.uk/uploads/1773063489300-3b34ad870659.mp4</video:content_loc>
+    </video:video>
+
+        <video:video>
+      <video:thumbnail_loc>https://www.truckhearse.co.uk/images/1773063068894-c678c01226fd-thumb.jpg</video:thumbnail_loc>
+      <video:title><![CDATA[Renault Magnum Truck Hearse Video | Alternative Hearse Hire UK]]></video:title>
+      <video:description><![CDATA[Watch our Renault Magnum truck hearse in action. A bespoke alternative hearse available for funeral hire across the UK, offering a personal and memorable final journey.]]></video:description>
+      <video:content_loc>https://www.truckhearse.co.uk/uploads/1773063068894-c678c01226fd.mp4</video:content_loc>
     </video:video>
 
     <video:video>
