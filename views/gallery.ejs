@@ -6,15 +6,92 @@
 
   const isVideo = (it) => (it && String(it.type) === "video");
   const srcOf = (it) => it ? `/uploads/${it.filename}` : "";
+  const clean = (v) => String(v || "").trim();
+
+  // SEO text that matches your video sitemap
+  const videoMeta = {
+    "1773063068894-c678c01226fd.mp4": {
+      title: "Renault Magnum Truck Hearse Video",
+      description:
+        "Watch our Renault Magnum truck hearse in action. This bespoke alternative hearse is available for funeral hire across the UK and offers a personal, respectful and memorable final journey."
+    },
+    "1773063489300-3b34ad870659.mp4": {
+      title: "ERF EC12 Hearse Video",
+      description:
+        "This video shows our ERF EC12 hearse, a distinctive lorry hearse available for funeral directors and families seeking alternative hearse hire and specialist funeral transport in the UK."
+    },
+    "1773063202508-38b2b68e1d4d.mp4": {
+      title: "Truck Hearse Funeral Transport Video",
+      description:
+        "See our bespoke truck hearse providing unique funeral transport in the UK. This alternative hearse is ideal for families wanting a final journey that reflects a life connected with trucks, haulage or the road."
+    },
+    "1773062895067-c0dad5586606.mp4": {
+      title: "Alternative Hearse Hire Video",
+      description:
+        "This gallery video shows our custom truck hearse service for funerals across the UK. It is a professional alternative hearse hire option for a truly personal and dignified final journey."
+    },
+    "1773062773652-48134637eeef.mp4": {
+      title: "Lorry Hearse Hire UK Video",
+      description:
+        "Discover specialist lorry hearse hire in the UK, including our unique funeral vehicles designed for families and funeral directors looking for a distinctive alternative to a traditional hearse."
+    }
+  };
+
+  const metaOf = (it) => {
+    if (!it) {
+      return {
+        title: "",
+        description: "",
+        alt: "Gallery image"
+      };
+    }
+
+    const filename = clean(it.filename);
+
+    if (isVideo(it) && videoMeta[filename]) {
+      return {
+        title: videoMeta[filename].title,
+        description: videoMeta[filename].description,
+        alt: videoMeta[filename].title
+      };
+    }
+
+    const fallbackTitle =
+      clean(it.title) ||
+      clean(it.original_name) ||
+      (isVideo(it) ? "Truck hearse gallery video" : "Gallery image");
+
+    const fallbackDescription =
+      clean(it.caption) ||
+      clean(it.description) ||
+      "";
+
+    const fallbackAlt =
+      fallbackDescription || fallbackTitle || "Gallery image";
+
+    return {
+      title: fallbackTitle,
+      description: fallbackDescription,
+      alt: fallbackAlt
+    };
+  };
 
   // Prefer first IMAGE for the "main" display; fall back to first item
   const firstImage = items.find(it => it && String(it.type) === "image") || null;
   const first = firstImage || items[0] || null;
   const firstFilename = first ? String(first.filename) : "";
+  const firstMeta = metaOf(first);
 %>
 
 <div class="wrap gallery">
   <h1>Gallery</h1>
+
+  <div class="card" style="margin-bottom:16px;">
+    <p style="margin:0;">
+      Explore our truck hearse and alternative hearse hire gallery, including bespoke funeral transport available across the UK.
+      This gallery includes specialist vehicles such as the Renault Magnum hearse and ERF EC12 hearse, created for families who want a truly personal and memorable final journey.
+    </p>
+  </div>
 
   <% if (!items.length) { %>
     <div class="card"><div class="muted">No gallery items yet.</div></div>
@@ -26,8 +103,28 @@
           <source src="<%= srcOf(first) %>">
         </video>
       <% } else { %>
-        <img class="gallery-media" src="<%= srcOf(first) %>" alt="Gallery image">
+        <img
+          class="gallery-media"
+          src="<%= srcOf(first) %>"
+          alt="<%= firstMeta.alt %>"
+        >
       <% } %>
+    </div>
+
+    <div
+      class="card"
+      id="galleryMeta"
+      style="margin-top:16px;<%= (firstMeta.title || firstMeta.description) ? '' : 'display:none;' %>"
+    >
+      <h2
+        id="galleryTitle"
+        style="margin-top:0;<%= firstMeta.title ? '' : 'display:none;' %>"
+      ><%= firstMeta.title %></h2>
+
+      <p
+        id="galleryDescription"
+        style="margin-bottom:0;<%= firstMeta.description ? '' : 'display:none;' %>"
+      ><%= firstMeta.description %></p>
     </div>
 
     <div class="gallery-strip-wrap">
@@ -42,14 +139,19 @@
 
       <div class="gallery-strip-viewport">
         <div class="gallery-strip" id="galleryStrip">
-          <% items.forEach((it) => { %>
+          <% items.forEach((it) => {
+            const meta = metaOf(it);
+          %>
             <button
               type="button"
               class="gthumb <%= String(it.filename) === firstFilename ? 'active' : '' %>"
               data-type="<%= it.type %>"
               data-src="<%= srcOf(it) %>"
-              aria-label="<%= it.type === 'video' ? 'Open video' : 'Open image' %>"
-              title="<%= it.caption || it.original_name || it.filename %>"
+              data-title="<%= meta.title %>"
+              data-description="<%= meta.description %>"
+              data-alt="<%= meta.alt %>"
+              aria-label="<%= meta.title || (it.type === 'video' ? 'Open video' : 'Open image') %>"
+              title="<%= meta.title || meta.description || it.original_name || it.filename %>"
             >
               <% if (isVideo(it)) { %>
                 <video muted playsinline preload="metadata">
@@ -57,7 +159,7 @@
                 </video>
                 <span class="gthumb-badge">VIDEO</span>
               <% } else { %>
-                <img src="<%= srcOf(it) %>" alt="">
+                <img src="<%= srcOf(it) %>" alt="<%= meta.alt %>">
               <% } %>
             </button>
           <% }) %>
@@ -80,8 +182,11 @@
         const strip = document.getElementById("galleryStrip");
         const leftBtn = document.getElementById("galleryArrowLeft");
         const rightBtn = document.getElementById("galleryArrowRight");
+        const metaWrap = document.getElementById("galleryMeta");
+        const titleEl = document.getElementById("galleryTitle");
+        const descEl = document.getElementById("galleryDescription");
 
-        if (!main || !strip || !leftBtn || !rightBtn) return;
+        if (!main || !strip || !leftBtn || !rightBtn || !metaWrap || !titleEl || !descEl) return;
 
         function updateArrowState() {
           const maxScroll = strip.scrollWidth - strip.clientWidth;
@@ -99,6 +204,44 @@
           });
         }
 
+        function updateMeta(title, description) {
+          const hasTitle = !!(title && title.trim());
+          const hasDescription = !!(description && description.trim());
+
+          titleEl.textContent = hasTitle ? title : "";
+          descEl.textContent = hasDescription ? description : "";
+
+          titleEl.style.display = hasTitle ? "" : "none";
+          descEl.style.display = hasDescription ? "" : "none";
+          metaWrap.style.display = (hasTitle || hasDescription) ? "" : "none";
+        }
+
+        function renderSelected(type, src, altText, title, description) {
+          main.innerHTML = "";
+
+          if (type === "video") {
+            const video = document.createElement("video");
+            video.className = "gallery-media";
+            video.controls = true;
+            video.playsInline = true;
+            video.preload = "metadata";
+
+            const source = document.createElement("source");
+            source.src = src;
+
+            video.appendChild(source);
+            main.appendChild(video);
+          } else {
+            const img = document.createElement("img");
+            img.className = "gallery-media";
+            img.src = src;
+            img.alt = altText || title || "Gallery image";
+            main.appendChild(img);
+          }
+
+          updateMeta(title, description);
+        }
+
         leftBtn.addEventListener("click", function () {
           scrollStrip(-1);
         });
@@ -114,18 +257,13 @@
           strip.querySelectorAll(".gthumb").forEach(x => x.classList.remove("active"));
           btn.classList.add("active");
 
-          const type = btn.dataset.type;
-          const src = btn.dataset.src;
+          const type = btn.dataset.type || "";
+          const src = btn.dataset.src || "";
+          const title = btn.dataset.title || "";
+          const description = btn.dataset.description || "";
+          const alt = btn.dataset.alt || "";
 
-          if (type === "video") {
-            main.innerHTML =
-              '<video class="gallery-media" controls playsinline preload="metadata">' +
-              '<source src="' + src + '">' +
-              '</video>';
-          } else {
-            main.innerHTML =
-              '<img class="gallery-media" src="' + src + '" alt="Gallery image">';
-          }
+          renderSelected(type, src, alt, title, description);
         });
 
         strip.addEventListener("scroll", updateArrowState);
