@@ -1,30 +1,18 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# Usage:
-#   bash scripts/backup-uploads.sh
-#   bash scripts/backup-uploads.sh /var/data/uploads /var/data/backups
-#
-# Defaults:
-#   UPLOAD_DIR  -> first arg, else env UPLOAD_DIR, else /var/data/uploads
-#   BACKUP_DIR  -> second arg, else /var/data/backups
-#
-# What it does:
-#   - creates a dated .tar.gz archive of the uploads folder
-#   - stores it in BACKUP_DIR
-#   - writes a sha256 checksum alongside it when possible
-#   - prints a short summary at the end
-
 UPLOAD_DIR="${1:-${UPLOAD_DIR:-/var/data/uploads}}"
 BACKUP_DIR="${2:-/var/data/backups}"
 TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
 SERVICE_NAME="${RENDER_SERVICE_NAME:-site}"
 ARCHIVE_NAME="${SERVICE_NAME}-uploads-${TIMESTAMP}.tar.gz"
 ARCHIVE_PATH="${BACKUP_DIR}/${ARCHIVE_NAME}"
+KEEP_BACKUPS=3
 
 echo "Starting uploads backup..."
 echo "Uploads dir : ${UPLOAD_DIR}"
 echo "Backup dir  : ${BACKUP_DIR}"
+echo "Keep latest : ${KEEP_BACKUPS}"
 
 if [[ ! -d "${UPLOAD_DIR}" ]]; then
   echo "Error: uploads directory does not exist: ${UPLOAD_DIR}" >&2
@@ -62,3 +50,28 @@ echo "Source size     : ${DIR_SIZE}"
 echo "Archive size    : ${ARCHIVE_SIZE}"
 echo "Archive path    : ${ARCHIVE_PATH}"
 echo "${CHECKSUM_NOTE}"
+
+echo
+echo "Applying retention policy..."
+
+mapfile -t BACKUP_FILES < <(
+  find "${BACKUP_DIR}" -maxdepth 1 -type f -name "${SERVICE_NAME}-uploads-*.tar.gz" -printf '%T@ %p\n' \
+  | sort -nr \
+  | awk '{print $2}'
+)
+
+BACKUP_COUNT="${#BACKUP_FILES[@]}"
+
+if (( BACKUP_COUNT > KEEP_BACKUPS )); then
+  for OLD_BACKUP in "${BACKUP_FILES[@]:KEEP_BACKUPS}"; do
+    echo "Deleting old backup: ${OLD_BACKUP}"
+    rm -f "${OLD_BACKUP}"
+    rm -f "${OLD_BACKUP}.sha256"
+  done
+else
+  echo "No old backups to delete."
+fi
+
+echo "Retention complete."
+echo "Current backups:"
+ls -1t "${BACKUP_DIR}/${SERVICE_NAME}"-uploads-*.tar.gz 2>/dev/null || true
