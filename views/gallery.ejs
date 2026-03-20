@@ -11,7 +11,7 @@
   // SEO text that matches your video sitemap
   const videoMeta = {
     "1773063068894-c678c01226fd.mp4": {
-     title: "ERF EC12 Hearse Video",
+      title: "ERF EC12 Hearse Video",
       description:
         "This video shows our ERF EC12 hearse, a distinctive lorry hearse available for funeral directors and families seeking alternative hearse hire and specialist funeral transport in the UK."
     },
@@ -21,7 +21,7 @@
       description:
         "Watch our Renault Magnum truck hearse in action. This bespoke alternative hearse is available for funeral hire across the UK and offers a personal, respectful and memorable final journey."
     },
-     
+
     "1773063202508-38b2b68e1d4d.mp4": {
       title: "Truck Hearse Funeral Transport Video",
       description:
@@ -58,10 +58,10 @@
       };
     }
 
+    // Removed original_name / filename fallbacks so file names never appear publicly
     const fallbackTitle =
       clean(it.title) ||
-      clean(it.original_name) ||
-      (isVideo(it) ? "Truck hearse gallery video" : "Gallery image");
+      (isVideo(it) ? "Truck hearse gallery video" : "");
 
     const fallbackDescription =
       clean(it.caption) ||
@@ -69,7 +69,9 @@
       "";
 
     const fallbackAlt =
-      fallbackDescription || fallbackTitle || "Gallery image";
+      fallbackDescription ||
+      fallbackTitle ||
+      (isVideo(it) ? "Truck hearse gallery video" : "Gallery image");
 
     return {
       title: fallbackTitle,
@@ -153,7 +155,7 @@
               data-description="<%= meta.description %>"
               data-alt="<%= meta.alt %>"
               aria-label="<%= meta.title || (it.type === 'video' ? 'Open video' : 'Open image') %>"
-              title="<%= meta.title || meta.description || it.original_name || it.filename %>"
+              title="<%= meta.title || meta.description || (it.type === 'video' ? 'Open video' : 'Open image') %>"
             >
               <% if (isVideo(it)) { %>
                 <video muted playsinline preload="metadata">
