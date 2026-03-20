@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# Usage:
+#   bash scripts/backup-uploads.sh
+#   bash scripts/backup-uploads.sh /var/data/uploads /var/data/backups
+#
+# Defaults:
+#   UPLOAD_DIR  -> first arg, else env UPLOAD_DIR, else /var/data/uploads
+#   BACKUP_DIR  -> second arg, else /var/data/backups
+#
+# What it does:
+#   - creates a dated .tar.gz archive of the uploads folder
+#   - stores it in BACKUP_DIR
+#   - writes a sha256 checksum alongside it when possible
+#   - prints a short summary at the end
+
+UPLOAD_DIR="${1:-${UPLOAD_DIR:-/var/data/uploads}}"
+BACKUP_DIR="${2:-/var/data/backups}"
+TIMESTAMP="$(date +"%Y-%m-%d_%H-%M-%S")"
+SERVICE_NAME="${RENDER_SERVICE_NAME:-site}"
+ARCHIVE_NAME="${SERVICE_NAME}-uploads-${TIMESTAMP}.tar.gz"
+ARCHIVE_PATH="${BACKUP_DIR}/${ARCHIVE_NAME}"
+
+echo "Starting uploads backup..."
+echo "Uploads dir : ${UPLOAD_DIR}"
+echo "Backup dir  : ${BACKUP_DIR}"
+
+if [[ ! -d "${UPLOAD_DIR}" ]]; then
+  echo "Error: uploads directory does not exist: ${UPLOAD_DIR}" >&2
+  exit 1
+fi
+
+if [[ ! -r "${UPLOAD_DIR}" ]]; then
+  echo "Error: uploads directory is not readable: ${UPLOAD_DIR}" >&2
+  exit 1
+fi
+
+mkdir -p "${BACKUP_DIR}"
+
+FILE_COUNT="$(find "${UPLOAD_DIR}" -type f | wc -l | tr -d ' ')"
+DIR_SIZE="$(du -sh "${UPLOAD_DIR}" | awk '{print $1}')"
+
+PARENT_DIR="$(dirname "${UPLOAD_DIR}")"
+BASE_DIR="$(basename "${UPLOAD_DIR}")"
+
+tar -czf "${ARCHIVE_PATH}" -C "${PARENT_DIR}" "${BASE_DIR}"
+
+if command -v sha256sum >/dev/null 2>&1; then
+  sha256sum "${ARCHIVE_PATH}" > "${ARCHIVE_PATH}.sha256"
+  CHECKSUM_NOTE="Checksum written: ${ARCHIVE_PATH}.sha256"
+else
+  CHECKSUM_NOTE="sha256sum not available; checksum file not created."
+fi
+
+ARCHIVE_SIZE="$(du -sh "${ARCHIVE_PATH}" | awk '{print $1}')"
+
+echo
+echo "Backup complete."
+echo "Files backed up : ${FILE_COUNT}"
+echo "Source size     : ${DIR_SIZE}"
+echo "Archive size    : ${ARCHIVE_SIZE}"
+echo "Archive path    : ${ARCHIVE_PATH}"
+echo "${CHECKSUM_NOTE}"
