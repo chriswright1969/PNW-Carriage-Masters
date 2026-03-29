@@ -8,8 +8,9 @@
 
 <%
   const s = settings || {};
-  const heroFile = s.hero_video_current || "";
-  const heroVer  = s.hero_video_version || "";
+  const heroFile = String(s.hero_video_current || "").trim();
+  const heroVer  = String(s.hero_video_version || "").trim();
+
   const phoneRaw = String(s.phone || "").trim();
   const phoneTel = phoneRaw.replace(/\s+/g, "");
 
@@ -17,6 +18,13 @@
   const gloryFile = String(s.home_truck_glory_img || "").trim();
   const powerVer  = String(s.home_truck_power_ver || "").trim();
   const gloryVer  = String(s.home_truck_glory_ver || "").trim();
+
+  // Keep admin control of the first paragraph only
+  const rawContent = String(contentHtml || "").trim();
+  const firstParagraphMatch = rawContent.match(/<p\b[^>]*>[\s\S]*?<\/p>/i);
+  const introHtml = firstParagraphMatch
+    ? firstParagraphMatch[0]
+    : (rawContent ? `<p>${rawContent}</p>` : '<p>Bespoke truck hearse and lorry hearse hire across the UK, exclusive for the funeral profession.</p>');
 %>
 
 <div class="wrap home">
@@ -35,37 +43,37 @@
 
         <div class="hero-truck-grid">
           <figure class="hero-truck-card">
-            <a href="/gallery" class="hero-truck-link">
+            <a href="/renault-magnum-hearse" class="hero-truck-link">
               <% if (powerFile) { %>
                 <img
                   src="/uploads/<%= powerFile %>?v=<%= powerVer %>"
-                  alt="Renault Magnum truck hearse available for funeral hire in the UK"
+                  alt="Renault Magnum truck hearse available for funeral hire across the UK"
                 >
               <% } else { %>
                 <div class="hero-truck-fallback">
                   <div class="muted">Image placeholder</div>
-                  <div class="hero-truck-name">Renault Magnum Lorry Hearse</div>
+                  <div class="hero-truck-name">Renault Magnum Truck Hearse</div>
                 </div>
               <% } %>
             </a>
-            <figcaption>Renault Magnum</br>Lorry Hearse</figcaption>
+            <figcaption>Renault Magnum<br>Truck Hearse</figcaption>
           </figure>
 
           <figure class="hero-truck-card">
-            <a href="/gallery" class="hero-truck-link">
+            <a href="/erf-ec12-hearse" class="hero-truck-link">
               <% if (gloryFile) { %>
                 <img
                   src="/uploads/<%= gloryFile %>?v=<%= gloryVer %>"
-                  alt="ERF EC12 lorry hearse available for bespoke funeral transport in the UK"
+                  alt="ERF EC12 lorry hearse available for bespoke funeral transport across the UK"
                 >
               <% } else { %>
                 <div class="hero-truck-fallback">
                   <div class="muted">Image placeholder</div>
-                  <div class="hero-truck-name">ERF EC12 Truck Hearse</div>
+                  <div class="hero-truck-name">ERF EC12 Lorry Hearse</div>
                 </div>
               <% } %>
             </a>
-            <figcaption>ERF EC12</br>Truck Hearse</figcaption>
+            <figcaption>ERF EC12<br>Lorry Hearse</figcaption>
           </figure>
         </div>
       </div>
@@ -75,20 +83,147 @@
       <h1><%= pageTitle %></h1>
 
       <div class="cta">
-        <a class="btn" href="/gallery">Photo gallery</a>
         <a class="btn" href="/contact">Enquire</a>
+        <a class="btn" href="/gallery">Photo gallery</a>
         <% if (phoneTel) { %>
           <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
         <% } %>
       </div>
 
-      <div class="rich"><%- contentHtml %></div>
+      <div class="rich"><%- introHtml %></div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h2 style="margin-top:0">Specialist alternative funeral transport</h2>
+    <p>
+      PNW Carriage Masters provides bespoke truck hearse and lorry hearse hire across the UK mainland,
+      offering funeral directors and families a distinctive alternative to a traditional hearse.
+      For people connected to haulage, transport, engineering, plant, recovery, logistics or road life,
+      a specialist truck hearse can make the final journey feel more personal, fitting and memorable.
+    </p>
+    <p style="margin-bottom:0">
+      Our vehicles are supplied exclusively for the funeral profession and are intended to complement the
+      care, dignity and professionalism of the funeral director leading the day.
+    </p>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h2 style="margin-top:0">Choose the right vehicle</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+      <div>
+        <h3 style="margin-bottom:8px">Renault Magnum Truck Hearse</h3>
+        <p>
+          A distinctive modern truck hearse that creates a powerful and memorable tribute for someone whose
+          life was closely connected to the road, haulage or transport.
+        </p>
+        <p style="margin-bottom:0">
+          <a class="btn" href="/renault-magnum-hearse">View Renault Magnum</a>
+        </p>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom:8px">ERF EC12 Lorry Hearse</h3>
+        <p>
+          A striking ERF lorry hearse with strong links to traditional British trucking, well suited to
+          families wanting a final journey that reflects a working life in heavy vehicles or logistics.
+        </p>
+        <p style="margin-bottom:0">
+          <a class="btn" href="/erf-ec12-hearse">View ERF EC12</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h2 style="margin-top:0">Why families choose a truck hearse</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px">
+      <div>
+        <h3 style="margin-bottom:8px">A more personal final journey</h3>
+        <p>
+          A truck hearse can reflect a lifetime spent in haulage, transport or engineering far more naturally
+          than a standard funeral vehicle.
+        </p>
+      </div>
+      <div>
+        <h3 style="margin-bottom:8px">A fitting tribute</h3>
+        <p>
+          For many families, choosing a lorry hearse is not about being unusual. It is about making the
+          funeral feel right for the person being remembered.
+        </p>
+      </div>
+      <div>
+        <h3 style="margin-bottom:8px">Professional and respectful</h3>
+        <p>
+          Our service is designed to work alongside funeral directors so that the tribute remains dignified,
+          well organised and appropriate to the occasion.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h2 style="margin-top:0">How bookings work with funeral directors</h2>
+    <ol style="padding-left:20px;margin-bottom:0">
+      <li style="margin-bottom:10px">
+        The funeral director contacts us with the service date, general location and preferred vehicle.
+      </li>
+      <li style="margin-bottom:10px">
+        We confirm availability, discuss practical arrangements and help make sure the specialist vehicle fits
+        the plan for the day.
+      </li>
+      <li>
+        The truck hearse is supplied as part of the funeral arrangements, helping create a respectful and
+        memorable final journey.
+      </li>
+    </ol>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h2 style="margin-top:0">Areas we regularly cover</h2>
+    <p>
+      We are based near Chester, close to North Wales and North West England, and offer truck hearse and
+      lorry hearse hire across the UK mainland. Whether the requirement is local or long-distance,
+      availability depends on the date, the location and the vehicle requested.
+    </p>
+    <p style="margin-bottom:0">
+      For the most accurate advice, please contact us directly through your funeral director or by using our
+      enquiry details.
+    </p>
+  </section>
+
+  <section class="card" style="margin-top:18px">
+    <h2 style="margin-top:0">Explore more</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+      <div>
+        <h3 style="margin-bottom:8px">Lorry Hearse Hire UK</h3>
+        <p>Find out more about UK-wide availability and why families choose a specialist lorry hearse.</p>
+        <p style="margin-bottom:0"><a class="btn" href="/lorry-hearse-hire-uk">Read more</a></p>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom:8px">Truck Hearse vs Traditional Hearse</h3>
+        <p>Compare a truck hearse with a traditional hearse and see which may be the better fit.</p>
+        <p style="margin-bottom:0"><a class="btn" href="/truck-hearse-vs-traditional-hearse">Compare options</a></p>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom:8px">Frequently Asked Questions</h3>
+        <p>Answers to common questions about bookings, availability, coverage and specialist funeral transport.</p>
+        <p style="margin-bottom:0"><a class="btn" href="/faq">View FAQ</a></p>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom:8px">Case Studies</h3>
+        <p>See examples and updates showing how truck hearses can create a more personal final journey.</p>
+        <p style="margin-bottom:0"><a class="btn" href="/case-studies">View case studies</a></p>
+      </div>
     </div>
   </section>
 
   <% if (thumbs && thumbs.length) { %>
-    <section class="thumbs">
-      <h2>Our truck hearses</h2>
+    <section class="thumbs" style="margin-top:18px">
+      <h2>Gallery highlights</h2>
       <div class="thumb-grid">
         <% thumbs.forEach(fn => { %>
           <a class="thumb" href="/gallery" title="Open gallery">
@@ -100,7 +235,7 @@
   <% } %>
 
   <% if (montage && montage.length) { %>
-    <section class="montage">
+    <section class="montage" style="margin-top:18px">
       <div class="marquee">
         <div class="marquee-track">
           <% montage.concat(montage).forEach(fn => { %>
@@ -110,6 +245,22 @@
       </div>
     </section>
   <% } %>
+
+  <section class="card" style="margin-top:18px;margin-bottom:8px">
+    <h2 style="margin-top:0">Enquire about availability</h2>
+    <p>
+      For availability, coverage and vehicle options, please contact us direct.
+      We are happy to discuss suitable arrangements for funeral directors seeking a specialist truck hearse
+      or lorry hearse anywhere across the UK mainland.
+    </p>
+    <div class="cta">
+      <a class="btn" href="/contact">Contact us</a>
+      <a class="btn" href="/gallery">View gallery</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
+    </div>
+  </section>
 </div>
 
 <script>
