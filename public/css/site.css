@@ -1,12 +1,4 @@
-/* =========================
-   PNW Carriage Masters — site.css (rewritten)
-   Key changes for HOME truck tiles:
-   - Truck images show FULLY (no cropping): object-fit: contain + padding + dark backdrop
-   - Two tiles are equal width, with a clear gap, and centered under the hero video
-   - Removed the conflicting “HOME HERO FIX” overrides at the bottom (they were fighting each other)
-========================= */
 
-/* ---------- Design tokens ---------- */
 :root{
   --bg:#0b0f14;
   --panel:#101824;
@@ -533,4 +525,34 @@ table th,.table th{color:var(--muted);font-weight:600}
   border:1px solid var(--border);
   background:rgba(0,0,0,0.55);
   color:var(--text);
+}
+/* ---------- Case Studies ---------- */
+.case-study-gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:14px;
+  margin-top:16px;
+}
+
+.case-study-photo{
+  margin:0;
+}
+
+.case-study-photo a{
+  display:block;
+  text-decoration:none;
+}
+
+.case-study-photo img{
+  display:block;
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:#111;
+}
+
+.case-study-photo img:hover{
+  opacity:.96;
 }
