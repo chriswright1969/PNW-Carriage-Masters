@@ -87,7 +87,8 @@ setDefault('youtube_link', '');
 ensurePage(
   'home',
   'Welcome',
-  `PNW Carriage Masters provides respectful, professional alternative hearse hire across {coverage}.\n\nWe lease a bespoke truck hearse, a classic black Rolls‑Royce hearse and limousine, and a classic white Daimler hearse and limousine.\n\nWe understand every farewell is unique. Our vehicles are prepared with care, presented immaculately, and operated discreetly in support of your family and funeral director.`
+  `PNW Carriage Masters provides respectful, professional alternative hearse hire across {coverage}.\n\nWe lease bespoke truck / lorry hearses.\n\nWe understand every farewell is unique. 
+    Our vehicles are prepared with care, presented immaculately, and operated discreetly in support of your family and funeral director.`
 );
 
 ensurePage(
