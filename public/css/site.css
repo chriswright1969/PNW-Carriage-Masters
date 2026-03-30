@@ -596,6 +596,11 @@ table th,
 }
 
 /* ---------- Gallery intro / link cards ---------- */
+.gallery-meta-title,
+.gallery-card-title{
+  margin-top:0;
+}
+
 .gallery-intro-card p + p{
   margin-top:12px;
 }
