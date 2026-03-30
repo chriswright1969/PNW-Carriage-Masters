@@ -1,4 +1,9 @@
-<%- include('partials/head', { title }) %>
+<%- include('partials/head', {
+  title,
+  metaTitle: 'Truck Hearse Gallery | Renault Magnum & ERF EC12 Funeral Hire',
+  metaDescription: 'Explore our truck hearse gallery including the Renault Magnum and ERF EC12. View specialist funeral transport images and videos available across the UK.',
+  canonicalPath: '/gallery'
+}) %>
 <%- include('partials/header') %>
 
 <%
@@ -8,7 +13,7 @@
   const srcOf = (it) => it ? `/uploads/${it.filename}` : "";
   const clean = (v) => String(v || "").trim();
 
-  // SEO text that matches your video sitemap
+  // SEO text for known videos
   const videoMeta = {
     "1773063068894-c678c01226fd.mp4": {
       title: "ERF EC12 Hearse Video",
@@ -27,11 +32,13 @@
       description:
         "See our bespoke truck hearse providing unique funeral transport in the UK. This alternative hearse is ideal for families wanting a final journey that reflects a life connected with trucks, haulage or the road."
     },
+
     "1773062895067-c0dad5586606.mp4": {
       title: "Alternative Hearse Hire Video",
       description:
         "This gallery video shows our custom truck hearse service for funerals across the UK. It is a professional alternative hearse hire option for a truly personal and dignified final journey."
     },
+
     "1773062773652-48134637eeef.mp4": {
       title: "Lorry Hearse Hire UK Video",
       description:
@@ -39,12 +46,42 @@
     }
   };
 
+  const inferImageMeta = (it) => {
+    const filename = clean(it && it.filename);
+    const lower = filename.toLowerCase();
+
+    if (lower.includes("renault")) {
+      return {
+        title: "Renault Magnum Truck Hearse",
+        description:
+          "Gallery image of our Renault Magnum truck hearse, available for specialist funeral hire across the UK.",
+        alt: "Renault Magnum truck hearse available for funeral hire across the UK"
+      };
+    }
+
+    if (lower.includes("erf")) {
+      return {
+        title: "ERF EC12 Lorry Hearse",
+        description:
+          "Gallery image of our ERF EC12 lorry hearse, available for bespoke funeral transport across the UK.",
+        alt: "ERF EC12 lorry hearse available for bespoke funeral transport across the UK"
+      };
+    }
+
+    return {
+      title: "Truck Hearse Gallery Image",
+      description:
+        "Gallery image showing one of our specialist truck hearses available for funeral hire across the UK.",
+      alt: "Truck hearse gallery image from PNW Carriage Masters"
+    };
+  };
+
   const metaOf = (it) => {
     if (!it) {
       return {
         title: "",
         description: "",
-        alt: "Gallery image"
+        alt: "Truck hearse gallery image from PNW Carriage Masters"
       };
     }
 
@@ -58,20 +95,21 @@
       };
     }
 
-    // Removed original_name / filename fallbacks so file names never appear publicly
+    const inferred = inferImageMeta(it);
+
     const fallbackTitle =
       clean(it.title) ||
-      (isVideo(it) ? "Truck hearse gallery video" : "");
+      (isVideo(it) ? "Truck hearse gallery video" : inferred.title);
 
     const fallbackDescription =
       clean(it.caption) ||
       clean(it.description) ||
-      "";
+      inferred.description;
 
     const fallbackAlt =
       fallbackDescription ||
       fallbackTitle ||
-      (isVideo(it) ? "Truck hearse gallery video" : "Gallery image");
+      inferred.alt;
 
     return {
       title: fallbackTitle,
@@ -88,13 +126,52 @@
 %>
 
 <div class="wrap gallery">
-  <h1>Gallery</h1>
+  <h1>Truck Hearse Gallery</h1>
 
-  <div class="card" style="margin-bottom:16px;">
-    <p style="margin:0;">
-      Explore our truck hearse and alternative hearse hire gallery, including bespoke funeral transport available across the UK.
-      This gallery includes specialist vehicles such as the Renault Magnum hearse and ERF EC12 hearse, created for families who want a truly personal and memorable final journey.
+  <div class="card gallery-intro-card" style="margin-bottom:16px;">
+    <p style="margin:0 0 12px;">
+      Explore our truck hearse and lorry hearse gallery, including specialist funeral transport available across the UK.
+      This page includes images and videos of our bespoke vehicles, including the Renault Magnum truck hearse and ERF EC12 lorry hearse,
+      created for funeral directors and families seeking a more personal and memorable final journey.
     </p>
+    <p style="margin:0;">
+      For many families, a truck hearse is chosen because it reflects a lifetime connected to haulage, transport, engineering or the road.
+      Our gallery shows how these specialist vehicles can provide a dignified and fitting tribute.
+    </p>
+  </div>
+
+  <div class="gallery-links-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:16px;">
+    <div class="card">
+      <h2 style="margin-top:0;">Renault Magnum</h2>
+      <p style="margin-bottom:14px;">
+        Learn more about our Renault Magnum truck hearse and why it is chosen for distinctive, personal funerals.
+      </p>
+      <a class="btn" href="/renault-magnum-hearse">View Renault Magnum</a>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">ERF EC12</h2>
+      <p style="margin-bottom:14px;">
+        Explore our ERF EC12 lorry hearse, a striking specialist vehicle for a final journey connected to the road.
+      </p>
+      <a class="btn" href="/erf-ec12-hearse">View ERF EC12</a>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Case Studies</h2>
+      <p style="margin-bottom:14px;">
+        Read recent field updates and completed service examples showing our hearses out on real funeral work.
+      </p>
+      <a class="btn" href="/case-studies">View case studies</a>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Need availability?</h2>
+      <p style="margin-bottom:14px;">
+        Contact us directly for availability, vehicle options and UK coverage for upcoming funeral requirements.
+      </p>
+      <a class="btn" href="/contact">Contact us</a>
+    </div>
   </div>
 
   <% if (!items.length) { %>
@@ -239,7 +316,7 @@
             const img = document.createElement("img");
             img.className = "gallery-media";
             img.src = src;
-            img.alt = altText || title || "Gallery image";
+            img.alt = altText || title || "Truck hearse gallery image";
             main.appendChild(img);
           }
 
@@ -276,6 +353,44 @@
         updateArrowState();
       })();
     </script>
+
+    <div class="card" style="margin-top:18px;">
+      <h2 style="margin-top:0;">Our specialist hearse vehicles</h2>
+      <p>
+        This gallery includes our Renault Magnum truck hearse and ERF EC12 lorry hearse, both available for specialist funeral transport across the UK mainland.
+        These vehicles are often chosen for funerals where the final journey should reflect a life connected to haulage, recovery, transport, engineering or road life.
+      </p>
+      <p style="margin-bottom:0;">
+        For more information, you can also visit our
+        <a href="/renault-magnum-hearse">Renault Magnum page</a>,
+        <a href="/erf-ec12-hearse">ERF EC12 page</a>,
+        <a href="/lorry-hearse-hire-uk">Lorry hearse hire UK page</a>
+        and our <a href="/truck-hearse-vs-traditional-hearse">truck hearse vs traditional hearse guide</a>.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h2 style="margin-top:0;">Explore more</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+        <div>
+          <h3 style="margin-bottom:8px;">Case Studies</h3>
+          <p>Read recent updates showing our hearses out in the field on real funeral work.</p>
+          <p style="margin-bottom:0;"><a class="btn" href="/case-studies">View case studies</a></p>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:8px;">Frequently Asked Questions</h3>
+          <p>Find answers about coverage, bookings, vehicle choice and funeral director arrangements.</p>
+          <p style="margin-bottom:0;"><a class="btn" href="/faq">View FAQ</a></p>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom:8px;">Contact Us</h3>
+          <p>Need availability, pricing guidance or help choosing the most suitable specialist vehicle?</p>
+          <p style="margin-bottom:0;"><a class="btn" href="/contact">Enquire</a></p>
+        </div>
+      </div>
+    </div>
 
   <% } %>
 </div>
