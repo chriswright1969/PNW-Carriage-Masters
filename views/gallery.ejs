@@ -193,59 +193,71 @@
     </div>
 
     <div
-      class="card"
-      id="galleryMeta"
-      style="margin-top:16px;<%= (firstMeta.title || firstMeta.description) ? '' : 'display:none;' %>"
-    >
-      <h2
-        id="galleryTitle"
-        style="margin-top:0;<%= firstMeta.title ? '' : 'display:none;' %>"
-      ><%= firstMeta.title %></h2>
+  class="card gallery-section-card"
+  id="galleryMeta"
+  style="<%= (firstMeta.title || firstMeta.description) ? '' : 'display:none;' %>"
+>
+  <h2
+    id="galleryTitle"
+    class="gallery-meta-title"
+    style="<%= firstMeta.title ? '' : 'display:none;' %>"
+  ><%= firstMeta.title %></h2>
 
-      <p
-        id="galleryDescription"
-        style="margin-bottom:0;<%= firstMeta.description ? '' : 'display:none;' %>"
-      ><%= firstMeta.description %></p>
+  <p
+    id="galleryDescription"
+    class="gallery-meta-description"
+    style="<%= firstMeta.description ? '' : 'display:none;' %>"
+  ><%= firstMeta.description %></p>
+</div>
+
+<div class="gallery-strip-wrap">
+  <button
+    type="button"
+    class="gallery-arrow gallery-arrow-left"
+    id="galleryArrowLeft"
+    aria-label="Previous thumbnails"
+  >
+    &#10094;
+  </button>
+
+  <div class="gallery-strip-viewport">
+    <div class="gallery-strip" id="galleryStrip">
+      <% items.forEach((it) => {
+        const meta = metaOf(it);
+      %>
+        <button
+          type="button"
+          class="gthumb <%= String(it.filename) === firstFilename ? 'active' : '' %>"
+          data-type="<%= it.type %>"
+          data-src="<%= srcOf(it) %>"
+          data-title="<%= meta.title %>"
+          data-description="<%= meta.description %>"
+          data-alt="<%= meta.alt %>"
+          aria-label="<%= meta.title || (it.type === 'video' ? 'Open video' : 'Open image') %>"
+          title="<%= meta.title || meta.description || (it.type === 'video' ? 'Open video' : 'Open image') %>"
+        >
+          <% if (isVideo(it)) { %>
+            <video muted playsinline preload="metadata">
+              <source src="<%= srcOf(it) %>">
+            </video>
+            <span class="gthumb-badge">VIDEO</span>
+          <% } else { %>
+            <img src="<%= srcOf(it) %>" alt="<%= meta.alt %>">
+          <% } %>
+        </button>
+      <% }) %>
     </div>
+  </div>
 
-    <div class="gallery-strip-wrap">
-      <button
-        type="button"
-        class="gallery-arrow gallery-arrow-left"
-        id="galleryArrowLeft"
-        aria-label="Previous thumbnails"
-      >
-        &#10094;
-      </button>
-
-      <div class="gallery-strip-viewport">
-        <div class="gallery-strip" id="galleryStrip">
-          <% items.forEach((it) => {
-            const meta = metaOf(it);
-          %>
-            <button
-              type="button"
-              class="gthumb <%= String(it.filename) === firstFilename ? 'active' : '' %>"
-              data-type="<%= it.type %>"
-              data-src="<%= srcOf(it) %>"
-              data-title="<%= meta.title %>"
-              data-description="<%= meta.description %>"
-              data-alt="<%= meta.alt %>"
-              aria-label="<%= meta.title || (it.type === 'video' ? 'Open video' : 'Open image') %>"
-              title="<%= meta.title || meta.description || (it.type === 'video' ? 'Open video' : 'Open image') %>"
-            >
-              <% if (isVideo(it)) { %>
-                <video muted playsinline preload="metadata">
-                  <source src="<%= srcOf(it) %>">
-                </video>
-                <span class="gthumb-badge">VIDEO</span>
-              <% } else { %>
-                <img src="<%= srcOf(it) %>" alt="<%= meta.alt %>">
-              <% } %>
-            </button>
-          <% }) %>
-        </div>
-      </div>
+  <button
+    type="button"
+    class="gallery-arrow gallery-arrow-right"
+    id="galleryArrowRight"
+    aria-label="Next thumbnails"
+  >
+    &#10095;
+  </button>
+</div>
 
       <button
         type="button"
