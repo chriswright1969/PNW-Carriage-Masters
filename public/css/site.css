@@ -701,6 +701,10 @@ table th,
   }
 }
 
+.gallery-section-title{
+  margin-top:0;
+}
+
 /* ---------- Case Studies ---------- */
 .case-studies-list{
   display:grid;
