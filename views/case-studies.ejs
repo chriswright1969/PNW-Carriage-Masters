@@ -15,6 +15,7 @@
   const caseStudies = [
     {
       title: "Baguley, Manchester",
+      date: "26 March 2026",
       vehicle: "ERF EC12 Truck Hearse",
       textHtml: `
         <p>
@@ -31,6 +32,7 @@
     },
     {
       title: "Rushden,Northamptonshire",
+      date: "13 March 2026",
       vehicle: "ERF EC12 Truck Hearse",
       textHtml: `
         <p>
@@ -46,6 +48,7 @@
     },
     {
       title: "Selston, Nottingham",
+      date: "8 March 2026",
       vehicle: "ERF EC12 Truck Hearse",
       textHtml: `
         <p>
@@ -60,6 +63,7 @@
     },
     {
       title: "Doncaster",
+      date: "28 March 2026",
       vehicle: "ERF EC12 Truck Hearse",
       textHtml: `
         <p>
@@ -98,6 +102,12 @@
     <% caseStudies.forEach(study => { %>
       <article class="card case-study">
         <h2 class="section-title case-study-title"><%= study.title %></h2>
+
+        <% if (study.date) { %>
+          <p class="small muted case-study-meta" style="margin:0 0 4px;">
+            Date: <%= study.date %>
+          </p>
+        <% } %>
 
         <% if (study.vehicle) { %>
           <p class="small muted case-study-meta">
