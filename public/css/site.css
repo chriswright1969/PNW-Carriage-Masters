@@ -627,6 +627,80 @@ table th,
   }
 }
 
+/* ---------- Gallery intro / link cards ---------- */
+.gallery-intro-card{
+  margin-bottom:16px;
+}
+
+.gallery-intro-card p{
+  margin:0;
+}
+
+.gallery-intro-card p + p{
+  margin-top:12px;
+}
+
+.gallery-links-grid,
+.gallery-info-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:16px;
+}
+
+.gallery-links-grid{
+  margin-bottom:16px;
+}
+
+.gallery-section-card{
+  margin-top:18px;
+}
+
+.gallery-links-grid .card,
+.gallery-info-grid > div{
+  min-width:0;
+}
+
+.gallery-links-grid .card{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+}
+
+.gallery-links-grid .card h2,
+.gallery-info-grid h3{
+  margin-top:0;
+}
+
+.gallery-links-grid .card p,
+.gallery-info-grid p{
+  margin-top:0;
+}
+
+.gallery-links-grid .card p{
+  flex:1 1 auto;
+  margin-bottom:14px;
+}
+
+.gallery-info-grid h3{
+  margin-bottom:8px;
+}
+
+.gallery-info-grid p:last-child{
+  margin-bottom:0;
+}
+
+.gallery-links-grid .btn,
+.gallery-info-grid .btn{
+  align-self:flex-start;
+}
+
+@media (max-width:640px){
+  .gallery-links-grid,
+  .gallery-info-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 /* ---------- Case Studies ---------- */
 .case-studies-list{
   display:grid;
