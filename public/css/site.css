@@ -595,6 +595,38 @@ table th,
   color:var(--text);
 }
 
+/* ---------- Gallery intro / link cards ---------- */
+.gallery-intro-card p + p{
+  margin-top:12px;
+}
+
+.gallery-links-grid .card,
+.gallery .card h2,
+.gallery .card h3{
+  word-wrap:break-word;
+}
+
+.gallery-links-grid .card{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+}
+
+.gallery-links-grid .card p{
+  flex:1 1 auto;
+  margin-bottom:14px;
+}
+
+.gallery-links-grid .btn{
+  align-self:flex-start;
+}
+
+@media (max-width:640px){
+  .gallery-links-grid{
+    grid-template-columns:1fr !important;
+  }
+}
+
 /* ---------- Case Studies ---------- */
 .case-studies-list{
   display:grid;
