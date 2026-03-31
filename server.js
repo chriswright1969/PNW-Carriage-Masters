@@ -633,6 +633,18 @@ app.get("/case-studies", (req, res) => {
     return res.status(500).send("Internal Server Error (case-studies)");
   }
 });
+
+app.get("/about", (req, res) => {
+  try {
+    return res.render("about", {
+      title: "About PNW Carriage Masters | Our Story"
+    });
+  } catch (e) {
+    console.error("about GET failed:", e);
+    return res.status(500).send("Internal Server Error (about)");
+  }
+});
+
 // ======================================================
 // Admin auth
 // ======================================================
