@@ -1,10 +1,5 @@
 <!doctype html>
 <html lang="en-GB">
-
-<% if (typeof structuredData !== "undefined" && structuredData) { %>
-  <script type="application/ld+json"><%- JSON.stringify(structuredData) %></script>
-<% } %>
-
 <head>
   <%
     const siteName = "PNW Carriage Masters";
@@ -30,85 +25,124 @@
       ? `${siteUrl}${String(canonicalPath).trim()}`
       : "";
 
-    /*
-      Safe behaviour:
-      - If a page passes metaRobots, use it.
-      - Else, if a canonicalPath is provided, assume it is a public SEO page and allow indexing.
-      - Else output no robots tag at all, so existing admin/shared pages are not changed unexpectedly.
-    */
     const robotsContent =
       (typeof metaRobots !== "undefined" && metaRobots)
         ? String(metaRobots).trim()
         : (hasCanonical ? "index,follow" : "");
 
-    /*
-      Only emit structured data for the homepage by default.
-      This avoids changing admin pages or other shared pages unexpectedly.
-    */
     const isHomePage = canonicalUrl === `${siteUrl}/`;
 
-    const phoneValue =
-      (typeof settings !== "undefined" && settings && settings.phone)
-        ? String(settings.phone).trim()
-        : "";
+    const settingsSafe = (typeof settings !== "undefined" && settings) ? settings : {};
 
-      // Socials public profile URLs
-      const sameAs = [
+    const phoneRaw = String(settingsSafe.phone || "").trim();
+    const phoneDigits = phoneRaw.replace(/[^\d+]/g, "");
+    const phoneValue = phoneDigits.startsWith("+")
+      ? phoneDigits
+      : (phoneDigits.startsWith("0") ? `+44${phoneDigits.slice(1)}` : phoneDigits);
+
+    // Only fill these if you are happy for the physical address to be public.
+    // Leave blank to skip LocalBusiness markup safely.
+    const businessAddress = {
+      streetAddress: String(settingsSafe.street_address || "").trim(),
+      addressLocality: String(settingsSafe.address_locality || "").trim(),
+      addressRegion: String(settingsSafe.address_region || "").trim(),
+      postalCode: String(settingsSafe.postal_code || "").trim(),
+      addressCountry: String(settingsSafe.address_country || "GB").trim()
+    };
+
+    const hasPublicAddress =
+      businessAddress.streetAddress &&
+      businessAddress.addressLocality &&
+      businessAddress.postalCode &&
+      businessAddress.addressCountry;
+
+    const sameAs = [
       "https://www.facebook.com/PNWCarriageMasters",
       "https://www.instagram.com/pnwcarriagemasters/",
       "https://www.tiktok.com/@truckhearse",
       "https://www.youtube.com/@pnwcarriagemasters1612"
     ];
 
-    const jsonLd = isHomePage
-      ? JSON.stringify(
-          {
-            "@context": "https://schema.org",
-            "@graph": [
-              {
-                "@type": "Organization",
-                "@id": `${siteUrl}/#organization`,
-                "name": siteName,
-                "url": siteUrl,
-                "logo": {
-                  "@type": "ImageObject",
-                  "url": defaultImage
-                },
-                "telephone": phoneValue,
-                "sameAs": sameAs
-              },
-              {
-                "@type": "LocalBusiness",
-                "@id": `${siteUrl}/#localbusiness`,
-                "name": siteName,
-                "url": siteUrl,
-                "telephone": phoneValue,
-                "image": defaultImage,
-                "logo": defaultImage,
-                "sameAs": sameAs,
-                "areaServed": {
-                  "@type": "Country",
-                  "name": "United Kingdom"
-                },
-                "parentOrganization": {
-                  "@id": `${siteUrl}/#organization`
-                }
-              },
-              {
-                "@type": "WebSite",
-                "@id": `${siteUrl}/#website`,
-                "name": siteName,
-                "url": siteUrl,
-                "publisher": {
-                  "@id": `${siteUrl}/#organization`
-                }
-              }
-            ]
+    const siteGraph = [];
+
+    if (isHomePage) {
+      siteGraph.push({
+        "@type": "Organization",
+        "@id": `${siteUrl}/#organization`,
+        "name": siteName,
+        "url": siteUrl,
+        "logo": {
+          "@type": "ImageObject",
+          "url": defaultImage
+        },
+        "image": defaultImage,
+        "description": defaultDescription,
+        ...(phoneValue ? { "telephone": phoneValue } : {}),
+        ...(phoneValue ? {
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "telephone": phoneValue
+          }
+        } : {}),
+        "sameAs": sameAs,
+        "areaServed": {
+          "@type": "Country",
+          "name": "United Kingdom"
+        }
+      });
+
+      siteGraph.push({
+        "@type": "WebSite",
+        "@id": `${siteUrl}/#website`,
+        "name": siteName,
+        "url": siteUrl,
+        "publisher": {
+          "@id": `${siteUrl}/#organization`
+        }
+      });
+
+      if (hasPublicAddress) {
+        siteGraph.push({
+          "@type": "LocalBusiness",
+          "@id": `${siteUrl}/#localbusiness`,
+          "name": siteName,
+          "url": siteUrl,
+          "image": defaultImage,
+          "logo": defaultImage,
+          "description": defaultDescription,
+          ...(phoneValue ? { "telephone": phoneValue } : {}),
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": businessAddress.streetAddress,
+            "addressLocality": businessAddress.addressLocality,
+            ...(businessAddress.addressRegion ? { "addressRegion": businessAddress.addressRegion } : {}),
+            "postalCode": businessAddress.postalCode,
+            "addressCountry": businessAddress.addressCountry
           },
-          null,
-          2
-        ).replace(/</g, "\\u003c")
+          "sameAs": sameAs,
+          "areaServed": {
+            "@type": "Country",
+            "name": "United Kingdom"
+          },
+          "parentOrganization": {
+            "@id": `${siteUrl}/#organization`
+          }
+        });
+      }
+    }
+
+    const siteStructuredData = siteGraph.length
+      ? JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": siteGraph
+        }).replace(/</g, "\\u003c")
       : "";
+
+    const pageStructuredData =
+      (typeof structuredData !== "undefined" && structuredData)
+        ? JSON.stringify(structuredData).replace(/</g, "\\u003c")
+        : "";
   %>
 
   <meta charset="utf-8"/>
@@ -143,8 +177,12 @@
   <link rel="stylesheet" href="/css/site.css"/>
   <link rel="icon" href="/images/logo.svg"/>
 
-  <% if (jsonLd) { %>
-    <script type="application/ld+json"><%- jsonLd %></script>
+  <% if (siteStructuredData) { %>
+    <script type="application/ld+json"><%- siteStructuredData %></script>
+  <% } %>
+
+  <% if (pageStructuredData) { %>
+    <script type="application/ld+json"><%- pageStructuredData %></script>
   <% } %>
 </head>
 <body>
