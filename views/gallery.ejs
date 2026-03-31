@@ -1,3 +1,25 @@
+<%
+  const faqItems = [ /* existing FAQ items */ ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqItems.map(item => ({
+      "@type": "Question",
+      "name": item.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.a
+      }
+    }))
+  };
+
+  const breadcrumbs = [
+    { name: "Home", href: "/" },
+    { name: "Gallery", href: "/gallery" }
+  ];
+%>
+
 <%- include('partials/head', {
   title,
   metaTitle: 'Truck Hearse Gallery | Renault Magnum & ERF EC12 Funeral Hire',
@@ -126,6 +148,7 @@
 %>
 
 <div class="wrap gallery">
+<%- include('partials/breadcrumbs', { breadcrumbs }) %>
   <h1>Truck Hearse Gallery</h1>
 
   <div class="card gallery-intro-card">
