@@ -1,24 +1,4 @@
 <%
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqItems.map(item => ({
-      "@type": "Question",
-      "name": item.q,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": item.a
-      }
-    }))
-  };
-
-  const breadcrumbs = [
-    { name: "Home", href: "/" },
-    { name: "FAQ", href: "/faq" }
-  ];
-%>
-
-<%
   const faqItems = [
     {
       q: "Do you offer truck hearse hire across the UK?",
@@ -58,6 +38,11 @@
       }
     }))
   };
+
+  const breadcrumbs = [
+    { name: "Home", href: "/" },
+    { name: "FAQ", href: "/faq" }
+  ];
 %>
 
 
