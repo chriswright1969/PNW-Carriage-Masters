@@ -24,6 +24,7 @@
 %>
 
 <div class="wrap">
+<%- include('partials/breadcrumbs', { breadcrumbs }) %>
   <div class="card">
     <h1 class="section-title" style="color: var(--accent);"><%= pageTitle %></h1>
     <div class="rich"><%- contentHtml %></div>
