@@ -1,8 +1,52 @@
+<%
+  const faqItems = [
+    {
+      q: "Do you offer truck hearse hire across the UK?",
+      a: "Yes. We offer truck hearse and lorry hearse hire across the UK mainland, subject to date, location and vehicle availability."
+    },
+    {
+      q: "Who chooses a lorry hearse for a funeral?",
+      a: "Lorry hearse hire is often chosen for someone with a connection to trucking, haulage, transport, engineering, mechanics, road life or heavy vehicles. It is also chosen by families who want a unique and personal final journey."
+    },
+    {
+      q: "Is a truck hearse still respectful for a funeral?",
+      a: "Yes. A truck hearse is chosen to add personality and meaning to the funeral while maintaining a respectful, dignified and professional presentation."
+    },
+    {
+      q: "Which vehicles do you currently offer?",
+      a: "We currently offer the Renault Magnum truck hearse and the ERF EC12 lorry hearse."
+    },
+    {
+      q: "How do I enquire about availability?",
+      a: "You can enquire through our contact page or by phone to discuss the date, location and the type of specialist hearse required."
+    },
+    {
+      q: "Can you help if I am not sure which vehicle is the better fit?",
+      a: "Yes. We can help you decide whether the Renault Magnum or ERF EC12 is likely to be the more suitable vehicle for the funeral."
+    }
+  ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqItems.map(item => ({
+      "@type": "Question",
+      "name": item.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.a
+      }
+    }))
+  };
+%>
+
+
 <%- include('partials/head', {
   title,
   metaTitle,
   metaDescription,
-  canonicalPath
+  canonicalPath,
+  structuredData
 }) %>
 
 <%- include('partials/header') %>
@@ -165,40 +209,13 @@
   </div>
 
   <div class="card" style="margin-top:20px;">
-    <h2 class="section-title" style="color: var(--accent);">Frequently asked questions</h2>
+  <h2 class="section-title" style="color: var(--accent);">Frequently asked questions</h2>
 
-    <h3 style="color: var(--accent);">Do you offer truck hearse hire across the UK?</h3>
-    <p>
-      Yes. We offer truck hearse and lorry hearse hire across the UK mainland, subject to date, location and vehicle availability.
-    </p>
-
-    <h3 style="color: var(--accent);">Who chooses a lorry hearse for a funeral?</h3>
-    <p>
-      Lorry hearse hire is often chosen for someone with a connection to trucking, haulage, transport, engineering, mechanics,
-      road life or heavy vehicles. It is also chosen by families who want a unique and personal final journey.
-    </p>
-
-    <h3 style="color: var(--accent);">Is a truck hearse still respectful for a funeral?</h3>
-    <p>
-      Yes. A truck hearse is chosen to add personality and meaning to the funeral while maintaining a respectful,
-      dignified and professional presentation.
-    </p>
-
-    <h3 style="color: var(--accent);">Which vehicles do you currently offer?</h3>
-    <p>
-      We currently offer the Renault Magnum truck hearse and the ERF EC12 lorry hearse.
-    </p>
-
-    <h3 style="color: var(--accent);">How do I enquire about availability?</h3>
-    <p>
-      You can enquire through our contact page or by phone to discuss the date, location and the type of specialist hearse required.
-    </p>
-
-    <h3 style="color: var(--accent);">Can you help if I am not sure which vehicle is the better fit?</h3>
-    <p>
-      Yes. We can help you decide whether the Renault Magnum or ERF EC12 is likely to be the more suitable vehicle for the funeral.
-    </p>
-  </div>
+  <% faqItems.forEach((item, i) => { %>
+    <h3 style="color: var(--accent);"><%= item.q %></h3>
+    <p<%= i === faqItems.length - 1 ? ' style="margin-bottom:0;"' : '' %>><%= item.a %></p>
+  <% }) %>
+</div>
 
   <div class="card" style="margin-top:20px;">
     <h2 class="section-title">Explore more</h2>
