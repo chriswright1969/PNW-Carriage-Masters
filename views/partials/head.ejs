@@ -1,5 +1,10 @@
 <!doctype html>
 <html lang="en-GB">
+
+<% if (typeof structuredData !== "undefined" && structuredData) { %>
+  <script type="application/ld+json"><%- JSON.stringify(structuredData) %></script>
+<% } %>
+
 <head>
   <%
     const siteName = "PNW Carriage Masters";
