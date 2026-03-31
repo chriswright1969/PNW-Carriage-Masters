@@ -550,7 +550,7 @@ app.post("/contact", async (req, res) => {
       title: "Truck Hearse FAQ | PNW Carriage Masters",
       metaTitle: "Truck Hearse FAQ | Lorry Hearse Hire UK | PNW Carriage Masters",
       metaDescription:
-        "Answers to common questions about truck hearses, lorry hearse hire across the UK, traditional hearse comparisons, completed service examples, and our specialist funeral vehicles.",
+        "Answers to common questions about truck hearse hire, lorry hearse hire, specialist funeral transport, UK coverage, bookings and vehicle choice.",
       canonicalPath: "/faq"
     });
   } catch (e) {
@@ -563,9 +563,9 @@ app.get("/truck-hearse-vs-traditional-hearse", (req, res) => {
   try {
     return res.render("truck-hearse-vs-traditional-hearse", {
       title: "Truck Hearse vs Traditional Hearse | PNW Carriage Masters",
-      metaTitle: "Truck Hearse vs Traditional Hearse | PNW Carriage Masters",
+      metaTitle: "Truck Hearse vs Traditional Hearse | Which Is Right?",
       metaDescription:
-        "Compare a truck hearse with a traditional hearse and see why families choose bespoke alternative funeral transport for a more personal final journey.",
+        "Compare a truck hearse with a traditional hearse and see which option may be the more fitting and personal choice for the funeral.",
       canonicalPath: "/truck-hearse-vs-traditional-hearse"
     });
   } catch (e) {
@@ -578,9 +578,9 @@ app.get("/lorry-hearse-hire-uk", (req, res) => {
   try {
     return res.render("lorry-hearse-hire-uk", {
       title: "Lorry Hearse Hire UK | PNW Carriage Masters",
-      metaTitle: "Lorry Hearse Hire UK | PNW Carriage Masters",
+      metaTitle: "Lorry Hearse Hire UK | Specialist Funeral Transport",
       metaDescription:
-        "Professional lorry hearse hire across the UK. Bespoke alternative funeral transport for families and funeral directors seeking a distinctive final journey.",
+        "Professional lorry hearse hire across the UK mainland. Specialist funeral transport for families and funeral directors seeking a more personal final journey.",
       canonicalPath: "/lorry-hearse-hire-uk"
     });
   } catch (e) {
@@ -595,7 +595,7 @@ app.get("/renault-magnum-hearse", (req, res) => {
       title: "Renault Magnum Hearse | Truck Hearse Hire | PNW Carriage Masters",
       metaTitle: "Renault Magnum Hearse | Truck Hearse Hire | PNW Carriage Masters",
       metaDescription:
-        "Discover our Renault Magnum hearse, a striking truck hearse available for funerals across the UK as part of our bespoke alternative funeral transport service.",
+        "Discover our Renault Magnum truck hearse for funerals across the UK. A distinctive alternative hearse for a personal and memorable final journey.",
       canonicalPath: "/renault-magnum-hearse"
     });
   } catch (e) {
@@ -610,7 +610,7 @@ app.get("/erf-ec12-hearse", (req, res) => {
       title: "ERF EC12 Hearse | Lorry Hearse Hire | PNW Carriage Masters",
       metaTitle: "ERF EC12 Hearse | Lorry Hearse Hire | PNW Carriage Masters",
       metaDescription:
-        "Discover our ERF EC12 hearse, a distinctive lorry hearse available for funeral hire across the UK through PNW Carriage Masters.",
+        "Explore our ERF EC12 lorry hearse for funerals across the UK. A distinctive British classic truck hearse for a fitting final journey.",
       canonicalPath: "/erf-ec12-hearse"
     });
   } catch (e) {
@@ -623,9 +623,9 @@ app.get("/case-studies", (req, res) => {
   try {
     return res.render("case-studies", {
       title: "Truck Hearse Case Studies | PNW Carriage Masters",
-      metaTitle: "Truck Hearse Case Studies | PNW Carriage Masters",
+      metaTitle: "Truck Hearse Case Studies | Completed Funeral Services",
       metaDescription:
-        "Read about the type of completed services supported by our truck hearses and lorry hearses, and how bespoke funeral transport creates a more personal final journey.",
+        "Read truck hearse case studies and recent field updates showing Renault Magnum and ERF EC12 specialist funeral services across the UK.",
       canonicalPath: "/case-studies"
     });
   } catch (e) {
