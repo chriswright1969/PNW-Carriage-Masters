@@ -267,6 +267,46 @@ table th,
   font-size:12.5px;
 }
 
+/* ---------- Breadcrumbs ---------- */
+.breadcrumbs{
+  margin-bottom:16px;
+}
+
+.breadcrumbs-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:0;
+  padding:0;
+  list-style:none;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.breadcrumbs-item{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+.breadcrumbs-item + .breadcrumbs-item::before{
+  content:"/";
+  color:var(--muted);
+}
+
+.breadcrumbs a{
+  color:var(--accent);
+  text-decoration:none;
+}
+
+.breadcrumbs a:hover{
+  text-decoration:underline;
+}
+
+.breadcrumbs [aria-current="page"]{
+  color:var(--text);
+}
+
 /* ---------- Home ---------- */
 .wrap.home{
   padding-top:18px;
