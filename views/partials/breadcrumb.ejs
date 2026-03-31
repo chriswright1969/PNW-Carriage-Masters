@@ -1,0 +1,22 @@
+<%
+  const trail = Array.isArray(breadcrumbs) ? breadcrumbs.filter(b => b && String(b.name || "").trim()) : [];
+%>
+
+<% if (trail.length > 1) { %>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <ol class="breadcrumbs-list">
+      <% trail.forEach((item, i) => { 
+        const isLast = i === trail.length - 1;
+        const href = String(item.href || "").trim();
+      %>
+        <li class="breadcrumbs-item">
+          <% if (!isLast && href) { %>
+            <a href="<%= href %>"><%= item.name %></a>
+          <% } else { %>
+            <span aria-current="page"><%= item.name %></span>
+          <% } %>
+        </li>
+      <% }) %>
+    </ol>
+  </nav>
+<% } %>
