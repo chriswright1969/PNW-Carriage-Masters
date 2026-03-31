@@ -1,20 +1,5 @@
 <%
-  const faqItems = [ /* existing FAQ items */ ];
-
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqItems.map(item => ({
-      "@type": "Question",
-      "name": item.q,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": item.a
-      }
-    }))
-  };
-
-  const breadcrumbs = [
+    const breadcrumbs = [
     { name: "Home", href: "/" },
     { name: "Gallery", href: "/gallery" }
   ];
