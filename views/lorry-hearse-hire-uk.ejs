@@ -1,8 +1,16 @@
+<%
+  const breadcrumbs = [
+    { name: "Home", href: "/" },
+    { name: "Lorry Hearse Hire UK", href: "/lorry-hearse-hire-uk" }
+  ];
+%>
+
 <%- include('partials/head', {
   title,
   metaTitle,
   metaDescription,
-  canonicalPath
+  canonicalPath,
+  breadcrumbs
 }) %>
 
 <%- include('partials/header') %>
