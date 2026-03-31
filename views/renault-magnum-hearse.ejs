@@ -34,33 +34,30 @@
   </div>
 
   <% if (renaultFile) { %>
-    <div class="card" style="margin-top:20px;">
-      <img
-        src="/uploads/<%= renaultFile %>?v=<%= renaultVer %>"
-        alt="Renault Magnum truck hearse available for funeral hire across the UK"
-        style="display:block; width:50%; max-width:50%; border-radius:16px;"
-      >
-    </div>
-  <% } %>
-
   <div class="card" style="margin-top:20px;">
-    <h2 class="section-title" style="color: var(--accent);">Technical specifications</h2>
-    <div class="rich">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 20px;">
-        <p><strong>Model:</strong> Renault Magnum Mk 2</p>
-        <p><strong>Year built:</strong> 2005</p>
-        <p><strong>Colour:</strong> Midnight Grey</p>
-        <p><strong>Engine:</strong> Volvo 12 litre</p>
-        <p><strong>Transmission:</strong> Auto I-Drive</p>
-        <p><strong>Converted to hearse:</strong> 2024</p>
-        <p><strong>Front tyres:</strong> Super singles fitted to front</p>
-        <p><strong>Air horns:</strong> Fitted</p>
-        <p><strong>External music system:</strong> Fitted</p>
-        <p><strong>Body:</strong> Bespoke aluminium body</p>
-        <p><strong>Factory side skirts:</strong> Fitted</p>
-      </div>
-    </div>
+    <img
+      src="/uploads/<%= renaultFile %>?v=<%= renaultVer %>"
+      alt="Renault Magnum truck hearse available for funeral hire across the UK"
+      style="display:block; width:100%; max-width:560px; margin:0 auto; border-radius:16px;"
+    >
   </div>
+<% } %>
+
+<div class="card" style="margin-top:20px;">
+  <h2 class="section-title" style="color: var(--accent);">Technical specifications</h2>
+  <div class="rich">
+    <p><strong style="color: var(--accent);">Model:</strong> Renault Magnum Mk 2</p>
+    <p><strong style="color: var(--accent);">Year of manufacture:</strong> 2005</p>
+    <p><strong style="color: var(--accent);">Colour:</strong> Midnight Grey</p>
+    <p><strong style="color: var(--accent);">Engine:</strong> Volvo 12 litre</p>
+    <p><strong style="color: var(--accent);">Transmission:</strong> Auto I-Drive</p>
+    <p><strong style="color: var(--accent);">Hearse conversion:</strong> 2024</p>
+    <p style="margin-bottom:0;">
+      <strong style="color: var(--accent);">Additional extras:</strong>
+      Super singles fitted to front, Air horns, External music system, Bespoke aluminium body, Factory side skirts.
+    </p>
+  </div>
+</div>
 
   <div class="card" style="margin-top:20px;">
     <h2 class="section-title" style="color: var(--accent);">A specialist Renault Magnum truck hearse</h2>
