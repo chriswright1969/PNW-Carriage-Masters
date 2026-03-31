@@ -1,0 +1,127 @@
+<%
+  const breadcrumbs = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" }
+  ];
+%>
+
+<%- include('partials/head', {
+  title,
+  metaTitle: 'About PNW Carriage Masters | Our Story',
+  metaDescription: 'Learn how PNW Carriage Masters was founded by Andy and Paula White and how a classic ERF became the basis of a specialist truck hearse service across the UK.',
+  canonicalPath: '/about',
+  breadcrumbs
+}) %>
+
+<%- include('partials/header') %>
+
+<%
+  const s = settings || {};
+  const phoneRaw = String(s.phone || "").trim();
+  const phoneTel = phoneRaw.replace(/\s+/g, "");
+%>
+
+<div class="wrap">
+  <%- include('partials/breadcrumbs', { breadcrumbs }) %>
+
+  <div class="card">
+    <h1 style="color: var(--accent);">About PNW Carriage Masters</h1>
+    <p class="lead">
+      PNW Carriage Masters is a family-run business, conceived in 2018 and operated by husband-and-wife team
+      Andy and Paula White. It was created from a lifelong passion for trucks and a deep respect for the funeral profession.
+    </p>
+
+    <div class="cta" style="margin:18px 0 8px;">
+      <a class="btn" href="/contact">Enquire</a>
+      <a class="btn" href="/gallery">View gallery</a>
+      <a class="btn" href="/case-studies">Case studies</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">How it began</h2>
+    <div class="rich">
+      <p>
+        Andy had owned a classic ERF truck for around fifteen years. It is one of the last ERFs built at
+        Sandbach, Cheshire, and in its day was a top-of-the-range model with numerous factory extras.
+        Known as the <strong>Black Cat</strong> because of its colour and its Caterpillar C12 engine,
+        it is a rare example, with very few ERFs produced in this specification.
+      </p>
+      <p>
+        Alongside a long-standing interest in cars and trucks, Andy also held a genuine respect for the funeral profession.
+        He shared with Paula his ambition to create a bespoke truck hearse that could offer families an alternative
+        to the traditional car-based hearse.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">Building the first truck hearse</h2>
+    <div class="rich">
+      <p>
+        With Paula’s encouragement and support, work began on converting the ERF, with the help of Andy’s best friend,
+        Peter Lewis. Peter brought more than forty years of experience in the haulage industry and was an accomplished mechanic
+        as well as a Class 1 driver.
+      </p>
+      <p>
+        Great care and attention were given to the design and detail of the hearse, with many subtle personal touches
+        incorporated throughout. Andy, a lifelong Queen fan, felt that the closing line of
+        <em>Bohemian Rhapsody</em> — <em>“Anyway the wind blows”</em> — perfectly summed up a trucker’s life.
+        That sentiment now carries across the expanded fleet.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">A story with real meaning</h2>
+    <div class="rich">
+      <p>
+        During the build, Peter was sadly diagnosed with cancer, but he encouraged Andy to continue the project.
+        The truck was eventually completed and went on to win first prize at a truck show.
+      </p>
+      <p>
+        Peter remained closely involved and supportive until the end. After his passing, his family said there was
+        only one way he would take his final journey — with Andy at the wheel.
+      </p>
+      <p>
+        That experience only deepened the purpose behind PNW Carriage Masters: to offer families a truly unique,
+        personal and meaningful send-off for loved ones who would have wanted a genuine HGV farewell.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">What PNW Carriage Masters offers today</h2>
+    <div class="rich">
+      <p>
+        Today, PNW Carriage Masters provides specialist truck hearse and lorry hearse hire across the UK mainland,
+        working with the funeral profession to help families create a final journey that feels fitting, individual and memorable.
+      </p>
+      <p>
+        Our vehicles are chosen not for novelty, but because they can reflect a lifetime connected to haulage,
+        engineering, transport, recovery, mechanics or life on the road.
+      </p>
+      <p style="margin-bottom:0;">
+        You can explore our <a href="/gallery">gallery</a>, view recent <a href="/case-studies">case studies</a>,
+        or read more about our <a href="/renault-magnum-hearse">Renault Magnum</a> and
+        <a href="/erf-ec12-hearse">ERF EC12</a> hearses.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Related pages</h2>
+    <div class="rich">
+      <p><a href="/gallery">Gallery</a></p>
+      <p><a href="/case-studies">Case studies</a></p>
+      <p><a href="/renault-magnum-hearse">Renault Magnum truck hearse</a></p>
+      <p><a href="/erf-ec12-hearse">ERF EC12 lorry hearse</a></p>
+      <p><a href="/contact">Contact</a></p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
