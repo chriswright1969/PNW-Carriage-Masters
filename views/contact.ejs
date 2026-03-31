@@ -1,8 +1,16 @@
+<%
+  const breadcrumbs = [
+    { name: "Home", href: "/" },
+    { name: "Contact", href: "/contact" }
+  ];
+%>
+
 <%- include('partials/head', {
   title,
   metaTitle: 'Contact PNW Carriage Masters | Truck Hearse Hire UK',
   metaDescription: 'Contact PNW Carriage Masters for truck hearse and lorry hearse availability across the UK. Enquiries for Renault Magnum, ERF EC12 and specialist funeral transport.',
-  canonicalPath: '/contact'
+  canonicalPath: '/contact',
+  breadcrumbs
 }) %>
 <%- include('partials/header') %>
 
