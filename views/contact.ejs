@@ -1,40 +1,117 @@
-<%- include('partials/head', { title }) %>
+<%- include('partials/head', {
+  title,
+  metaTitle: 'Contact PNW Carriage Masters | Truck Hearse Hire UK',
+  metaDescription: 'Contact PNW Carriage Masters for truck hearse and lorry hearse availability across the UK. Enquiries for Renault Magnum, ERF EC12 and specialist funeral transport.',
+  canonicalPath: '/contact'
+}) %>
 <%- include('partials/header') %>
 
 <%
+  const s = settings || {};
   const _form = (typeof form !== "undefined" && form) ? form : {};
   const v = (k) => String(_form[k] ?? "");
+
+  const phoneRaw = String(s.phone || "").trim();
+  const phoneTel = phoneRaw.replace(/\s+/g, "");
 %>
 
 <div class="wrap">
   <div class="card">
-    <h1 class="section-title"><%= pageTitle %></h1>
-    <div><%- contentHtml %></div>
+    <h1 class="section-title" style="color: var(--accent);"><%= pageTitle %></h1>
+    <div class="rich"><%- contentHtml %></div>
 
-    <hr/>
+    <div class="cta" style="margin:18px 0 0;">
+      <a class="btn" href="/gallery">View gallery</a>
+      <a class="btn" href="/case-studies">Case studies</a>
+      <a class="btn" href="/faq">FAQ</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
+    </div>
+  </div>
 
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">How bookings work</h2>
+    <div class="rich">
+      <p>
+        Our specialist truck hearses and lorry hearses are supplied exclusively for the funeral profession.
+        In most cases, the enquiry comes through the funeral director handling the arrangements, although
+        families are also welcome to contact us directly to discuss availability and the most suitable vehicle.
+      </p>
+      <p>
+        We normally need the proposed funeral date, the general location, and which vehicle is preferred if known.
+        This helps us advise on availability and whether the Renault Magnum or ERF EC12 is the better fit for the service.
+      </p>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px;">
+    <div class="notice">
+      <div class="small muted">Phone</div>
+      <div>
+        <% if (phoneTel) { %>
+          <a href="tel:<%= phoneTel %>"><%= phoneRaw %></a>
+        <% } else { %>
+          <span class="muted">Please use the enquiry form below</span>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="notice">
+      <div class="small muted">Coverage</div>
+      <div>UK mainland, subject to date and vehicle availability</div>
+    </div>
+
+    <div class="notice">
+      <div class="small muted">Base area</div>
+      <div>Near Chester, close to North Wales and North West England</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">Our specialist vehicles</h2>
+    <div class="rich">
+      <p>
+        We currently offer the <a href="/renault-magnum-hearse">Renault Magnum truck hearse</a> and the
+        <a href="/erf-ec12-hearse">ERF EC12 lorry hearse</a>, both available for specialist funeral transport
+        across the UK mainland.
+      </p>
+      <p style="margin-bottom:0;">
+        You can also explore our <a href="/gallery">gallery</a>, read recent
+        <a href="/case-studies">case studies</a>, or compare vehicle choices on our
+        <a href="/truck-hearse-vs-traditional-hearse">truck hearse vs traditional hearse</a> page.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">What to include in your enquiry</h2>
+    <div class="rich">
+      <p>
+        To help us respond as usefully as possible, please include the funeral date if known, the service area or venue,
+        and whether you are enquiring about the Renault Magnum or ERF EC12. If you are unsure which vehicle is the better fit,
+        we can help guide that decision.
+      </p>
+      <p style="margin-bottom:0;">
+        We understand that funeral planning can be time-sensitive, so we aim to respond as promptly as possible.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
     <% if (success) { %>
       <div class="notice ok">Thank you — your message has been sent. We’ll respond as soon as possible.</div>
       <div style="height:10px"></div>
     <% } %>
+
     <% if (error && error.length) { %>
       <div class="notice bad"><%= error %></div>
       <div style="height:10px"></div>
     <% } %>
 
-    <div class="grid-3">
-      <div class="notice">
-        <div class="small muted">Phone</div>
-        <div><a href="tel:<%= settings.phone.replace(/\s/g,'') %>"><%= settings.phone %></a></div>
-      </div>
-    </div>
-
-    <hr/>
-
-    <h2 class="section-title">Send an enquiry</h2>
+    <h2 class="section-title" style="color: var(--accent);">Send an enquiry</h2>
 
     <form action="/contact" method="post">
-      <!-- Honeypot (bots fill this; humans won't see it) -->
       <div style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;">
         <label for="website">Website</label>
         <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" value="">
@@ -43,30 +120,83 @@
       <div class="grid-3">
         <div>
           <label for="first_name">First name *</label>
-          <input id="first_name" name="first_name" type="text" required maxlength="60" autocomplete="given-name" value="<%= v('first_name') %>"/>
+          <input
+            id="first_name"
+            name="first_name"
+            type="text"
+            required
+            maxlength="60"
+            autocomplete="given-name"
+            value="<%= v('first_name') %>"
+          />
         </div>
+
         <div>
           <label for="last_name">Surname *</label>
-          <input id="last_name" name="last_name" type="text" required maxlength="60" autocomplete="family-name" value="<%= v('last_name') %>"/>
+          <input
+            id="last_name"
+            name="last_name"
+            type="text"
+            required
+            maxlength="60"
+            autocomplete="family-name"
+            value="<%= v('last_name') %>"
+          />
         </div>
+
         <div>
           <label for="phone">Telephone *</label>
-          <input id="phone" name="phone" type="tel" required maxlength="40" autocomplete="tel" value="<%= v('phone') %>"/>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            required
+            maxlength="40"
+            autocomplete="tel"
+            value="<%= v('phone') %>"
+          />
         </div>
       </div>
 
       <label for="email">Email *</label>
-      <input id="email" name="email" type="email" required maxlength="120" autocomplete="email" value="<%= v('email') %>"/>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        required
+        maxlength="120"
+        autocomplete="email"
+        value="<%= v('email') %>"
+      />
 
       <label for="message">Message (optional)</label>
-      <textarea id="message" name="message" rows="5" maxlength="1200"
-        placeholder="Tell us about the service date, pickup location, and vehicle preference (if known)."><%= v('message') %></textarea>
+      <textarea
+        id="message"
+        name="message"
+        rows="6"
+        maxlength="1200"
+        placeholder="Tell us about the funeral date, general location, funeral director (if known), and vehicle preference such as Renault Magnum or ERF EC12."
+      ><%= v('message') %></textarea>
 
       <div style="height:10px"></div>
-      <button class="btn" type="submit">Send</button>
-      <div class="small muted" style="margin-top:10px">We’ll use your details only to respond to this enquiry.</div>
+      <button class="btn" type="submit">Send enquiry</button>
+      <div class="small muted" style="margin-top:10px;">
+        We’ll use your details only to respond to this enquiry.
+      </div>
     </form>
+  </div>
 
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Related pages</h2>
+    <div class="rich">
+      <p><a href="/renault-magnum-hearse">Renault Magnum truck hearse</a></p>
+      <p><a href="/erf-ec12-hearse">ERF EC12 lorry hearse</a></p>
+      <p><a href="/gallery">Gallery</a></p>
+      <p><a href="/case-studies">Case studies</a></p>
+      <p><a href="/lorry-hearse-hire-uk">Lorry hearse hire across the UK</a></p>
+      <p><a href="/truck-hearse-vs-traditional-hearse">Truck hearse vs traditional hearse</a></p>
+      <p><a href="/faq">FAQ</a></p>
+    </div>
   </div>
 </div>
 
