@@ -98,8 +98,8 @@ header.site-header{
 }
 
 .brand img{
-  width:200px;
-  height:200px;
+  width:180px;
+  height:180px;
   object-fit:contain;
   flex:0 0 auto;
   max-width:none;
