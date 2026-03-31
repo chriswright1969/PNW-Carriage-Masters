@@ -1,4 +1,26 @@
 <%
+  const faqItems = [ /* existing FAQ items */ ];
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqItems.map(item => ({
+      "@type": "Question",
+      "name": item.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.a
+      }
+    }))
+  };
+
+  const breadcrumbs = [
+    { name: "Home", href: "/" },
+    { name: "FAQ", href: "/faq" }
+  ];
+%>
+
+<%
   const faqItems = [
     {
       q: "Do you offer truck hearse hire across the UK?",
@@ -46,7 +68,8 @@
   metaTitle,
   metaDescription,
   canonicalPath,
-  structuredData
+  structuredData,
+  breadcrumbs
 }) %>
 
 <%- include('partials/header') %>
@@ -58,6 +81,7 @@
 %>
 
 <div class="wrap">
+<%- include('partials/breadcrumbs', { breadcrumbs }) %>
   <div class="card">
     <h1 style="color: var(--accent);">Truck Hearse FAQ</h1>
     <p class="lead">
