@@ -40,8 +40,6 @@
       ? phoneDigits
       : (phoneDigits.startsWith("0") ? `+44${phoneDigits.slice(1)}` : phoneDigits);
 
-    // Only fill these if you are happy for the physical address to be public.
-    // Leave blank to skip LocalBusiness markup safely.
     const businessAddress = {
       streetAddress: String(settingsSafe.street_address || "").trim(),
       addressLocality: String(settingsSafe.address_locality || "").trim(),
@@ -143,6 +141,28 @@
       (typeof structuredData !== "undefined" && structuredData)
         ? JSON.stringify(structuredData).replace(/</g, "\\u003c")
         : "";
+
+    const breadcrumbItems =
+      (typeof breadcrumbs !== "undefined" && Array.isArray(breadcrumbs))
+        ? breadcrumbs.filter(b => b && String(b.name || "").trim())
+        : [];
+
+    const breadcrumbStructuredData =
+      (breadcrumbItems.length > 1)
+        ? JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": breadcrumbItems.map((b, i) => {
+              const href = String(b.href || "").trim();
+              return {
+                "@type": "ListItem",
+                "position": i + 1,
+                "name": String(b.name).trim(),
+                ...(href ? { "item": `${siteUrl}${href}` } : {})
+              };
+            })
+          }).replace(/</g, "\\u003c")
+        : "";
   %>
 
   <meta charset="utf-8"/>
@@ -183,6 +203,10 @@
 
   <% if (pageStructuredData) { %>
     <script type="application/ld+json"><%- pageStructuredData %></script>
+  <% } %>
+
+  <% if (breadcrumbStructuredData) { %>
+    <script type="application/ld+json"><%- breadcrumbStructuredData %></script>
   <% } %>
 </head>
 <body>
