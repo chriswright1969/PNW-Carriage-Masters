@@ -941,6 +941,12 @@ app.post("/admin/gallery/renault-magnum/:id", requireAdmin, (req, res) => {
   setSetting("renault_magnum_img", item.filename);
   setSetting("renault_magnum_ver", String(Date.now()));
 
+db.prepare(`
+  UPDATE media
+  SET vehicle_type = 'renault-magnum'
+  WHERE id = ?
+`).run(id);
+
   return res.redirect("/admin/gallery?msg=Renault%20Magnum%20page%20image%20updated");
 });
 
@@ -963,6 +969,12 @@ app.post("/admin/gallery/erf-ec12/:id", requireAdmin, (req, res) => {
 
   setSetting("erf_ec12_img", item.filename);
   setSetting("erf_ec12_ver", String(Date.now()));
+
+db.prepare(`
+  UPDATE media
+  SET vehicle_type = 'erf-ec12'
+  WHERE id = ?
+`).run(id);
 
   return res.redirect("/admin/gallery?msg=ERF%20EC12%20page%20image%20updated");
 });
