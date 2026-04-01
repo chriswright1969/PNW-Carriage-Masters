@@ -1,5 +1,5 @@
 <%
-    const breadcrumbs = [
+  const breadcrumbs = [
     { name: "Home", href: "/" },
     { name: "Gallery", href: "/gallery" }
   ];
@@ -19,6 +19,9 @@
   const isVideo = (it) => (it && String(it.type) === "video");
   const srcOf = (it) => it ? `/uploads/${it.filename}` : "";
   const clean = (v) => String(v || "").trim();
+  const compact = (v) => clean(v).replace(/\s+/g, " ").trim();
+  const lower = (v) => compact(v).toLowerCase();
+  const wordCount = (v) => compact(v).split(/\s+/).filter(Boolean).length;
 
   // SEO text for known videos
   const videoMeta = {
@@ -53,42 +56,76 @@
     }
   };
 
-  const inferImageMeta = (it) => {
-    const filename = clean(it && it.filename);
-    const lower = filename.toLowerCase();
+  function classifyVehicle(it) {
+    const haystack = [
+      clean(it && it.filename),
+      clean(it && it.title),
+      clean(it && it.caption),
+      clean(it && it.description)
+    ].join(" ").toLowerCase();
 
-    if (lower.includes("renault")) {
+    if (/(renault|magnum)/.test(haystack)) return "renault";
+    if (/(erf|ec12)/.test(haystack)) return "erf";
+    return "generic";
+  }
+
+  function seoImageMeta(it) {
+    const vehicle = classifyVehicle(it);
+
+    if (vehicle === "renault") {
       return {
-        title: "Renault Magnum Truck Hearse",
+        title: "Renault Magnum truck hearse",
         description:
-          "Gallery image of our Renault Magnum truck hearse, available for specialist funeral hire across the UK.",
-        alt: "Renault Magnum truck hearse available for funeral hire across the UK"
+          "Photo of our Renault Magnum truck hearse, available for specialist funeral hire across the UK.",
+        alt: "Renault Magnum truck hearse for specialist funeral hire in the UK"
       };
     }
 
-    if (lower.includes("erf")) {
+    if (vehicle === "erf") {
       return {
-        title: "ERF EC12 Lorry Hearse",
+        title: "ERF EC12 lorry hearse",
         description:
-          "Gallery image of our ERF EC12 lorry hearse, available for bespoke funeral transport across the UK.",
-        alt: "ERF EC12 lorry hearse available for bespoke funeral transport across the UK"
+          "Photo of our ERF EC12 lorry hearse, available for bespoke funeral transport across the UK.",
+        alt: "ERF EC12 lorry hearse for bespoke funeral transport in the UK"
       };
     }
 
     return {
-      title: "Truck Hearse Gallery Image",
+      title: "Truck hearse",
       description:
-        "Gallery image showing one of our specialist truck hearses available for funeral hire across the UK.",
-      alt: "Truck hearse gallery image from PNW Carriage Masters"
+        "Photo from our truck hearse gallery showing specialist funeral transport available across the UK.",
+      alt: "Truck hearse for specialist funeral transport in the UK"
     };
-  };
+  }
 
-  const metaOf = (it) => {
+  function isStrongLiteralText(text) {
+    const t = compact(text);
+    const l = lower(text);
+
+    if (!t) return false;
+    if (wordCount(t) < 4 || wordCount(t) > 28) return false;
+
+    const weakPhrases = [
+      "the final journey",
+      "lest we forget",
+      "anyway the wind blows",
+      "gallery image",
+      "gallery photo",
+      "open image",
+      "open video"
+    ];
+
+    if (weakPhrases.some((p) => l.includes(p))) return false;
+
+    return /(truck hearse|lorry hearse|hearse|funeral|renault|magnum|erf|ec12|transport|vehicle)/i.test(t);
+  }
+
+  function metaOf(it) {
     if (!it) {
       return {
         title: "",
         description: "",
-        alt: "Truck hearse gallery image from PNW Carriage Masters"
+        alt: "Truck hearse for specialist funeral hire in the UK"
       };
     }
 
@@ -102,28 +139,17 @@
       };
     }
 
-    const inferred = inferImageMeta(it);
+    const seo = seoImageMeta(it);
 
-    const fallbackTitle =
-      clean(it.title) ||
-      (isVideo(it) ? "Truck hearse gallery video" : inferred.title);
-
-    const fallbackDescription =
-      clean(it.caption) ||
-      clean(it.description) ||
-      inferred.description;
-
-    const fallbackAlt =
-      fallbackDescription ||
-      fallbackTitle ||
-      inferred.alt;
+    const adminTitle = compact(it.title);
+    const adminDescription = compact(it.caption) || compact(it.description);
 
     return {
-      title: fallbackTitle,
-      description: fallbackDescription,
-      alt: fallbackAlt
+      title: isStrongLiteralText(adminTitle) ? adminTitle : seo.title,
+      description: isStrongLiteralText(adminDescription) ? adminDescription : seo.description,
+      alt: seo.alt
     };
-  };
+  }
 
   // Prefer first IMAGE for the "main" display; fall back to first item
   const firstImage = items.find(it => it && String(it.type) === "image") || null;
@@ -133,20 +159,21 @@
 %>
 
 <div class="wrap gallery">
-<%- include('partials/breadcrumbs', { breadcrumbs }) %>
+  <%- include('partials/breadcrumbs', { breadcrumbs }) %>
+
   <h1>Truck Hearse Gallery</h1>
 
   <div class="card gallery-intro-card">
-  <p>
-    Explore our truck hearse and lorry hearse gallery, including specialist funeral transport available across the UK.
-    This page includes images and videos of our bespoke vehicles, including the Renault Magnum truck hearse and ERF EC12 lorry hearse,
-    created for funeral directors and families seeking a more personal and memorable final journey.
-  </p>
-  <p>
-    For many families, a truck hearse is chosen because it reflects a lifetime connected to haulage, transport, engineering or the road.
-    Our gallery shows how these specialist vehicles can provide a dignified and fitting tribute.
-  </p>
-</div>
+    <p>
+      Explore our truck hearse and lorry hearse gallery, including specialist funeral transport available across the UK.
+      This page includes images and videos of our bespoke vehicles, including the Renault Magnum truck hearse and ERF EC12 lorry hearse,
+      created for funeral directors and families seeking a more personal and memorable final journey.
+    </p>
+    <p>
+      For many families, a truck hearse is chosen because it reflects a lifetime connected to haulage, transport, engineering or the road.
+      Our gallery shows how these specialist vehicles can provide a dignified and fitting tribute.
+    </p>
+  </div>
 
   <div class="gallery-links-grid">
     <div class="card">
@@ -196,76 +223,83 @@
           class="gallery-media"
           src="<%= srcOf(first) %>"
           alt="<%= firstMeta.alt %>"
+          decoding="async"
+          fetchpriority="high"
         >
       <% } %>
     </div>
 
     <div
-  class="card gallery-section-card"
-  id="galleryMeta"
-  style="<%= (firstMeta.title || firstMeta.description) ? '' : 'display:none;' %>"
->
-  <h2
-    id="galleryTitle"
-    class="gallery-meta-title"
-    style="<%= firstMeta.title ? '' : 'display:none;' %>"
-  ><%= firstMeta.title %></h2>
+      class="card gallery-section-card"
+      id="galleryMeta"
+      style="<%= (firstMeta.title || firstMeta.description) ? '' : 'display:none;' %>"
+    >
+      <h2
+        id="galleryTitle"
+        class="gallery-meta-title"
+        style="<%= firstMeta.title ? '' : 'display:none;' %>"
+      ><%= firstMeta.title %></h2>
 
-  <p
-    id="galleryDescription"
-    class="gallery-meta-description"
-    style="<%= firstMeta.description ? '' : 'display:none;' %>"
-  ><%= firstMeta.description %></p>
-</div>
-
-<div class="gallery-strip-wrap">
-  <button
-    type="button"
-    class="gallery-arrow gallery-arrow-left"
-    id="galleryArrowLeft"
-    aria-label="Previous thumbnails"
-  >
-    &#10094;
-  </button>
-
-  <div class="gallery-strip-viewport">
-    <div class="gallery-strip" id="galleryStrip">
-      <% items.forEach((it) => {
-        const meta = metaOf(it);
-      %>
-        <button
-          type="button"
-          class="gthumb <%= String(it.filename) === firstFilename ? 'active' : '' %>"
-          data-type="<%= it.type %>"
-          data-src="<%= srcOf(it) %>"
-          data-title="<%= meta.title %>"
-          data-description="<%= meta.description %>"
-          data-alt="<%= meta.alt %>"
-          aria-label="<%= meta.title || (it.type === 'video' ? 'Open video' : 'Open image') %>"
-          title="<%= meta.title || meta.description || (it.type === 'video' ? 'Open video' : 'Open image') %>"
-        >
-          <% if (isVideo(it)) { %>
-            <video muted playsinline preload="metadata">
-              <source src="<%= srcOf(it) %>">
-            </video>
-            <span class="gthumb-badge">VIDEO</span>
-          <% } else { %>
-            <img src="<%= srcOf(it) %>" alt="<%= meta.alt %>">
-          <% } %>
-        </button>
-      <% }) %>
+      <p
+        id="galleryDescription"
+        class="gallery-meta-description"
+        style="<%= firstMeta.description ? '' : 'display:none;' %>"
+      ><%= firstMeta.description %></p>
     </div>
-  </div>
 
-  <button
-    type="button"
-    class="gallery-arrow gallery-arrow-right"
-    id="galleryArrowRight"
-    aria-label="Next thumbnails"
-  >
-    &#10095;
-  </button>
-</div>
+    <div class="gallery-strip-wrap">
+      <button
+        type="button"
+        class="gallery-arrow gallery-arrow-left"
+        id="galleryArrowLeft"
+        aria-label="Previous thumbnails"
+      >
+        &#10094;
+      </button>
+
+      <div class="gallery-strip-viewport">
+        <div class="gallery-strip" id="galleryStrip">
+          <% items.forEach((it) => {
+            const meta = metaOf(it);
+          %>
+            <button
+              type="button"
+              class="gthumb <%= String(it.filename) === firstFilename ? 'active' : '' %>"
+              data-type="<%= it.type %>"
+              data-src="<%= srcOf(it) %>"
+              data-title="<%= meta.title %>"
+              data-description="<%= meta.description %>"
+              data-alt="<%= meta.alt %>"
+              aria-label="<%= meta.title || (it.type === 'video' ? 'Open video' : 'Open image') %>"
+              title="<%= meta.title || meta.description || (it.type === 'video' ? 'Open video' : 'Open image') %>"
+            >
+              <% if (isVideo(it)) { %>
+                <video muted playsinline preload="metadata">
+                  <source src="<%= srcOf(it) %>">
+                </video>
+                <span class="gthumb-badge">VIDEO</span>
+              <% } else { %>
+                <img
+                  src="<%= srcOf(it) %>"
+                  alt="<%= meta.alt %>"
+                  loading="lazy"
+                  decoding="async"
+                >
+              <% } %>
+            </button>
+          <% }) %>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="gallery-arrow gallery-arrow-right"
+        id="galleryArrowRight"
+        aria-label="Next thumbnails"
+      >
+        &#10095;
+      </button>
+    </div>
 
     <script>
       (function () {
@@ -326,7 +360,8 @@
             const img = document.createElement("img");
             img.className = "gallery-media";
             img.src = src;
-            img.alt = altText || title || "Truck hearse gallery image";
+            img.alt = altText || title || "Truck hearse for specialist funeral hire in the UK";
+            img.decoding = "async";
             main.appendChild(img);
           }
 
@@ -381,7 +416,7 @@
 
     <div class="card gallery-section-card gallery-narrow-card">
       <h2 class="gallery-section-title">Explore more</h2>
-        <div class="gallery-info-grid">
+      <div class="gallery-info-grid">
         <div>
           <h3>Case Studies</h3>
           <p>Read recent updates showing our hearses out in the field on real funeral work.</p>
