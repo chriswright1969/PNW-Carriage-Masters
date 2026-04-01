@@ -35,11 +35,9 @@ import {
   createAdmin,
   deactivateAdmin,
   updateAdminPassword,
-  addMedia,
   listMedia,
   getMedia,
   deleteMedia,
-  updateMediaCaption
 } from "./src/db.js";
 
 const app = express();
@@ -74,6 +72,20 @@ db.prepare(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   )
 `).run();
+
+// ======================================================
+// Ensure media.vehicle_type exists
+// ======================================================
+try {
+  const mediaCols = db.prepare(`PRAGMA table_info(media)`).all();
+  const hasVehicleType = mediaCols.some(col => String(col.name) === "vehicle_type");
+
+  if (!hasVehicleType) {
+    db.prepare(`ALTER TABLE media ADD COLUMN vehicle_type TEXT DEFAULT 'generic'`).run();
+  }
+} catch (e) {
+  console.error("Could not ensure media.vehicle_type column:", e);
+}
 
 // --------------------
 // Middleware
@@ -229,6 +241,14 @@ function findAdminByEmail(email) {
        LIMIT 1`
     )
     .get(e);
+}
+
+function normaliseVehicleType(value) {
+  const v = String(value || "").trim().toLowerCase();
+
+  if (v === "renault-magnum") return "renault-magnum";
+  if (v === "erf-ec12") return "erf-ec12";
+  return "generic";
 }
 
 // ======================================================
@@ -977,18 +997,30 @@ app.post("/admin/upload", requireAdmin, upload.single("media"), (req, res) => {
   if (!file) return res.status(400).send("No file uploaded");
 
   const type = file.mimetype.startsWith("video/") ? "video" : "image";
-  const caption = String(req.body.caption || "").slice(0, 200);
+  const caption = String(req.body.caption || "").trim().slice(0, 200);
+  const vehicleType = normaliseVehicleType(req.body.vehicle_type);
 
-  addMedia({
+  db.prepare(`
+    INSERT INTO media (
+      type,
+      filename,
+      original_name,
+      caption,
+      mime,
+      uploaded_by,
+      vehicle_type
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(
     type,
-    filename: file.filename,
-    original_name: file.originalname,
+    file.filename,
+    file.originalname,
     caption,
-    mime: file.mimetype,
-    uploaded_by: req.admin.id
-  });
+    file.mimetype,
+    req.admin.id,
+    vehicleType
+  );
 
-  res.redirect("/admin/gallery");
+  res.redirect("/admin/gallery?msg=Upload%20saved");
 });
 
 app.post("/admin/media/:id/delete", requireAdmin, (req, res) => {
@@ -1012,12 +1044,13 @@ app.post("/admin/media/:id/delete", requireAdmin, (req, res) => {
 });
 
 // ======================================================
-// Admin update caption text
+// Admin update caption + vehicle type
 // ======================================================
 app.post("/admin/media/:id/caption", requireAdmin, (req, res) => {
   try {
     const id = Number(req.params.id || 0);
     const caption = String(req.body?.caption || "").trim();
+    const vehicleType = normaliseVehicleType(req.body?.vehicle_type);
 
     if (!id) {
       return res.redirect("/admin/gallery?err=Invalid%20media%20item");
@@ -1027,12 +1060,16 @@ app.post("/admin/media/:id/caption", requireAdmin, (req, res) => {
       return res.redirect("/admin/gallery?err=Caption%20must%20be%20200%20characters%20or%20less");
     }
 
-    updateMediaCaption(id, caption);
+    db.prepare(`
+      UPDATE media
+      SET caption = ?, vehicle_type = ?
+      WHERE id = ?
+    `).run(caption, vehicleType, id);
 
-    return res.redirect("/admin/gallery?msg=Caption%20saved");
+    return res.redirect("/admin/gallery?msg=Gallery%20item%20saved");
   } catch (e) {
     console.error("admin media caption update failed:", e);
-    return res.redirect("/admin/gallery?err=Could%20not%20save%20caption");
+    return res.redirect("/admin/gallery?err=Could%20not%20save%20gallery%20item");
   }
 });
 
