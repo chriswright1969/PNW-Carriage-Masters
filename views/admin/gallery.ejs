@@ -7,12 +7,29 @@
   const _errorMsg = (typeof errorMsg !== "undefined" && errorMsg) ? errorMsg : null;
   const _renaultMagnumImg = String((settings && settings.renault_magnum_img) || "").trim();
   const _erfEc12Img = String((settings && settings.erf_ec12_img) || "").trim();
+
+  const normaliseVehicleType = (v) => {
+    const x = String(v || "").trim().toLowerCase();
+    if (x === "renault-magnum") return "renault-magnum";
+    if (x === "erf-ec12") return "erf-ec12";
+    return "generic";
+  };
+
+  const vehicleLabel = (v) => {
+    const x = normaliseVehicleType(v);
+    if (x === "renault-magnum") return "Renault Magnum";
+    if (x === "erf-ec12") return "ERF EC12";
+    return "General / not specific";
+  };
 %>
 
 <div class="wrap">
   <div class="card">
     <h1 class="section-title">Manage gallery</h1>
-    <p class="muted">Upload new photos/videos, edit captions, choose which photo shows first on the public gallery, choose the Renault Magnum page image, choose the ERF EC12 page image, and delete existing items.</p>
+    <p class="muted">
+      Upload new photos/videos, edit captions, assign each image to a vehicle, choose which photo shows first on the public gallery,
+      choose the Renault Magnum page image, choose the ERF EC12 page image, and delete existing items.
+    </p>
 
     <% if (_message) { %>
       <div class="notice ok" style="margin:0 0 16px"><%= _message %></div>
@@ -29,7 +46,24 @@
       <input id="media" name="media" type="file" accept="image/*,video/*" required>
 
       <label for="caption">Caption (optional)</label>
-      <input id="caption" name="caption" type="text" maxlength="200" placeholder="e.g., Black truck hearse – side view">
+      <input
+        id="caption"
+        name="caption"
+        type="text"
+        maxlength="200"
+        placeholder="e.g., Renault Magnum truck hearse at funeral service"
+      >
+
+      <label for="vehicle_type">Vehicle</label>
+      <select id="vehicle_type" name="vehicle_type">
+        <option value="generic" selected>General / not specific</option>
+        <option value="renault-magnum">Renault Magnum</option>
+        <option value="erf-ec12">ERF EC12</option>
+      </select>
+
+      <p class="small muted" style="margin:8px 0 0;">
+        This helps the public gallery and SEO text use the correct vehicle name instead of guessing from the caption or filename.
+      </p>
 
       <div style="height:10px"></div>
       <button class="btn" type="submit">Upload to gallery</button>
@@ -75,6 +109,7 @@
             const isFeatured = isImg && _featuredId && Number(item.id) === _featuredId;
             const isRenaultMagnumImg = isImg && _renaultMagnumImg && item.filename === _renaultMagnumImg;
             const isErfEc12Img = isImg && _erfEc12Img && item.filename === _erfEc12Img;
+            const currentVehicleType = normaliseVehicleType(item.vehicle_type);
           %>
 
           <div class="thumb" style="overflow:hidden">
@@ -99,6 +134,30 @@
                   placeholder="Enter caption"
                   style="width:100%; margin-bottom:10px;"
                 >
+
+                <label for="vehicle-type-<%= item.id %>" class="small muted" style="display:block; margin-bottom:6px;">
+                  Vehicle
+                </label>
+
+                <select
+                  id="vehicle-type-<%= item.id %>"
+                  name="vehicle_type"
+                  style="width:100%; margin-bottom:10px;"
+                >
+                  <option value="generic" <%= currentVehicleType === "generic" ? "selected" : "" %>>
+                    General / not specific
+                  </option>
+                  <option value="renault-magnum" <%= currentVehicleType === "renault-magnum" ? "selected" : "" %>>
+                    Renault Magnum
+                  </option>
+                  <option value="erf-ec12" <%= currentVehicleType === "erf-ec12" ? "selected" : "" %>>
+                    ERF EC12
+                  </option>
+                </select>
+
+                <div class="small muted" style="margin:-2px 0 10px;">
+                  Current vehicle setting: <strong><%= vehicleLabel(currentVehicleType) %></strong>
+                </div>
 
                 <button class="btn" type="submit">Save</button>
               </form>
@@ -134,6 +193,10 @@
                       <button class="btn" type="submit">Use for ERF EC12 page</button>
                     </form>
                   <% } %>
+
+                  <span class="small" style="padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,0.04);">
+                    Vehicle: <%= vehicleLabel(currentVehicleType) %>
+                  </span>
                 </div>
               <% } %>
 
