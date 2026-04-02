@@ -857,13 +857,19 @@ table th,
 .case-study-photo img{
   display:block;
   width:100%;
-  max-width:680px;
   height:auto;
+  aspect-ratio: 4/3;
+  object-fit: cover;
   margin:0 auto;
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid var(--line);
   border-radius:14px;
   background:#111;
 }
+
+  @media (max-width: 760px){
+  .case-study-gallery-double{
+    grid-template-columns: 1fr;
+  }
 
 .case-study-photo img:hover{
   opacity:.96;
