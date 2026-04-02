@@ -35,11 +35,13 @@
           for a final journey to <a href="https://www.facebook.com/profile.php?id=61583215632929" target="_blank" rel="noopener noreferrer">Manchester Crematorium</a>.
         </p>
       `,
-      image: {
-        file: "baguley-manchester-1.jpg",
-        alt: "ERF EC12 truck hearse at a funeral service in Baguley, Manchester",
-        caption: "ERF EC12 truck hearse during a funeral service in Baguley, Manchester on 26 March 2026."
-      }
+      images: [
+        {
+          file: "baguley-manchester-1.jpg",
+          alt: "ERF EC12 truck hearse at a funeral service in Baguley, Manchester",
+          caption: "ERF EC12 truck hearse during a funeral service in Baguley, Manchester on 26 March 2026."
+        }
+      ]
     },
     {
       slug: "rushden-northamptonshire-erf-ec12",
@@ -54,11 +56,18 @@
           to <a href="https://www.facebook.com/Nenevalleycrem" target="_blank" rel="noopener noreferrer">Nene Valley Crematorium</a>.
         </p>
       `,
-      image: {
-        file: "northamptonshire-1.jpg",
-        alt: "ERF EC12 truck hearse at a funeral service in Rushden, Northamptonshire",
-        caption: "ERF EC12 truck hearse attending a funeral service in Rushden, Northamptonshire on 13 March 2026."
-      }
+      images: [
+        {
+          file: "northamptonshire-1.jpg",
+          alt: "ERF EC12 truck hearse at a funeral service in Rushden, Northamptonshire",
+          caption: "ERF EC12 truck hearse attending a funeral service in Rushden, Northamptonshire on 13 March 2026."
+        },
+        {
+          file: "northamptonshire-2.jpg",
+          alt: "Second view of the ERF EC12 truck hearse at a funeral service in Rushden, Northamptonshire",
+          caption: "Additional view of the ERF EC12 truck hearse in Rushden, Northamptonshire."
+        }
+      ]
     },
     {
       slug: "selston-nottingham-erf-ec12",
@@ -72,11 +81,18 @@
           for making us so very welcome with the truck hearse. It was lovely working with you all.
         </p>
       `,
-      image: {
-        file: "nottingham-1.jpg",
-        alt: "ERF EC12 truck hearse taking part in a funeral service in Selston, Nottingham",
-        caption: "ERF EC12 truck hearse taking part in a funeral service in Selston, Nottingham on 8 March 2026."
-      }
+      images: [
+        {
+          file: "nottingham-1.jpg",
+          alt: "ERF EC12 truck hearse taking part in a funeral service in Selston, Nottingham",
+          caption: "ERF EC12 truck hearse taking part in a funeral service in Selston, Nottingham on 8 March 2026."
+        },
+        {
+          file: "nottingham-2.jpg",
+          alt: "Second view of the ERF EC12 truck hearse during a funeral service in Selston, Nottingham",
+          caption: "Additional view of the ERF EC12 truck hearse in Selston, Nottingham."
+        }
+      ]
     },
     {
       slug: "doncaster-erf-ec12",
@@ -91,11 +107,13 @@
           and it's got to be right...in more ways than one. Thanks for the tea to keep us warm Kevin...it was great to meet you!
         </p>
       `,
-      image: {
-        file: "doncaster-1.jpg",
-        alt: "ERF EC12 truck hearse prepared for a funeral in Doncaster",
-        caption: "ERF EC12 truck hearse prepared for funeral service in Doncaster on 11 February 2026."
-      }
+      images: [
+        {
+          file: "doncaster-1.jpg",
+          alt: "ERF EC12 truck hearse prepared for a funeral in Doncaster",
+          caption: "ERF EC12 truck hearse prepared for funeral service in Doncaster on 11 February 2026."
+        }
+      ]
     },
     {
       slug: "rotherham-erf-ec12",
@@ -113,11 +131,18 @@
           RIP Mick.
         </p>
       `,
-      image: {
-        file: "rotherham-1.jpg",
-        alt: "ERF EC12 truck hearse being used for a funeral in Rotherham",
-        caption: "ERF EC12 truck hearse being used for a funeral service in Rotherham on 6 February 2026."
-      }
+      images: [
+        {
+          file: "rotherham-1.jpg",
+          alt: "ERF EC12 truck hearse being used for a funeral in Rotherham",
+          caption: "ERF EC12 truck hearse being used for a funeral service in Rotherham on 6 February 2026."
+        },
+        {
+          file: "rotherham-2.jpg",
+          alt: "Second view of the ERF EC12 truck hearse at a funeral in Rotherham",
+          caption: "Additional view of the ERF EC12 truck hearse in Rotherham."
+        }
+      ]
     }
   ];
 %>
@@ -173,32 +198,34 @@
           <%- study.textHtml %>
         </div>
 
-        <% if (study.image && study.image.file) { %>
-          <div class="case-study-gallery">
-            <figure class="case-study-photo">
-              <a
-                href="/images/<%= study.image.file %>"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Open larger image: <%= study.image.alt %>"
-                title="<%= study.image.alt %>"
-              >
-                <img
-                  src="/images/<%= study.image.file %>"
-                  alt="<%= study.image.alt %>"
-                  loading="lazy"
-                  decoding="async"
-                >
-              </a>
+        <% if (Array.isArray(study.images) && study.images.length) { %>
+  <div class="case-study-gallery <%= study.images.length === 1 ? 'case-study-gallery-single' : 'case-study-gallery-double' %>">
+    <% study.images.forEach((img, idx) => { %>
+      <figure class="case-study-photo">
+        <a
+          href="/images/<%= img.file %>"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open larger image: <%= img.alt %>"
+          title="<%= img.alt %>"
+        >
+          <img
+            src="/images/<%= img.file %>"
+            alt="<%= img.alt %>"
+            loading="lazy"
+            decoding="async"
+          >
+        </a>
 
-              <% if (study.image.caption) { %>
-                <figcaption class="small muted" style="margin-top:8px;">
-                  <%= study.image.caption %>
-                </figcaption>
-              <% } %>
-            </figure>
-          </div>
+        <% if (img.caption) { %>
+          <figcaption class="small muted" style="margin-top:8px;">
+            <%= img.caption %>
+          </figcaption>
         <% } %>
+      </figure>
+    <% }) %>
+  </div>
+<% } %>
       </article>
     <% }) %>
   </section>
