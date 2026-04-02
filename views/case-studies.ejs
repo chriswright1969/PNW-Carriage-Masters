@@ -9,7 +9,7 @@
   title,
   metaTitle: 'Truck Hearse Case Studies | Completed Funeral Services',
   metaDescription: 'Read truck hearse case studies and recent field updates showing Renault Magnum and ERF EC12 specialist funeral services across the UK.',
-  canonicalPath: 'case-studies',
+  canonicalPath: '/case-studies',
   breadcrumbs
 }) %>
 
@@ -22,8 +22,10 @@
 
   const caseStudies = [
     {
+      slug: "baguley-manchester-erf-ec12",
       title: "Baguley, Manchester",
       date: "26 March 2026",
+      isoDate: "2026-03-26",
       vehicle: "ERF EC12 Truck Hearse",
       textHtml: `
         <p>
@@ -35,43 +37,52 @@
       `,
       image: {
         file: "baguley-manchester-1.jpg",
-        alt: "ERF EC12 truck hearse at a funeral service in Baguley, Manchester"
+        alt: "ERF EC12 truck hearse at a funeral service in Baguley, Manchester",
+        caption: "ERF EC12 truck hearse during a funeral service in Baguley, Manchester on 26 March 2026."
       }
     },
     {
-      title: "Rushden,Northamptonshire",
+      slug: "rushden-northamptonshire-erf-ec12",
+      title: "Rushden, Northamptonshire",
       date: "13 March 2026",
+      isoDate: "2026-03-13",
       vehicle: "ERF EC12 Truck Hearse",
       textHtml: `
         <p>
           Working with the lovely Independent Family Funeral Directors
           <strong>A Abbotts &amp; Sons</strong>, the truck hearse was used for the final journey of a much-loved HGV driver
-          to <a href="https://www.facebook.com/Nenevalleycrem" target="_blank" rel="noopener no referrer">Nene Valley Crematorium</a>.
+          to <a href="https://www.facebook.com/Nenevalleycrem" target="_blank" rel="noopener noreferrer">Nene Valley Crematorium</a>.
         </p>
       `,
       image: {
         file: "northamptonshire-1.jpg",
-        alt: "Truck hearse attending a funeral service in Northamptonshire"
+        alt: "ERF EC12 truck hearse at a funeral service in Rushden, Northamptonshire",
+        caption: "ERF EC12 truck hearse attending a funeral service in Rushden, Northamptonshire on 13 March 2026."
       }
     },
     {
+      slug: "selston-nottingham-erf-ec12",
       title: "Selston, Nottingham",
       date: "8 March 2026",
+      isoDate: "2026-03-08",
       vehicle: "ERF EC12 Truck Hearse",
       textHtml: `
         <p>
-          Thank you Team <a href="https://www.facebook.com/GillottsFuneralDirectors" target="_blank" rel="noopener no referrer">Gillotts</a> in Selston, 
-          for making us so very welcome with the truck hearse. It was lovely working with you all. 
+          Thank you Team <a href="https://www.facebook.com/GillottsFuneralDirectors" target="_blank" rel="noopener noreferrer">Gillotts</a> in Selston,
+          for making us so very welcome with the truck hearse. It was lovely working with you all.
         </p>
       `,
       image: {
         file: "nottingham-1.jpg",
-        alt: "Truck hearse taking part in a funeral service in Nottingham"
+        alt: "ERF EC12 truck hearse taking part in a funeral service in Selston, Nottingham",
+        caption: "ERF EC12 truck hearse taking part in a funeral service in Selston, Nottingham on 8 March 2026."
       }
     },
     {
+      slug: "doncaster-erf-ec12",
       title: "Doncaster",
-      date: "11 Feb 2026",
+      date: "11 February 2026",
+      isoDate: "2026-02-11",
       vehicle: "ERF EC12 Truck Hearse",
       textHtml: `
         <p>
@@ -82,36 +93,48 @@
       `,
       image: {
         file: "doncaster-1.jpg",
-        alt: "ERF EC12 attending a funeral in Doncaster"
+        alt: "ERF EC12 truck hearse prepared for a funeral in Doncaster",
+        caption: "ERF EC12 truck hearse prepared for funeral service in Doncaster on 11 February 2026."
       }
     },
-      {
+    {
+      slug: "rotherham-erf-ec12",
       title: "Rotherham",
-      date: "6 Feb 2026",
+      date: "6 February 2026",
+      isoDate: "2026-02-06",
       vehicle: "ERF EC12 Truck Hearse",
       textHtml: `
         <p>
-          The ERF truck hearse with <a href="https://www.facebook.com/BartholomewAndSonsFuneralDirectors" target="_blank" rel="noopener no referrer">
-          Bartholomew and Sons Funeral Directors</a> and another visit for us to <a href="https://www.facebook.com/CMGRotherham" target="_blank" rel="noopener no referrer">CMG Rotherham Crematorium & Cemeteries</a>
-          A very wet and snowy trip up there yesterday for an early wet service this morning but great to work with Matt and his Team. 
-          RIP Mick
+          The ERF truck hearse worked with
+          <a href="https://www.facebook.com/BartholomewAndSonsFuneralDirectors" target="_blank" rel="noopener noreferrer">Bartholomew and Sons Funeral Directors</a>
+          and included another visit for us to
+          <a href="https://www.facebook.com/CMGRotherham" target="_blank" rel="noopener noreferrer">CMG Rotherham Crematorium &amp; Cemeteries</a>.
+          A very wet and snowy trip up there yesterday for an early service this morning, but great to work with Matt and his team.
+          RIP Mick.
         </p>
       `,
       image: {
         file: "rotherham-1.jpg",
-        alt: "ERF EC12 truck hearse being used for a funeral in Rotherham"
+        alt: "ERF EC12 truck hearse being used for a funeral in Rotherham",
+        caption: "ERF EC12 truck hearse being used for a funeral service in Rotherham on 6 February 2026."
       }
     }
   ];
 %>
 
 <div class="wrap">
-<%- include('partials/breadcrumbs', { breadcrumbs }) %>
+  <%- include('partials/breadcrumbs', { breadcrumbs }) %>
+
   <div class="card">
-    <h1 style="color: var(--accent);">Our Truck and Lorry Hearses Out In The Field</h1>
+    <h1 style="color: var(--accent);">Truck Hearse Case Studies</h1>
     <p class="lead">
-      We are honoured to serve our customers and their loved ones, and will always provide a first class service
-      with dignity and professionalism. Our number one priority is our customers and their wishes for a final journey.
+      Read recent truck hearse and lorry hearse case studies showing our specialist funeral vehicles out in the field on completed services across the UK.
+      These updates include funeral work involving our ERF EC12 and Renault Magnum vehicles.
+    </p>
+
+    <p>
+      We are honoured to serve our customers and their loved ones, and always aim to provide a first-class service with dignity and professionalism.
+      Our priority is to help create a final journey that is personal, fitting and respectful.
     </p>
 
     <div class="cta" style="margin:18px 0 8px;">
@@ -124,21 +147,26 @@
     </div>
   </div>
 
-  <section class="case-studies-list">
+  <section class="case-studies-list" aria-label="Truck hearse case studies">
     <% caseStudies.forEach(study => { %>
-      <article class="card case-study">
+      <article class="card case-study" id="<%= study.slug %>">
         <h2 class="section-title case-study-title"><%= study.title %></h2>
 
-        <% if (study.date) { %>
-          <p class="small muted case-study-meta" style="margin:0 0 4px;">
-            Date: <%= study.date %>
-          </p>
-        <% } %>
+        <% if (study.date || study.vehicle) { %>
+          <div class="case-study-meta-wrap" style="margin:0 0 10px;">
+            <% if (study.date) { %>
+              <p class="small muted case-study-meta" style="margin:0 0 4px;">
+                Date:
+                <time datetime="<%= study.isoDate || '' %>"><%= study.date %></time>
+              </p>
+            <% } %>
 
-        <% if (study.vehicle) { %>
-          <p class="small muted case-study-meta">
-            Vehicle: <%= study.vehicle %>
-          </p>
+            <% if (study.vehicle) { %>
+              <p class="small muted case-study-meta" style="margin:0;">
+                Vehicle: <%= study.vehicle %>
+              </p>
+            <% } %>
+          </div>
         <% } %>
 
         <div class="rich case-study-copy">
@@ -148,13 +176,26 @@
         <% if (study.image && study.image.file) { %>
           <div class="case-study-gallery">
             <figure class="case-study-photo">
-              <a href="/images/<%= study.image.file %>" target="_blank" rel="noopener noreferrer">
+              <a
+                href="/images/<%= study.image.file %>"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open larger image: <%= study.image.alt %>"
+                title="<%= study.image.alt %>"
+              >
                 <img
                   src="/images/<%= study.image.file %>"
                   alt="<%= study.image.alt %>"
                   loading="lazy"
+                  decoding="async"
                 >
               </a>
+
+              <% if (study.image.caption) { %>
+                <figcaption class="small muted" style="margin-top:8px;">
+                  <%= study.image.caption %>
+                </figcaption>
+              <% } %>
             </figure>
           </div>
         <% } %>
