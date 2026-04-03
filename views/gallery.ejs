@@ -158,6 +158,130 @@
   const firstMeta = metaOf(first);
 %>
 
+<style>
+  .gallery-main-card,
+  .gallery-strip-wrap,
+  #galleryMeta {
+    max-width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .gallery-main-card {
+    margin-bottom: 16px;
+    padding: 16px;
+  }
+
+  .gallery-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 420px;
+  }
+
+  .gallery-media {
+    display: block;
+    width: auto;
+    max-width: min(100%, 860px);
+    max-height: 70vh;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+
+  .gallery-strip-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .gallery-strip-viewport {
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  .gallery-strip {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .gallery-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gthumb {
+    flex: 0 0 auto;
+    width: 130px;
+    height: 90px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #111;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .gthumb.active {
+    border-color: var(--accent);
+  }
+
+  .gthumb img,
+  .gthumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .gthumb-badge {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    font-size: 11px;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    letter-spacing: 0.04em;
+  }
+
+  #galleryMeta {
+    margin-bottom: 22px;
+  }
+
+  .gallery-meta-title {
+    margin-top: 0;
+  }
+
+  @media (max-width: 700px) {
+    .gallery-main {
+      min-height: 260px;
+    }
+
+    .gallery-media {
+      max-width: 100%;
+      max-height: 55vh;
+    }
+
+    .gthumb {
+      width: 110px;
+      height: 78px;
+    }
+
+    .gallery-strip-wrap {
+      gap: 8px;
+    }
+  }
+</style>
+
 <div class="wrap gallery">
   <%- include('partials/breadcrumbs', { breadcrumbs }) %>
 
@@ -213,38 +337,22 @@
     <div class="card"><div class="muted">No gallery items yet.</div></div>
   <% } else { %>
 
-    <div class="gallery-main" id="galleryMain">
-      <% if (first && isVideo(first)) { %>
-        <video controls playsinline preload="metadata" class="gallery-media">
-          <source src="<%= srcOf(first) %>">
-        </video>
-      <% } else { %>
-        <img
-          class="gallery-media"
-          src="<%= srcOf(first) %>"
-          alt="<%= firstMeta.alt %>"
-          decoding="async"
-          fetchpriority="high"
-        >
-      <% } %>
-    </div>
-
-    <div
-      class="card gallery-section-card"
-      id="galleryMeta"
-      style="<%= (firstMeta.title || firstMeta.description) ? '' : 'display:none;' %>"
-    >
-      <h2
-        id="galleryTitle"
-        class="gallery-meta-title"
-        style="<%= firstMeta.title ? '' : 'display:none;' %>"
-      ><%= firstMeta.title %></h2>
-
-      <p
-        id="galleryDescription"
-        class="gallery-meta-description"
-        style="<%= firstMeta.description ? '' : 'display:none;' %>"
-      ><%= firstMeta.description %></p>
+    <div class="card gallery-main-card">
+      <div class="gallery-main" id="galleryMain">
+        <% if (first && isVideo(first)) { %>
+          <video controls playsinline preload="metadata" class="gallery-media">
+            <source src="<%= srcOf(first) %>">
+          </video>
+        <% } else { %>
+          <img
+            class="gallery-media"
+            src="<%= srcOf(first) %>"
+            alt="<%= firstMeta.alt %>"
+            decoding="async"
+            fetchpriority="high"
+          >
+        <% } %>
+      </div>
     </div>
 
     <div class="gallery-strip-wrap">
@@ -299,6 +407,24 @@
       >
         &#10095;
       </button>
+    </div>
+
+    <div
+      class="card gallery-section-card"
+      id="galleryMeta"
+      style="<%= (firstMeta.title || firstMeta.description) ? '' : 'display:none;' %>"
+    >
+      <h2
+        id="galleryTitle"
+        class="gallery-meta-title"
+        style="<%= firstMeta.title ? '' : 'display:none;' %>"
+      ><%= firstMeta.title %></h2>
+
+      <p
+        id="galleryDescription"
+        class="gallery-meta-description"
+        style="<%= firstMeta.description ? '' : 'display:none;' %>"
+      ><%= firstMeta.description %></p>
     </div>
 
     <script>
