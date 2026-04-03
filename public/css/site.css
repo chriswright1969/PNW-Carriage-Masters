@@ -579,18 +579,40 @@ table th,
 }
 
 .gallery-main{
-  display:flex;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 860px;
+  height: 520px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #111;
+  border-radius: 12px;
 }
 
 .gallery-main .gallery-media{
   display:block;
-  width:auto;
-  height:auto;
-  max-width:min(1100px, 95vw);
-  max-height:70vh;
+  width:100%;
+  height:100%;
+  object-fit: contain;
+  object-position: center;
+  background: #111
   border:1px solid var(--border);
-  border-radius:18px;
+  border-radius:12px;
+}
+
+@media (max-width: 900px) {
+  .gallery-main {
+    height: 420px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .gallery-main {
+    height: 300px;
+  }
 }
 
 .gallery-strip-wrap{
