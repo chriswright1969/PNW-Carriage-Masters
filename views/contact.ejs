@@ -21,6 +21,7 @@
 
   const phoneRaw = String(s.phone || "").trim();
   const phoneTel = phoneRaw.replace(/\s+/g, "");
+  const tsKey = String(typeof turnstileSiteKey !== "undefined" ? (turnstileSiteKey || "") : "").trim();
 %>
 
 <div class="wrap">
@@ -126,6 +127,8 @@
         <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" value="">
       </div>
 
+      <input type="hidden" name="form_started" value="<%= Date.now() %>">
+
       <div class="grid-3">
         <div>
           <label for="first_name">First name *</label>
@@ -187,8 +190,23 @@
         placeholder="Tell us about the funeral date, general location, funeral director (if known), and vehicle preference such as Renault Magnum or ERF EC12."
       ><%= v('message') %></textarea>
 
-      <div style="height:10px"></div>
-      <button class="btn" type="submit">Send enquiry</button>
+      <div style="height:14px"></div>
+
+      <% if (tsKey) { %>
+        <div class="cf-turnstile"
+             data-sitekey="<%= tsKey %>"
+             data-theme="light"></div>
+        <div class="small muted" style="margin-top:10px;">
+          Human verification helps protect this enquiry form from spam.
+        </div>
+      <% } else { %>
+        <div class="notice bad">
+          Human verification is not currently available. Please try again later or call us directly.
+        </div>
+      <% } %>
+
+      <div style="height:14px"></div>
+      <button class="btn" type="submit" <%= tsKey ? "" : "disabled" %>>Send enquiry</button>
       <div class="small muted" style="margin-top:10px;">
         We’ll use your details only to respond to this enquiry.
       </div>
@@ -208,5 +226,7 @@
     </div>
   </div>
 </div>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <%- include('partials/footer') %>
