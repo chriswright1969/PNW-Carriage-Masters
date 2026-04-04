@@ -481,6 +481,32 @@ app.get("/gallery", (_req, res) => {
   res.render("gallery", { title: "Gallery", media });
 });
 
+// Turnstile Helper
+async function verifyTurnstile(token, remoteIp) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+
+  if (!secret) {
+    throw new Error("Missing TURNSTILE_SECRET_KEY");
+  }
+
+  if (!token) {
+    return { success: false, "error-codes": ["missing-input-response"] };
+  }
+
+  const resp = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      secret,
+      response: token,
+      remoteip: remoteIp
+    })
+  });
+
+  return await resp.json();
+}
+// End Turnstyle Helper
+
 app.get("/contact", (req, res) => {
   const page = getPage("contact");
   const settings = res.locals.settings;
@@ -490,13 +516,14 @@ app.get("/contact", (req, res) => {
     pageTitle: page?.title || "Contact Us / Find Us",
     contentHtml: formatPageContent(page?.content, settings),
     success: req.query.success === "1",
-    error: req.query.error || ""
+    error: req.query.error || "",
+    turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || ""
   });
 });
 
 app.post("/contact", async (req, res) => {
   try {
-    // Honeypot (only works if you add <input name="website"> in contact.ejs)
+    // Honeypot
     if (String(req.body.website || "").trim()) {
       return res.redirect("/contact?success=1");
     }
@@ -507,11 +534,31 @@ app.post("/contact", async (req, res) => {
     const email = String(req.body.email || "").trim();
     const message = String(req.body.message || "").trim();
 
+    const formStarted = Number(req.body.form_started || 0);
+    const turnstileToken = String(req.body["cf-turnstile-response"] || "").trim();
+
     if (!first_name || !last_name || !phone || !email) {
       return res.redirect("/contact?error=" + encodeURIComponent("Please complete all required fields."));
     }
+
     if (!validator.isEmail(email)) {
       return res.redirect("/contact?error=" + encodeURIComponent("Please enter a valid email address."));
+    }
+
+    // Basic time trap: reject unrealistically fast submissions
+    if (!formStarted || (Date.now() - formStarted) < 3000) {
+      return res.redirect("/contact?error=" + encodeURIComponent("Please complete the form and try again."));
+    }
+
+    // Turnstile validation
+    const verification = await verifyTurnstile(
+      turnstileToken,
+      req.headers["cf-connecting-ip"] || req.ip
+    );
+
+    if (!verification.success) {
+      console.warn("Turnstile failed:", verification["error-codes"] || []);
+      return res.redirect("/contact?error=" + encodeURIComponent("Human verification failed. Please try again."));
     }
 
     const hasMx = await emailDomainHasMX(email);
@@ -528,7 +575,6 @@ app.post("/contact", async (req, res) => {
       message
     );
 
-    // Who receives the enquiry:
     const forwardTo =
       getSetting("forward_to_email") ||
       process.env.CONTACT_TO ||
