@@ -19,33 +19,16 @@
     <loc>https://truckhearse.co.uk/contact</loc>
   </url>
 
-   <url>
+  <url>
     <loc>https://truckhearse.co.uk/erf-ec12-hearse</loc>
   </url>
 
   <url>
     <loc>https://truckhearse.co.uk/faq</loc>
   </url>
-  
+
   <url>
     <loc>https://truckhearse.co.uk/gallery</loc>
-  </url>
-
-  <url>
-    <loc>https://truckhearse.co.uk/home</loc>
-  </url>
-
-  <url>
-    <loc>https://truckhearse.co.uk/lorry-hearse-hire-uk</loc>
-  </url>
-
-  <url>
-    <loc>https://truckhearse.co.uk/renault-magnum-hearse</loc>
-  </url>
-  
-  <url>
-    <loc>https://truckhearse.co.uk/truck-hearse-vs-traditional-hearse</loc>
-  </url>
 
     <video:video>
       <video:thumbnail_loc>https://truckhearse.co.uk/images/1773063489300-3b34ad870659-thumb.jpg</video:thumbnail_loc>
@@ -81,6 +64,22 @@
       <video:description><![CDATA[Discover specialist lorry hearse hire in the UK, including Renault Magnum and ERF EC12 funeral vehicles. A unique alternative hearse service for families and funeral directors.]]></video:description>
       <video:content_loc>https://truckhearse.co.uk/uploads/1773062773652-48134637eeef.mp4</video:content_loc>
     </video:video>
+  </url>
 
- 
+  <url>
+    <loc>https://truckhearse.co.uk/home</loc>
+  </url>
+
+  <url>
+    <loc>https://truckhearse.co.uk/lorry-hearse-hire-uk</loc>
+  </url>
+
+  <url>
+    <loc>https://truckhearse.co.uk/renault-magnum-hearse</loc>
+  </url>
+
+  <url>
+    <loc>https://truckhearse.co.uk/truck-hearse-vs-traditional-hearse</loc>
+  </url>
+
 </urlset>
