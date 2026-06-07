@@ -1,7 +1,7 @@
 <%- include('partials/head', {
   title,
   metaTitle: 'Truck Hearse & Lorry Hearse Hire UK | PNW Carriage Masters',
-  metaDescription: 'Bespoke truck hearse and lorry hearse hire across the UK. Renault Magnum and ERF EC12 specialist funeral transport for a personal final journey.',
+  metaDescription: 'Bespoke truck hearse and lorry hearse hire across the UK. Renault Magnum, ERF EC12 and Scania Double Cab specialist funeral transport for a personal final journey.',
   canonicalPath: '/'
 }) %>
 <%- include('partials/header') %>
@@ -16,8 +16,14 @@
 
   const powerFile = String(s.home_truck_power_img || "").trim();
   const gloryFile = String(s.home_truck_glory_img || "").trim();
+
+  // Optional future admin setting for the Scania image.
+  // If this setting does not exist yet, the page will still work and show a placeholder.
+  const scaniaFile = String(s.home_truck_scania_img || s.scania_double_cab_img || "").trim();
+
   const powerVer  = String(s.home_truck_power_ver || "").trim();
   const gloryVer  = String(s.home_truck_glory_ver || "").trim();
+  const scaniaVer = String(s.home_truck_scania_ver || s.scania_double_cab_ver || "").trim();
 
   // Keep admin control of the first paragraph only
   const rawContent = String(contentHtml || "").trim();
@@ -75,6 +81,23 @@
             </a>
             <figcaption>ERF EC12<br>Lorry Hearse</figcaption>
           </figure>
+
+          <figure class="hero-truck-card">
+            <a href="/scania-double-cab-hearse" class="hero-truck-link">
+              <% if (scaniaFile) { %>
+                <img
+                  src="/uploads/<%= scaniaFile %>?v=<%= scaniaVer %>"
+                  alt="Scania Double Cab truck hearse seating up to 7 people for a personal final journey"
+                >
+              <% } else { %>
+                <div class="hero-truck-fallback">
+                  <div class="muted">Image placeholder</div>
+                  <div class="hero-truck-name">Scania Double Cab Hearse</div>
+                </div>
+              <% } %>
+            </a>
+            <figcaption>Scania Double Cab<br>Hearse</figcaption>
+          </figure>
         </div>
       </div>
     </div>
@@ -102,6 +125,11 @@
       For people connected to haulage, transport, engineering, plant, recovery, logistics or road life,
       a specialist truck hearse can make the final journey feel more personal, fitting and memorable.
     </p>
+    <p>
+      Our fleet includes the Renault Magnum Truck Hearse, the ERF EC12 Lorry Hearse and the Scania
+      Double Cab Hearse, giving families a choice of specialist vehicles depending on the style of
+      tribute and practical arrangements required.
+    </p>
     <p style="margin-bottom:0">
       Our vehicles are supplied exclusively for the funeral profession and are intended to complement the
       care, dignity and professionalism of the funeral director leading the day.
@@ -109,16 +137,16 @@
   </section>
 
   <div class="card" style="margin-top:18px">
-  <h2 style="margin-top:0">The story behind PNW Carriage Masters</h2>
-  <p>
-    PNW Carriage Masters is a family-run business founded by Andy and Paula White, created from a lifelong passion
-    for trucks and a deep respect for the funeral profession. What began with the bespoke conversion of a classic ERF
-    into a specialist hearse has grown into a unique service offering families a more personal and meaningful final journey.
-  </p>
-  <p style="margin-bottom:0">
-    <a class="btn" href="/about">Read our story</a>
-  </p>
-</div>
+    <h2 style="margin-top:0">The story behind PNW Carriage Masters</h2>
+    <p>
+      PNW Carriage Masters is a family-run business founded by Andy and Paula White, created from a lifelong passion
+      for trucks and a deep respect for the funeral profession. What began with the bespoke conversion of a classic ERF
+      into a specialist hearse has grown into a unique service offering families a more personal and meaningful final journey.
+    </p>
+    <p style="margin-bottom:0">
+      <a class="btn" href="/about">Read our story</a>
+    </p>
+  </div>
 
   <section class="card" style="margin-top:18px">
     <h2 style="margin-top:0">Choose the right vehicle</h2>
@@ -142,6 +170,17 @@
         </p>
         <p style="margin-bottom:0">
           <a class="btn" href="/erf-ec12-hearse">View ERF EC12</a>
+        </p>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom:8px">Scania Double Cab Hearse</h3>
+        <p>
+          A black 2003 Scania Double Cab Hearse seating up to 7 people, giving family members the opportunity
+          to travel with their loved one on The Final Journey.
+        </p>
+        <p style="margin-bottom:0">
+          <a class="btn" href="/scania-double-cab-hearse">View Scania Double Cab</a>
         </p>
       </div>
     </div>
