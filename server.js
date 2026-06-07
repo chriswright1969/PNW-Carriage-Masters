@@ -248,6 +248,7 @@ function normaliseVehicleType(value) {
 
   if (v === "renault-magnum") return "renault-magnum";
   if (v === "erf-ec12") return "erf-ec12";
+  if (v === "scania-double-cab") return "scania-double-cab";
   return "generic";
 }
 
@@ -282,19 +283,26 @@ ensureSetting("hero_videos_json", "[]");
 ensureSetting("hero_video_current", "");
 ensureSetting("hero_video_version", String(Date.now()));
 
-// NEW: 2 truck placeholders under video
+// Home truck placeholders under video
 ensureSetting("home_truck_power_img", "");
 ensureSetting("home_truck_power_ver", String(Date.now()));
 ensureSetting("home_truck_glory_img", "");
 ensureSetting("home_truck_glory_ver", String(Date.now()));
+ensureSetting("home_truck_scania_img", "");
+ensureSetting("home_truck_scania_ver", String(Date.now()));
 
-// Setting default for renault magnum image
+// Vehicle page image settings
 ensureSetting("renault_magnum_img", "");
 ensureSetting("renault_magnum_ver", String(Date.now()));
 
-// Setting default for erf ec12 image
 ensureSetting("erf_ec12_img", "");
 ensureSetting("erf_ec12_ver", String(Date.now()));
+
+ensureSetting("scania_double_cab_img", "");
+ensureSetting("scania_double_cab_ver", String(Date.now()));
+
+// Gallery setting
+ensureSetting("gallery_featured_media_id", "0");
 
 // Settings available everywhere (must be AFTER session so we can read req.session)
 app.use((req, res, next) => {
@@ -332,14 +340,20 @@ app.use((req, res, next) => {
     "home_truck_power_ver",
     "home_truck_glory_img",
     "home_truck_glory_ver",
+    "home_truck_scania_img",
+    "home_truck_scania_ver",
 
-    //Renualt Magnum image
+    // Renault Magnum image
     "renault_magnum_img",
     "renault_magnum_ver",
 
-    //ERF EC12 image
+    // ERF EC12 image
     "erf_ec12_img",
     "erf_ec12_ver",
+
+    // Scania Double Cab image
+    "scania_double_cab_img",
+    "scania_double_cab_ver",
   ]);
 
   res.locals.settings = settings;
@@ -686,16 +700,17 @@ app.get("/erf-ec12-hearse", (req, res) => {
 });
 
 app.get("/scania-double-cab-hearse", (req, res) => {
-  res.render("scania-double-cab-hearse", {
-    title: "Scania Double Cab Hearse | Truck Hearse Hire | PNW Carriage Masters",
-    metaTitle: "Scania Double Cab Hearse | Lorry Hearse Hire | PNW Carriage Masters",
-    metaDescription:
-        "Explore our Scania Double Cab Hearse for funerals across the UK. A distinctive family passenger truck hearse.",
+  try {
+    return res.render("scania-double-cab-hearse", {
+      title: "Scania Double Cab Hearse | Truck Hearse Hire | PNW Carriage Masters",
+      metaTitle: "Scania Double Cab Hearse Hire UK | Family Passenger Truck Hearse",
+      metaDescription:
+        "Discover our black 2003 Scania Double Cab truck hearse. Seats up to 7 people, allowing family members to travel with their loved one on The Final Journey.",
       canonicalPath: "/scania-double-cab-hearse"
-  });
-} catch (e) {
+    });
+  } catch (e) {
     console.error("scania-double-cab-hearse GET failed:", e);
-    return res.status(500).send("Internal Server Error (scania-double-cab-hearse )");
+    return res.status(500).send("Internal Server Error (scania-double-cab-hearse)");
   }
 });
 
@@ -705,7 +720,7 @@ app.get("/case-studies", (req, res) => {
       title: "Truck Hearse Case Studies | PNW Carriage Masters",
       metaTitle: "Truck Hearse Case Studies | Completed Funeral Services",
       metaDescription:
-        "Read truck hearse case studies and recent field updates showing Renault Magnum and ERF EC12 specialist funeral services across the UK.",
+        "Read truck hearse case studies and recent field updates showing Renault Magnum, ERF EC12 and Scania Double Cab specialist funeral services across the UK.",
       canonicalPath: "/case-studies"
     });
   } catch (e) {
@@ -988,61 +1003,86 @@ app.post("/admin/gallery/featured/clear", requireAdmin, (_req, res) => {
   return res.redirect("/admin/gallery");
 });
 
-//Admin route to set Renault Magnum image
-app.post("/admin/gallery/renault-magnum/:id", requireAdmin, (req, res) => {
+function redirectGalleryMsg(res, message) {
+  return res.redirect("/admin/gallery?msg=" + encodeURIComponent(message));
+}
+
+function redirectGalleryErr(res, message) {
+  return res.redirect("/admin/gallery?err=" + encodeURIComponent(message));
+}
+
+function setVehiclePageImage(req, res, config) {
   const id = Number(req.params.id || 0);
-  if (!id) return res.redirect("/admin/gallery?err=Invalid%20image");
+  if (!id) return redirectGalleryErr(res, "Invalid image");
 
   const item = getMedia(id);
   if (!item || String(item.type) !== "image") {
-    return res.redirect("/admin/gallery?err=That%20item%20is%20not%20an%20image");
+    return redirectGalleryErr(res, "That item is not an image");
   }
 
-  setSetting("renault_magnum_img", item.filename);
-  setSetting("renault_magnum_ver", String(Date.now()));
+  setSetting(config.imageSetting, item.filename);
+  setSetting(config.versionSetting, String(Date.now()));
 
-db.prepare(`
-  UPDATE media
-  SET vehicle_type = 'renault-magnum'
-  WHERE id = ?
-`).run(id);
+  db.prepare(`
+    UPDATE media
+    SET vehicle_type = ?
+    WHERE id = ?
+  `).run(config.vehicleType, id);
 
-  return res.redirect("/admin/gallery?msg=Renault%20Magnum%20page%20image%20updated");
-});
+  return redirectGalleryMsg(res, `${config.label} page image updated`);
+}
 
-// Clear route for Renault Magnum image
+function clearVehiclePageImage(res, config) {
+  setSetting(config.imageSetting, "");
+  setSetting(config.versionSetting, String(Date.now()));
+  return redirectGalleryMsg(res, `${config.label} page image cleared`);
+}
+
+const vehiclePageImageConfigs = {
+  "renault-magnum": {
+    label: "Renault Magnum",
+    vehicleType: "renault-magnum",
+    imageSetting: "renault_magnum_img",
+    versionSetting: "renault_magnum_ver"
+  },
+  "erf-ec12": {
+    label: "ERF EC12",
+    vehicleType: "erf-ec12",
+    imageSetting: "erf_ec12_img",
+    versionSetting: "erf_ec12_ver"
+  },
+  "scania-double-cab": {
+    label: "Scania Double Cab",
+    vehicleType: "scania-double-cab",
+    imageSetting: "scania_double_cab_img",
+    versionSetting: "scania_double_cab_ver"
+  }
+};
+
+// Clear routes must come before the :id routes.
 app.post("/admin/gallery/renault-magnum/clear", requireAdmin, (_req, res) => {
-  setSetting("renault_magnum_img", "");
-  setSetting("renault_magnum_ver", String(Date.now()));
-  return res.redirect("/admin/gallery?msg=Renault%20Magnum%20page%20image%20cleared");
-});
-
-//Admin route to set ERF EC12 image
-app.post("/admin/gallery/erf-ec12/:id", requireAdmin, (req, res) => {
-  const id = Number(req.params.id || 0);
-  if (!id) return res.redirect("/admin/gallery?err=Invalid%20image");
-
-  const item = getMedia(id);
-  if (!item || String(item.type) !== "image") {
-    return res.redirect("/admin/gallery?err=That%20item%20is%20not%20an%20image");
-  }
-
-  setSetting("erf_ec12_img", item.filename);
-  setSetting("erf_ec12_ver", String(Date.now()));
-
-db.prepare(`
-  UPDATE media
-  SET vehicle_type = 'erf-ec12'
-  WHERE id = ?
-`).run(id);
-
-  return res.redirect("/admin/gallery?msg=ERF%20EC12%20page%20image%20updated");
+  return clearVehiclePageImage(res, vehiclePageImageConfigs["renault-magnum"]);
 });
 
 app.post("/admin/gallery/erf-ec12/clear", requireAdmin, (_req, res) => {
-  setSetting("erf_ec12_img", "");
-  setSetting("erf_ec12_ver", String(Date.now()));
-  return res.redirect("/admin/gallery?msg=ERF%20EC12%20page%20image%20cleared");
+  return clearVehiclePageImage(res, vehiclePageImageConfigs["erf-ec12"]);
+});
+
+app.post("/admin/gallery/scania-double-cab/clear", requireAdmin, (_req, res) => {
+  return clearVehiclePageImage(res, vehiclePageImageConfigs["scania-double-cab"]);
+});
+
+// Admin routes to set vehicle page images
+app.post("/admin/gallery/renault-magnum/:id", requireAdmin, (req, res) => {
+  return setVehiclePageImage(req, res, vehiclePageImageConfigs["renault-magnum"]);
+});
+
+app.post("/admin/gallery/erf-ec12/:id", requireAdmin, (req, res) => {
+  return setVehiclePageImage(req, res, vehiclePageImageConfigs["erf-ec12"]);
+});
+
+app.post("/admin/gallery/scania-double-cab/:id", requireAdmin, (req, res) => {
+  return setVehiclePageImage(req, res, vehiclePageImageConfigs["scania-double-cab"]);
 });
 
 // Uploads (admin only) - gallery media
@@ -1106,10 +1146,27 @@ app.post("/admin/media/:id/delete", requireAdmin, (req, res) => {
 
   deleteMedia(id);
 
-  // If the deleted item was the featured image, clear the setting
+  // If the deleted item was the featured image, clear the setting.
   const featuredId = Number(getSetting("gallery_featured_media_id") || 0);
   if (featuredId && featuredId === id) {
     setSetting("gallery_featured_media_id", "0");
+  }
+
+  // If the deleted item was being used as a vehicle/home image, clear those settings too.
+  const imageSettingsToCheck = [
+    ["renault_magnum_img", "renault_magnum_ver"],
+    ["erf_ec12_img", "erf_ec12_ver"],
+    ["scania_double_cab_img", "scania_double_cab_ver"],
+    ["home_truck_power_img", "home_truck_power_ver"],
+    ["home_truck_glory_img", "home_truck_glory_ver"],
+    ["home_truck_scania_img", "home_truck_scania_ver"],
+  ];
+
+  for (const [imageKey, versionKey] of imageSettingsToCheck) {
+    if (String(getSetting(imageKey) || "") === String(item.filename || "")) {
+      setSetting(imageKey, "");
+      setSetting(versionKey, String(Date.now()));
+    }
   }
 
   res.redirect("/admin/gallery");
