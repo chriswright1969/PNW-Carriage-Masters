@@ -7,96 +7,241 @@
 
 <%- include('partials/head', {
   title,
-  metaTitle: 'Scania Double Cab Hearse Hire | Family Passenger Truck Hearse',
-  metaDescription: 'Black 2003 Scania Double Cab truck hearse from PNW Carriage Masters. Seats up to 7 people, allowing family members to travel with their loved one on The Final Journey.',
+  metaTitle: 'Scania Double Cab Hearse Hire UK | Family Passenger Truck Hearse',
+  metaDescription: 'Discover our black 2003 Scania Double Cab truck hearse. Seats up to 7 people, allowing family members to travel with their loved one on The Final Journey.',
   canonicalPath: '/scania-double-cab-hearse',
   breadcrumbs
 }) %>
 
 <%- include('partials/header') %>
 
-<main class="wrap">
-  <section class="card">
-    <h1>Scania Double Cab Hearse</h1>
+<%
+  const s = settings || {};
+  const phoneRaw = String(s.phone || "").trim();
+  const phoneTel = phoneRaw.replace(/\s+/g, "");
 
-    <p>
-      Our Scania Double Cab Hearse offers families a truly personal way to accompany
-      their loved one on The Final Journey.
+  // Optional admin-controlled Scania image.
+  // Add this setting later if you want the image controlled through admin.
+  const scaniaFile = String(s.scania_double_cab_img || s.home_truck_scania_img || "").trim();
+  const scaniaVer  = String(s.scania_double_cab_ver || s.home_truck_scania_ver || "").trim();
+%>
+
+<div class="wrap">
+  <%- include('partials/breadcrumbs', { breadcrumbs }) %>
+
+  <div class="card">
+    <h1 style="color: var(--accent);">Scania Double Cab Hearse</h1>
+    <p class="lead">
+      Our Scania Double Cab Hearse is a distinctive specialist funeral vehicle, offering families the opportunity
+      to travel with their loved one on The Final Journey.
     </p>
 
-    <p>
-      With seating for up to 7 people, this distinctive lorry hearse gives selected
-      family members the opportunity to travel together in the vehicle, creating a
-      powerful and memorable tribute.
-    </p>
-
-    <p>
-      The design of the Scania pays tribute to our ERF EC12 and Renault Magnum
-      hearses, carefully mirroring their unique characteristics while offering its
-      own practical and deeply meaningful role within our fleet.
-    </p>
-  </section>
-
-  <section class="card">
-    <h2>Vehicle details</h2>
-
-    <div class="spec-grid">
-      <div>
-        <strong>Vehicle</strong>
-        <span>Scania Double Cab Hearse</span>
-      </div>
-
-      <div>
-        <strong>Year</strong>
-        <span>2003</span>
-      </div>
-
-      <div>
-        <strong>Colour</strong>
-        <span>Black</span>
-      </div>
-
-      <div>
-        <strong>Engine</strong>
-        <span>8970cc</span>
-      </div>
-
-      <div>
-        <strong>Fuel</strong>
-        <span>Diesel</span>
-      </div>
-
-      <div>
-        <strong>Seating</strong>
-        <span>Seats up to 7 people</span>
-      </div>
+    <div class="cta" style="margin:18px 0 8px;">
+      <a class="btn" href="/contact">Enquire about this hearse</a>
+      <a class="btn" href="/gallery">View gallery</a>
+      <a class="btn" href="/case-studies">Case studies</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
     </div>
-  </section>
+  </div>
 
-  <section class="card">
-    <h2>A family-focused truck hearse</h2>
+  <% if (scaniaFile) { %>
+    <div class="card" style="margin-top:20px;">
+      <img
+        src="/uploads/<%= scaniaFile %>?v=<%= scaniaVer %>"
+        alt="Scania Double Cab truck hearse seating up to 7 people for a personal final journey"
+        style="display:block; width:100%; max-width:560px; margin:0 auto; border-radius:16px;"
+      >
+    </div>
+  <% } %>
 
-    <p>
-      For families who want to be closer to their loved one throughout the journey,
-      the Scania Double Cab Hearse provides a unique alternative to a traditional
-      hearse. It combines the presence of a full-size truck hearse with the added
-      ability for family members to travel together.
-    </p>
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">Technical specifications</h2>
+    <div class="rich">
+      <p><strong style="color: var(--accent);">Model:</strong> Scania Double Cab Hearse</p>
+      <p><strong style="color: var(--accent);">Year of manufacture:</strong> 2003</p>
+      <p><strong style="color: var(--accent);">Colour:</strong> Black</p>
+      <p><strong style="color: var(--accent);">Engine:</strong> 8970cc</p>
+      <p><strong style="color: var(--accent);">Fuel:</strong> Diesel</p>
+      <p><strong style="color: var(--accent);">Seating:</strong> Seats up to 7 people</p>
+      <p style="margin-bottom:0;">
+        <strong style="color: var(--accent);">Purpose:</strong>
+        A family-focused truck hearse allowing selected family members to travel with their loved one on The Final Journey.
+      </p>
+    </div>
+  </div>
 
-    <p>
-      This makes the Scania especially suited to services where the journey itself
-      is an important part of the tribute.
-    </p>
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">A family-focused Scania Double Cab hearse</h2>
+    <div class="rich">
+      <p>
+        The Scania Double Cab Hearse offers something especially personal within our specialist fleet. With seating
+        for up to 7 people, it gives family members the opportunity to travel together with their loved one as part
+        of the final journey.
+      </p>
+      <p>
+        For some families, being close throughout the journey can be an important and comforting part of the tribute.
+        The Scania combines the presence of a full-size truck hearse with the added practicality of passenger seating.
+      </p>
+    </div>
+  </div>
 
-    <p>
-      To discuss availability or suitability for a funeral service, please contact
-      PNW Carriage Masters directly.
-    </p>
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">A design inspired by our fleet</h2>
+    <div class="rich">
+      <p>
+        The design of the Scania pays tribute to our ERF EC12 and Renault Magnum hearses, carefully capturing and
+        mirroring their unique characteristics while offering its own individual role within PNW Carriage Masters.
+      </p>
+      <p>
+        It has been created to sit naturally alongside our existing truck hearses, giving families another meaningful
+        choice when planning a personal and memorable final journey.
+      </p>
+    </div>
+  </div>
 
-    <p>
-      <a class="btn" href="/contact">Enquire about the Scania Double Cab Hearse</a>
-    </p>
-  </section>
-</main>
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">Who this hearse often suits</h2>
+    <div class="rich">
+      <p>
+        The Scania Double Cab Hearse can be especially fitting for families who want to travel together as part of
+        the funeral journey. It may also suit someone with a strong connection to haulage, transport, logistics,
+        engineering, trucks or road life.
+      </p>
+      <p>
+        Its passenger capacity makes it different from a conventional hearse and allows the journey itself to become
+        a more personal part of the day.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">Why families choose the Scania Double Cab</h2>
+    <div class="rich">
+      <p>
+        Families may choose the Scania because it offers a more intimate and personal experience. Rather than following
+        separately, selected family members can travel in the vehicle itself, accompanying their loved one on The Final Journey.
+      </p>
+      <p>
+        This can make the funeral feel more connected, especially when the journey has particular meaning to the family
+        or to the person being remembered.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">What to expect on the day</h2>
+    <div class="rich">
+      <p>
+        Our Scania Double Cab Hearse is supplied to work alongside the funeral director and the wider funeral arrangements
+        already in place. As with all of our specialist hearses, the aim is to provide a vehicle that complements the day
+        professionally, respectfully and with the right presence.
+      </p>
+      <p>
+        Passenger arrangements, timing, route, venue access and the overall tone of the service all need to be considered
+        carefully. The Scania is provided as part of a dignified final journey, not simply as a display vehicle.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">Working with funeral directors</h2>
+    <div class="rich">
+      <p>
+        Our specialist hearses are supplied exclusively for the funeral profession. We work with funeral directors to
+        confirm availability, discuss the location and service details, and help ensure the chosen vehicle is suitable
+        for the funeral plans.
+      </p>
+      <p>
+        Where family members wish to travel in the Scania, we can discuss the practical arrangements with the funeral
+        director so that the vehicle is used appropriately and respectfully on the day.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">Available for funerals across the UK</h2>
+    <div class="rich">
+      <p>
+        Our Scania Double Cab Hearse is available for funeral hire across the UK mainland. We are based near Chester,
+        close to North Wales and North West England, but can provide specialist truck hearse hire much further afield,
+        depending on the date, the location and the vehicle required.
+      </p>
+      <p>
+        For availability, coverage and guidance on whether the Scania Double Cab Hearse is the right fit for a funeral,
+        please contact us directly.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">Related gallery and case studies</h2>
+    <div class="rich">
+      <p>
+        You can explore more images on our <a href="/gallery">gallery page</a> and view recent field updates on our
+        <a href="/case-studies">case studies page</a>.
+      </p>
+      <p>
+        These pages help show how our specialist hearses are used in real funeral settings and how a truck hearse can
+        become a meaningful part of a personal final journey.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">Frequently asked questions about this hearse</h2>
+    <div class="rich">
+      <p><strong>How many people can the Scania Double Cab Hearse seat?</strong><br>
+        The Scania Double Cab Hearse seats up to 7 people, allowing selected family members to travel with their loved one.
+      </p>
+      <p><strong>Is the Scania Double Cab Hearse available across the UK?</strong><br>
+        Yes. Availability depends on the date, the location and the overall funeral arrangements, so early enquiry is always helpful.
+      </p>
+      <p><strong>Who usually books this hearse?</strong><br>
+        The vehicle is supplied for the funeral profession and is typically arranged as part of the funeral director’s plans for the service.
+      </p>
+      <p><strong>Why would a family choose this hearse?</strong><br>
+        It is often chosen when family members want the opportunity to travel with their loved one, making the final journey feel especially personal.
+      </p>
+      <p style="margin-bottom:0;"><strong>Where can I find out more?</strong><br>
+        You can also visit our <a href="/faq">FAQ page</a> or contact us directly to discuss availability and suitability.
+      </p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title">Related pages</h2>
+    <div class="rich">
+      <p><a href="/renault-magnum-hearse">Renault Magnum hearse</a></p>
+      <p><a href="/erf-ec12-hearse">ERF EC12 hearse</a></p>
+      <p><a href="/lorry-hearse-hire-uk">Lorry hearse hire across the UK</a></p>
+      <p><a href="/truck-hearse-vs-traditional-hearse">Truck hearse vs traditional hearse</a></p>
+      <p><a href="/case-studies">Truck hearse case studies</a></p>
+      <p><a href="/gallery">Gallery</a></p>
+      <p><a href="/faq">FAQ</a></p>
+      <p><a href="/contact">Contact</a></p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2 class="section-title" style="color: var(--accent);">Enquire about the Scania Double Cab Hearse</h2>
+    <div class="rich">
+      <p>
+        If you would like to discuss availability, location, passenger arrangements or whether the Scania Double Cab Hearse
+        is the right fit for an upcoming funeral, please contact us directly.
+      </p>
+    </div>
+
+    <div class="cta" style="margin:18px 0 0;">
+      <a class="btn" href="/contact">Contact us</a>
+      <a class="btn" href="/gallery">View gallery</a>
+      <a class="btn" href="/case-studies">View case studies</a>
+      <% if (phoneTel) { %>
+        <a class="btn" href="tel:<%= phoneTel %>">Call <%= phoneRaw %></a>
+      <% } %>
+    </div>
+  </div>
+</div>
 
 <%- include('partials/footer') %>
