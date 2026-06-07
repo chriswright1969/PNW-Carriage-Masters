@@ -1,20 +1,47 @@
 <%- include('../partials/head', { title }) %>
 <%- include('../partials/header') %>
 
+<%
+  const _message = (typeof message !== "undefined" && message) ? message : null;
+  const _errorMsg = (typeof errorMsg !== "undefined" && errorMsg) ? errorMsg : null;
+
+  const _powerImg = String((typeof powerImg !== "undefined" && powerImg) ? powerImg : "").trim();
+  const _powerVer = String((typeof powerVer !== "undefined" && powerVer) ? powerVer : "").trim();
+
+  const _gloryImg = String((typeof gloryImg !== "undefined" && gloryImg) ? gloryImg : "").trim();
+  const _gloryVer = String((typeof gloryVer !== "undefined" && gloryVer) ? gloryVer : "").trim();
+
+  const _scaniaImg = String((typeof scaniaImg !== "undefined" && scaniaImg) ? scaniaImg : "").trim();
+  const _scaniaVer = String((typeof scaniaVer !== "undefined" && scaniaVer) ? scaniaVer : "").trim();
+%>
+
 <div class="wrap">
   <div class="card">
     <h1>Home page truck images</h1>
 
-    <% if (message) { %><div class="notice"><%= message %></div><% } %>
-    <% if (errorMsg) { %><div class="error"><%= errorMsg %></div><% } %>
+    <% if (_message) { %>
+      <div class="notice"><%= _message %></div>
+    <% } %>
+
+    <% if (_errorMsg) { %>
+      <div class="error"><%= _errorMsg %></div>
+    <% } %>
+
+    <p class="muted">
+      These images appear underneath the homepage hero video and link through to the individual truck hearse pages.
+    </p>
 
     <form method="post" action="/admin/home-trucks" enctype="multipart/form-data">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
         <div class="card" style="padding:14px;">
-          <h3 style="margin-top:0;color:var(--accent);">The Power</h3>
+          <h3 style="margin-top:0;color:var(--accent);">Renault Magnum</h3>
 
-          <% if (powerImg) { %>
-            <img src="/uploads/<%= powerImg %>?v=<%= powerVer %>" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid var(--table-line);" alt="The Power">
+          <% if (_powerImg) { %>
+            <img
+              src="/uploads/<%= _powerImg %>?v=<%= _powerVer %>"
+              style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid var(--table-line);"
+              alt="Renault Magnum Truck Hearse"
+            >
           <% } else { %>
             <div class="hero-fallback" style="height:220px;display:flex;align-items:center;justify-content:center;">
               <div class="muted">No image set</div>
@@ -23,15 +50,23 @@
 
           <div style="height:10px;"></div>
           <input type="file" name="power_img" accept="image/*">
+
           <div style="height:10px;"></div>
-          <label><input type="checkbox" name="clear_power" value="1"> Clear image</label>
+          <label>
+            <input type="checkbox" name="clear_power" value="1">
+            Clear image
+          </label>
         </div>
 
         <div class="card" style="padding:14px;">
-          <h3 style="margin-top:0;color:var(--accent);">The Glory</h3>
+          <h3 style="margin-top:0;color:var(--accent);">ERF EC12</h3>
 
-          <% if (gloryImg) { %>
-            <img src="/uploads/<%= gloryImg %>?v=<%= gloryVer %>" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid var(--table-line);" alt="The Glory">
+          <% if (_gloryImg) { %>
+            <img
+              src="/uploads/<%= _gloryImg %>?v=<%= _gloryVer %>"
+              style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid var(--table-line);"
+              alt="ERF EC12 Lorry Hearse"
+            >
           <% } else { %>
             <div class="hero-fallback" style="height:220px;display:flex;align-items:center;justify-content:center;">
               <div class="muted">No image set</div>
@@ -40,13 +75,45 @@
 
           <div style="height:10px;"></div>
           <input type="file" name="glory_img" accept="image/*">
+
           <div style="height:10px;"></div>
-          <label><input type="checkbox" name="clear_glory" value="1"> Clear image</label>
+          <label>
+            <input type="checkbox" name="clear_glory" value="1">
+            Clear image
+          </label>
+        </div>
+
+        <div class="card" style="padding:14px;">
+          <h3 style="margin-top:0;color:var(--accent);">Scania Double Cab</h3>
+
+          <% if (_scaniaImg) { %>
+            <img
+              src="/uploads/<%= _scaniaImg %>?v=<%= _scaniaVer %>"
+              style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid var(--table-line);"
+              alt="Scania Double Cab Hearse"
+            >
+          <% } else { %>
+            <div class="hero-fallback" style="height:220px;display:flex;align-items:center;justify-content:center;">
+              <div class="muted">No image set</div>
+            </div>
+          <% } %>
+
+          <div style="height:10px;"></div>
+          <input type="file" name="scania_img" accept="image/*">
+
+          <div style="height:10px;"></div>
+          <label>
+            <input type="checkbox" name="clear_scania" value="1">
+            Clear image
+          </label>
         </div>
       </div>
 
       <div style="height:14px;"></div>
       <button class="btn" type="submit">Save</button>
+      <a class="btn" href="/admin" style="margin-left:8px;">Back</a>
     </form>
   </div>
 </div>
+
+<%- include('../partials/footer') %>
