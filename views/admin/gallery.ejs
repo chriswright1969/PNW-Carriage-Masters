@@ -5,13 +5,16 @@
   const _featuredId = Number((typeof featuredId !== "undefined" && featuredId) ? featuredId : 0);
   const _message = (typeof message !== "undefined" && message) ? message : null;
   const _errorMsg = (typeof errorMsg !== "undefined" && errorMsg) ? errorMsg : null;
+
   const _renaultMagnumImg = String((settings && settings.renault_magnum_img) || "").trim();
   const _erfEc12Img = String((settings && settings.erf_ec12_img) || "").trim();
+  const _scaniaDoubleCabImg = String((settings && (settings.scania_double_cab_img || settings.home_truck_scania_img)) || "").trim();
 
   const normaliseVehicleType = (v) => {
     const x = String(v || "").trim().toLowerCase();
     if (x === "renault-magnum") return "renault-magnum";
     if (x === "erf-ec12") return "erf-ec12";
+    if (x === "scania-double-cab") return "scania-double-cab";
     return "generic";
   };
 
@@ -19,6 +22,7 @@
     const x = normaliseVehicleType(v);
     if (x === "renault-magnum") return "Renault Magnum";
     if (x === "erf-ec12") return "ERF EC12";
+    if (x === "scania-double-cab") return "Scania Double Cab";
     return "General / not specific";
   };
 %>
@@ -28,7 +32,7 @@
     <h1 class="section-title">Manage gallery</h1>
     <p class="muted">
       Upload new photos/videos, edit captions, assign each image to a vehicle, choose which photo shows first on the public gallery,
-      choose the Renault Magnum page image, choose the ERF EC12 page image, and delete existing items.
+      choose the Renault Magnum page image, choose the ERF EC12 page image, choose the Scania Double Cab page image, and delete existing items.
     </p>
 
     <% if (_message) { %>
@@ -51,7 +55,7 @@
         name="caption"
         type="text"
         maxlength="200"
-        placeholder="e.g., Renault Magnum truck hearse at funeral service"
+        placeholder="e.g., Scania Double Cab hearse on The Final Journey"
       >
 
       <label for="vehicle_type">Vehicle</label>
@@ -59,6 +63,7 @@
         <option value="generic" selected>General / not specific</option>
         <option value="renault-magnum">Renault Magnum</option>
         <option value="erf-ec12">ERF EC12</option>
+        <option value="scania-double-cab">Scania Double Cab</option>
       </select>
 
       <p class="small muted" style="margin:8px 0 0;">
@@ -96,6 +101,14 @@
             Clear ERF EC12 image
           </button>
         </form>
+
+        <form method="post" action="/admin/gallery/scania-double-cab/clear"
+              onsubmit="return confirm('Clear the Scania Double Cab page image?');"
+              style="margin:0">
+          <button class="btn" type="submit" <% if (!_scaniaDoubleCabImg) { %>disabled<% } %>>
+            Clear Scania image
+          </button>
+        </form>
       </div>
     </div>
 
@@ -109,6 +122,7 @@
             const isFeatured = isImg && _featuredId && Number(item.id) === _featuredId;
             const isRenaultMagnumImg = isImg && _renaultMagnumImg && item.filename === _renaultMagnumImg;
             const isErfEc12Img = isImg && _erfEc12Img && item.filename === _erfEc12Img;
+            const isScaniaDoubleCabImg = isImg && _scaniaDoubleCabImg && item.filename === _scaniaDoubleCabImg;
             const currentVehicleType = normaliseVehicleType(item.vehicle_type);
           %>
 
@@ -153,6 +167,9 @@
                   <option value="erf-ec12" <%= currentVehicleType === "erf-ec12" ? "selected" : "" %>>
                     ERF EC12
                   </option>
+                  <option value="scania-double-cab" <%= currentVehicleType === "scania-double-cab" ? "selected" : "" %>>
+                    Scania Double Cab
+                  </option>
                 </select>
 
                 <div class="small muted" style="margin:-2px 0 10px;">
@@ -191,6 +208,16 @@
                   <% } else { %>
                     <form method="post" action="/admin/gallery/erf-ec12/<%= item.id %>" style="margin:0">
                       <button class="btn" type="submit">Use for ERF EC12 page</button>
+                    </form>
+                  <% } %>
+
+                  <% if (isScaniaDoubleCabImg) { %>
+                    <span class="small" style="padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:rgba(215,180,106,0.10); color:var(--accent);">
+                      Scania Double Cab page image
+                    </span>
+                  <% } else { %>
+                    <form method="post" action="/admin/gallery/scania-double-cab/<%= item.id %>" style="margin:0">
+                      <button class="btn" type="submit">Use for Scania Double Cab page</button>
                     </form>
                   <% } %>
 
