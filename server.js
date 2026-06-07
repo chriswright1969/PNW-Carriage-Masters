@@ -685,6 +685,20 @@ app.get("/erf-ec12-hearse", (req, res) => {
   }
 });
 
+app.get("/scania-double-cab-hearse", (req, res) => {
+  res.render("scania-double-cab-hearse", {
+    title: "Scania Double Cab Hearse | Truck Hearse Hire | PNW Carriage Masters",
+    metaTitle: "Scania Double Cab Hearse | Lorry Hearse Hire | PNW Carriage Masters",
+    metaDescription:
+        "Explore our Scania Double Cab Hearse for funerals across the UK. A distinctive family passenger truck hearse.",
+      canonicalPath: "/scania-double-cab-hearse"
+  });
+} catch (e) {
+    console.error("scania-double-cab-hearse GET failed:", e);
+    return res.status(500).send("Internal Server Error (scania-double-cab-hearse )");
+  }
+});
+
 app.get("/case-studies", (req, res) => {
   try {
     return res.render("case-studies", {
