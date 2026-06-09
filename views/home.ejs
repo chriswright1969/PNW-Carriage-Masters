@@ -31,20 +31,48 @@
 %>
 
 <style>
+  /*
+    Widen the hero media side so the three truck images have more room.
+    This only affects larger screens.
+  */
+  @media (min-width: 900px) {
+    .home .hero {
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+      align-items: start;
+    }
+  }
+
   .home-three-truck-row {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
+    gap: 18px;
     align-items: stretch;
   }
 
   .home-three-truck-row .hero-truck-card {
     min-width: 0;
+    margin: 0;
+  }
+
+  .home-three-truck-row .hero-truck-link {
+    display: block;
+    width: 100%;
   }
 
   .home-three-truck-row .hero-truck-card img,
   .home-three-truck-row .hero-truck-fallback {
+    display: block;
     width: 100%;
+    height: clamp(150px, 15vw, 230px);
+    object-fit: cover;
+    border-radius: 14px;
+  }
+
+  .home-three-truck-row figcaption {
+    font-size: 0.95rem;
+    line-height: 1.25;
+    margin-top: 8px;
+    text-align: center;
   }
 
   .home-vehicle-choice-grid {
@@ -54,9 +82,18 @@
   }
 
   @media (max-width: 760px) {
+    .home .hero {
+      grid-template-columns: 1fr;
+    }
+
     .home-three-truck-row,
     .home-vehicle-choice-grid {
       grid-template-columns: 1fr;
+    }
+
+    .home-three-truck-row .hero-truck-card img,
+    .home-three-truck-row .hero-truck-fallback {
+      height: 220px;
     }
   }
 </style>
