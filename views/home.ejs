@@ -1,7 +1,7 @@
 <%- include('partials/head', {
   title,
   metaTitle: 'Truck Hearse & Lorry Hearse Hire UK | PNW Carriage Masters',
-  metaDescription: 'Bespoke truck hearse and lorry hearse hire across the UK. Renault Magnum, ERF EC12 and Scania Double Cab specialist funeral transport for a personal final journey.',
+  metaDescription: 'Bespoke truck hearse and lorry hearse hire across the UK. Renault Magnum, Scania Double Cab and ERF EC12 specialist funeral transport for a personal final journey.',
   canonicalPath: '/'
 }) %>
 <%- include('partials/header') %>
@@ -16,9 +16,6 @@
 
   const powerFile = String(s.home_truck_power_img || "").trim();
   const gloryFile = String(s.home_truck_glory_img || "").trim();
-
-  // Optional future admin setting for the Scania image.
-  // If this setting does not exist yet, the page will still work and show a placeholder.
   const scaniaFile = String(s.home_truck_scania_img || s.scania_double_cab_img || "").trim();
 
   const powerVer  = String(s.home_truck_power_ver || "").trim();
@@ -32,6 +29,37 @@
     ? firstParagraphMatch[0]
     : (rawContent ? `<p>${rawContent}</p>` : '<p>Bespoke truck hearse and lorry hearse hire across the UK, exclusive for the funeral profession.</p>');
 %>
+
+<style>
+  .home-three-truck-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .home-three-truck-row .hero-truck-card {
+    min-width: 0;
+  }
+
+  .home-three-truck-row .hero-truck-card img,
+  .home-three-truck-row .hero-truck-fallback {
+    width: 100%;
+  }
+
+  .home-vehicle-choice-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  @media (max-width: 760px) {
+    .home-three-truck-row,
+    .home-vehicle-choice-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 
 <div class="wrap home">
   <section class="hero">
@@ -47,7 +75,7 @@
           </div>
         <% } %>
 
-        <div class="hero-truck-grid">
+        <div class="hero-truck-grid home-three-truck-row">
           <figure class="hero-truck-card">
             <a href="/renault-magnum-hearse" class="hero-truck-link">
               <% if (powerFile) { %>
@@ -66,23 +94,6 @@
           </figure>
 
           <figure class="hero-truck-card">
-            <a href="/erf-ec12-hearse" class="hero-truck-link">
-              <% if (gloryFile) { %>
-                <img
-                  src="/uploads/<%= gloryFile %>?v=<%= gloryVer %>"
-                  alt="ERF EC12 lorry hearse available for bespoke funeral transport across the UK"
-                >
-              <% } else { %>
-                <div class="hero-truck-fallback">
-                  <div class="muted">Image placeholder</div>
-                  <div class="hero-truck-name">ERF EC12 Lorry Hearse</div>
-                </div>
-              <% } %>
-            </a>
-            <figcaption>ERF EC12<br>Lorry Hearse</figcaption>
-          </figure>
-
-          <figure class="hero-truck-card">
             <a href="/scania-double-cab-hearse" class="hero-truck-link">
               <% if (scaniaFile) { %>
                 <img
@@ -97,6 +108,23 @@
               <% } %>
             </a>
             <figcaption>Scania Double Cab<br>Hearse</figcaption>
+          </figure>
+
+          <figure class="hero-truck-card">
+            <a href="/erf-ec12-hearse" class="hero-truck-link">
+              <% if (gloryFile) { %>
+                <img
+                  src="/uploads/<%= gloryFile %>?v=<%= gloryVer %>"
+                  alt="ERF EC12 lorry hearse available for bespoke funeral transport across the UK"
+                >
+              <% } else { %>
+                <div class="hero-truck-fallback">
+                  <div class="muted">Image placeholder</div>
+                  <div class="hero-truck-name">ERF EC12 Lorry Hearse</div>
+                </div>
+              <% } %>
+            </a>
+            <figcaption>ERF EC12<br>Lorry Hearse</figcaption>
           </figure>
         </div>
       </div>
@@ -126,9 +154,9 @@
       a specialist truck hearse can make the final journey feel more personal, fitting and memorable.
     </p>
     <p>
-      Our fleet includes the Renault Magnum Truck Hearse, the ERF EC12 Lorry Hearse and the Scania
-      Double Cab Hearse, giving families a choice of specialist vehicles depending on the style of
-      tribute and practical arrangements required.
+      Our fleet includes the Renault Magnum Truck Hearse, the Scania Double Cab Hearse and the ERF EC12
+      Lorry Hearse, giving families a choice of specialist vehicles depending on the style of tribute and
+      practical arrangements required.
     </p>
     <p style="margin-bottom:0">
       Our vehicles are supplied exclusively for the funeral profession and are intended to complement the
@@ -150,7 +178,7 @@
 
   <section class="card" style="margin-top:18px">
     <h2 style="margin-top:0">Choose the right vehicle</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+    <div class="home-vehicle-choice-grid">
       <div>
         <h3 style="margin-bottom:8px">Renault Magnum Truck Hearse</h3>
         <p>
@@ -163,17 +191,6 @@
       </div>
 
       <div>
-        <h3 style="margin-bottom:8px">ERF EC12 Lorry Hearse</h3>
-        <p>
-          A striking ERF lorry hearse with strong links to traditional British trucking, well suited to
-          families wanting a final journey that reflects a working life in heavy vehicles or logistics.
-        </p>
-        <p style="margin-bottom:0">
-          <a class="btn" href="/erf-ec12-hearse">View ERF EC12</a>
-        </p>
-      </div>
-
-      <div>
         <h3 style="margin-bottom:8px">Scania Double Cab Hearse</h3>
         <p>
           A black 2003 Scania Double Cab Hearse seating up to 7 people, giving family members the opportunity
@@ -181,6 +198,17 @@
         </p>
         <p style="margin-bottom:0">
           <a class="btn" href="/scania-double-cab-hearse">View Scania Double Cab</a>
+        </p>
+      </div>
+
+      <div>
+        <h3 style="margin-bottom:8px">ERF EC12 Lorry Hearse</h3>
+        <p>
+          A striking ERF lorry hearse with strong links to traditional British trucking, well suited to
+          families wanting a final journey that reflects a working life in heavy vehicles or logistics.
+        </p>
+        <p style="margin-bottom:0">
+          <a class="btn" href="/erf-ec12-hearse">View ERF EC12</a>
         </p>
       </div>
     </div>
