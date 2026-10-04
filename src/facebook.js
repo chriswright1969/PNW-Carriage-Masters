@@ -2,7 +2,7 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 
-const DEFAULT_GRAPH_VERSION = "v24.0";
+const DEFAULT_GRAPH_VERSION = "v26.0";
 const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
 
 function getConfig() {
