@@ -977,15 +977,14 @@ app.post("/admin/case-studies/:id/edit", requireAdmin, (req, res) => {
       return res.redirect(`/admin/case-studies/${study.id}/edit?err=${encodeURIComponent("Title and case study text are required.")}`);
     }
 
-    let photoFilename = String(study.photo_filename || "");
+    const oldPhotoFilename = String(study.photo_filename || "");
+    let photoFilename = oldPhotoFilename;
 
-    if (req.body.remove_photo === "1" && photoFilename) {
-      removeCaseStudyPhoto(photoFilename);
+    if (req.body.remove_photo === "1") {
       photoFilename = "";
     }
 
     if (req.file?.filename) {
-      if (photoFilename) removeCaseStudyPhoto(photoFilename);
       photoFilename = req.file.filename;
     }
 
@@ -1006,6 +1005,10 @@ app.post("/admin/case-studies/:id/edit", requireAdmin, (req, res) => {
         ? "That page anchor/slug is already in use. Please choose another."
         : "Could not save the case study.";
       return res.redirect(`/admin/case-studies/${study.id}/edit?err=${encodeURIComponent(message)}`);
+    }
+
+    if (oldPhotoFilename && oldPhotoFilename !== photoFilename) {
+      removeCaseStudyPhoto(oldPhotoFilename);
     }
 
     return res.redirect("/admin/case-studies?msg=" + encodeURIComponent("Case study saved."));
