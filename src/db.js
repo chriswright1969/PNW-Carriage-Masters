@@ -56,6 +56,26 @@ db.exec(`
     message TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS case_studies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT NOT NULL UNIQUE,
+    title TEXT NOT NULL,
+    event_date TEXT,
+    vehicle TEXT,
+    body_text TEXT NOT NULL DEFAULT '',
+    photo_filename TEXT,
+    photo_alt TEXT,
+    facebook_post_id TEXT UNIQUE,
+    facebook_post_url TEXT,
+    facebook_image_url TEXT,
+    status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','published')),
+    created_by INTEGER,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    published_at TEXT,
+    FOREIGN KEY(created_by) REFERENCES admins(id)
+  );
 `);
 
 function setDefault(key, value) {
@@ -170,6 +190,124 @@ export function deleteMedia(id) {
 export function updateMediaCaption(id, caption) {
   db.prepare('UPDATE media SET caption=? WHERE id=?')
     .run(String(caption || '').trim(), Number(id));
+}
+
+export function listCaseStudies() {
+  return db.prepare(`
+    SELECT *
+    FROM case_studies
+    ORDER BY
+      CASE WHEN status='draft' THEN 0 ELSE 1 END,
+      COALESCE(event_date, created_at) DESC,
+      id DESC
+  `).all();
+}
+
+export function listPublishedCaseStudies() {
+  return db.prepare(`
+    SELECT *
+    FROM case_studies
+    WHERE status='published'
+    ORDER BY COALESCE(event_date, published_at, created_at) DESC, id DESC
+  `).all();
+}
+
+export function getCaseStudy(id) {
+  return db.prepare('SELECT * FROM case_studies WHERE id=?').get(Number(id));
+}
+
+export function getCaseStudyByFacebookPostId(postId) {
+  return db.prepare('SELECT * FROM case_studies WHERE facebook_post_id=?').get(String(postId || '').trim());
+}
+
+export function createCaseStudyDraft({
+  slug,
+  title,
+  event_date,
+  vehicle,
+  body_text,
+  photo_filename,
+  photo_alt,
+  facebook_post_id,
+  facebook_post_url,
+  facebook_image_url,
+  created_by
+}) {
+  return db.prepare(`
+    INSERT INTO case_studies (
+      slug, title, event_date, vehicle, body_text,
+      photo_filename, photo_alt,
+      facebook_post_id, facebook_post_url, facebook_image_url,
+      status, created_by
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?)
+  `).run(
+    slug,
+    title,
+    event_date || null,
+    vehicle || '',
+    body_text || '',
+    photo_filename || '',
+    photo_alt || '',
+    facebook_post_id || null,
+    facebook_post_url || '',
+    facebook_image_url || '',
+    created_by || null
+  );
+}
+
+export function updateCaseStudy(id, {
+  slug,
+  title,
+  event_date,
+  vehicle,
+  body_text,
+  photo_filename,
+  photo_alt
+}) {
+  return db.prepare(`
+    UPDATE case_studies
+    SET slug=?,
+        title=?,
+        event_date=?,
+        vehicle=?,
+        body_text=?,
+        photo_filename=?,
+        photo_alt=?,
+        updated_at=datetime('now')
+    WHERE id=?
+  `).run(
+    slug,
+    title,
+    event_date || null,
+    vehicle || '',
+    body_text || '',
+    photo_filename || '',
+    photo_alt || '',
+    Number(id)
+  );
+}
+
+export function publishCaseStudy(id) {
+  return db.prepare(`
+    UPDATE case_studies
+    SET status='published',
+        published_at=COALESCE(published_at, datetime('now')),
+        updated_at=datetime('now')
+    WHERE id=?
+  `).run(Number(id));
+}
+
+export function moveCaseStudyToDraft(id) {
+  return db.prepare(`
+    UPDATE case_studies
+    SET status='draft',
+        updated_at=datetime('now')
+    WHERE id=?
+  `).run(Number(id));
+}
+
+export function deleteCaseStudy(id) {
+  return db.prepare('DELETE FROM case_studies WHERE id=?').run(Number(id));
 }
 
 export { DATA_DIR, DB_PATH };

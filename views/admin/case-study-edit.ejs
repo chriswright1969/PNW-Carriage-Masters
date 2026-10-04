@@ -1,0 +1,90 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/header') %>
+
+<div class="wrap">
+  <div class="card">
+    <h1 class="section-title">Edit Case Study</h1>
+    <p class="muted">
+      Facebook text is only the starting point. Edit it freely here before publishing to the website.
+    </p>
+
+    <% if (errorMsg) { %>
+      <div class="notice" style="margin:14px 0; border-color:#b42318;"><%= errorMsg %></div>
+    <% } %>
+
+    <% if (study.facebook_post_url) { %>
+      <p class="small">
+        Source:
+        <a href="<%= study.facebook_post_url %>" target="_blank" rel="noopener noreferrer">Open original Facebook post</a>
+      </p>
+    <% } %>
+
+    <form method="post" action="/admin/case-studies/<%= study.id %>/edit" enctype="multipart/form-data" style="display:grid; gap:14px;">
+      <label>
+        <div class="small muted">Title / location</div>
+        <input type="text" name="title" value="<%= study.title || '' %>" maxlength="160" required style="width:100%;">
+      </label>
+
+      <label>
+        <div class="small muted">Date</div>
+        <input type="date" name="event_date" value="<%= study.event_date || '' %>">
+      </label>
+
+      <label>
+        <div class="small muted">Vehicle</div>
+        <input type="text" name="vehicle" value="<%= study.vehicle || '' %>" maxlength="160" placeholder="e.g. Renault Magnum Truck Hearse" style="width:100%;">
+      </label>
+
+      <label>
+        <div class="small muted">Case study text</div>
+        <textarea name="body_text" rows="12" maxlength="12000" required style="width:100%;"><%= study.body_text || '' %></textarea>
+        <div class="small muted">You can rewrite, shorten or completely replace the imported Facebook wording.</div>
+      </label>
+
+      <label>
+        <div class="small muted">Page anchor / slug</div>
+        <input type="text" name="slug" value="<%= study.slug || '' %>" maxlength="180" required style="width:100%;">
+      </label>
+
+      <% if (study.photo_filename) { %>
+        <div>
+          <div class="small muted">Current photo</div>
+          <img src="/uploads/<%= study.photo_filename %>" alt="<%= study.photo_alt || '' %>" style="display:block; max-width:520px; width:100%; max-height:360px; object-fit:contain; margin-top:8px; border-radius:8px;">
+          <label style="display:inline-flex; align-items:center; gap:8px; margin-top:8px;">
+            <input type="checkbox" name="remove_photo" value="1"> Remove current photo
+          </label>
+        </div>
+      <% } %>
+
+      <label>
+        <div class="small muted">Replace / add photo</div>
+        <input type="file" name="photo" accept="image/png,image/jpeg,image/webp">
+      </label>
+
+      <label>
+        <div class="small muted">Photo alt text</div>
+        <input type="text" name="photo_alt" value="<%= study.photo_alt || '' %>" maxlength="240" style="width:100%;" placeholder="Describe the image for accessibility and search engines">
+      </label>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
+        <button class="btn" type="submit">Save changes</button>
+        <a class="btn" href="/admin/case-studies/<%= study.id %>/preview" target="_blank" rel="noopener noreferrer">Preview</a>
+        <a class="btn" href="/admin/case-studies">Back</a>
+      </div>
+    </form>
+
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;">
+      <% if (study.status === 'published') { %>
+        <form method="post" action="/admin/case-studies/<%= study.id %>/draft">
+          <button class="btn" type="submit">Move to draft</button>
+        </form>
+      <% } else { %>
+        <form method="post" action="/admin/case-studies/<%= study.id %>/publish">
+          <button class="btn" type="submit">Publish to website</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

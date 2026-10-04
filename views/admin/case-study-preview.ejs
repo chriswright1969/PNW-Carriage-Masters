@@ -1,0 +1,53 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/header') %>
+
+<%
+  const fmtDate = (value) => {
+    if (!value) return '';
+    const d = new Date(value + 'T12:00:00');
+    if (Number.isNaN(d.getTime())) return String(value);
+    return new Intl.DateTimeFormat('en-GB', { day:'numeric', month:'long', year:'numeric' }).format(d);
+  };
+  const paragraphs = String(study.body_text || '').split(/\n\s*\n/).map(x => x.trim()).filter(Boolean);
+%>
+
+<div class="wrap">
+  <div class="notice" style="margin-bottom:14px;">
+    <strong>Admin preview only.</strong>
+    This is how the case study will appear when published.
+    <a href="/admin/case-studies/<%= study.id %>/edit">Return to editing</a>.
+  </div>
+
+  <article class="card case-study" id="<%= study.slug %>">
+    <h2 class="section-title case-study-title"><%= study.title %></h2>
+
+    <% if (study.event_date || study.vehicle) { %>
+      <div class="case-study-meta-wrap" style="margin:0 0 10px;">
+        <% if (study.event_date) { %>
+          <p class="small muted case-study-meta" style="margin:0 0 4px;">
+            Date: <time datetime="<%= study.event_date %>"><%= fmtDate(study.event_date) %></time>
+          </p>
+        <% } %>
+        <% if (study.vehicle) { %>
+          <p class="small muted case-study-meta" style="margin:0;">Vehicle: <%= study.vehicle %></p>
+        <% } %>
+      </div>
+    <% } %>
+
+    <div class="rich case-study-copy">
+      <% paragraphs.forEach(p => { %><p style="white-space:pre-line;"><%= p %></p><% }) %>
+    </div>
+
+    <% if (study.photo_filename) { %>
+      <div class="case-study-gallery case-study-gallery-single">
+        <figure class="case-study-photo">
+          <a href="/uploads/<%= study.photo_filename %>" target="_blank" rel="noopener noreferrer">
+            <img src="/uploads/<%= study.photo_filename %>" alt="<%= study.photo_alt || study.title %>" loading="lazy" decoding="async">
+          </a>
+        </figure>
+      </div>
+    <% } %>
+  </article>
+</div>
+
+<%- include('../partials/footer') %>

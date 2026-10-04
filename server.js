@@ -18,6 +18,12 @@ import dns from "dns/promises";
 import createSqliteStore from "better-sqlite3-session-store";
 
 import adminHomeTruckRoutes from "./src/routes/adminHomeTruckRoutes.js";
+import {
+  facebookConfigSummary,
+  fetchFacebookPosts,
+  fetchFacebookPost,
+  downloadFacebookImage
+} from "./src/facebook.js";
 
 import {
   db,
@@ -38,6 +44,15 @@ import {
   listMedia,
   getMedia,
   deleteMedia,
+  listCaseStudies,
+  listPublishedCaseStudies,
+  getCaseStudy,
+  getCaseStudyByFacebookPostId,
+  createCaseStudyDraft,
+  updateCaseStudy,
+  publishCaseStudy,
+  moveCaseStudyToDraft,
+  deleteCaseStudy,
 } from "./src/db.js";
 
 const app = express();
@@ -252,6 +267,30 @@ function normaliseVehicleType(value) {
   return "generic";
 }
 
+function normaliseCaseStudySlug(value, fallback = "case-study") {
+  const base = String(value || fallback)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 170);
+
+  return base || fallback;
+}
+
+function safeCaseStudyDate(value) {
+  const v = String(value || "").trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : "";
+}
+
+function removeCaseStudyPhoto(filename) {
+  const name = safeFilename(filename);
+  if (!name || !name.startsWith("case-")) return;
+  try {
+    fs.unlinkSync(path.join(UPLOAD_DIR, name));
+  } catch {}
+}
+
 // ======================================================
 // 3) Ensure defaults exist (do not overwrite)
 // ======================================================
@@ -412,6 +451,24 @@ const homeImageUpload = multer({
   fileFilter: (_req, file, cb) => {
     const ok = file.mimetype.startsWith("image/");
     if (!ok) return cb(new Error("Only image files are allowed."));
+    cb(null, true);
+  }
+});
+
+
+const caseStudyUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
+    filename: (_req, file, cb) => {
+      const mime = String(file.mimetype || "").toLowerCase();
+      const ext = mime === "image/png" ? ".png" : mime === "image/webp" ? ".webp" : ".jpg";
+      cb(null, `case-upload-${Date.now()}-${crypto.randomBytes(4).toString("hex")}${ext}`);
+    }
+  }),
+  limits: { fileSize: 1024 * 1024 * 12 },
+  fileFilter: (_req, file, cb) => {
+    const ok = ["image/png", "image/jpeg", "image/webp"].includes(String(file.mimetype || "").toLowerCase());
+    if (!ok) return cb(new Error("Case study photos must be PNG, JPG or WebP."));
     cb(null, true);
   }
 });
@@ -721,7 +778,8 @@ app.get("/case-studies", (req, res) => {
       metaTitle: "Truck Hearse Case Studies | Completed Funeral Services",
       metaDescription:
         "Read truck hearse case studies and recent field updates showing Renault Magnum, ERF EC12 and Scania Double Cab specialist funeral services across the UK.",
-      canonicalPath: "/case-studies"
+      canonicalPath: "/case-studies",
+      dynamicCaseStudies: listPublishedCaseStudies()
     });
   } catch (e) {
     console.error("case-studies GET failed:", e);
@@ -802,6 +860,199 @@ app.post("/setup", (req, res) => {
 // ======================================================
 app.get("/admin", requireAdmin, (_req, res) => {
   res.render("admin/dashboard", { title: "Admin Dashboard" });
+});
+
+// ======================================================
+// Admin: Facebook -> editable Case Studies
+// ======================================================
+app.get("/admin/case-studies", requireAdmin, async (req, res) => {
+  const facebookConfig = facebookConfigSummary();
+  const caseStudies = listCaseStudies();
+  const importedByPostId = {};
+
+  for (const study of caseStudies) {
+    if (study.facebook_post_id) importedByPostId[String(study.facebook_post_id)] = study;
+  }
+
+  let facebookPosts = [];
+  let facebookError = "";
+
+  if (facebookConfig.configured) {
+    try {
+      facebookPosts = await fetchFacebookPosts(20);
+    } catch (e) {
+      console.error("Facebook posts fetch failed:", e);
+      facebookError = e?.message || "Could not retrieve Facebook posts.";
+    }
+  }
+
+  return res.render("admin/case-studies", {
+    title: "Case Studies",
+    caseStudies,
+    facebookPosts,
+    importedByPostId,
+    facebookConfig,
+    message: req.query.msg || "",
+    errorMsg: req.query.err || facebookError
+  });
+});
+
+app.post("/admin/case-studies/facebook/:postId/import", requireAdmin, async (req, res) => {
+  const postId = String(req.params.postId || "").trim();
+
+  try {
+    const existing = getCaseStudyByFacebookPostId(postId);
+    if (existing) {
+      return res.redirect(`/admin/case-studies/${existing.id}/edit`);
+    }
+
+    const post = await fetchFacebookPost(postId);
+    const eventDate = safeCaseStudyDate(String(post.created_time || "").slice(0, 10));
+    const idTail = String(post.id || postId).replace(/[^A-Za-z0-9]/g, "").slice(-10) || String(Date.now());
+    const title = eventDate ? `Facebook Case Study – ${eventDate}` : "Facebook Case Study";
+    const slug = normaliseCaseStudySlug(`facebook-${eventDate || "post"}-${idTail}`);
+    let photoFilename = "";
+
+    if (post.full_picture) {
+      try {
+        photoFilename = await downloadFacebookImage(post.full_picture, UPLOAD_DIR);
+      } catch (imageErr) {
+        console.error("Facebook image download failed:", imageErr);
+      }
+    }
+
+    const result = createCaseStudyDraft({
+      slug,
+      title,
+      event_date: eventDate,
+      vehicle: "",
+      body_text: String(post.message || "").trim(),
+      photo_filename: photoFilename,
+      photo_alt: "PNW Carriage Masters case study",
+      facebook_post_id: String(post.id || postId),
+      facebook_post_url: String(post.permalink_url || ""),
+      facebook_image_url: String(post.full_picture || ""),
+      created_by: req.admin.id
+    });
+
+    return res.redirect(`/admin/case-studies/${result.lastInsertRowid}/edit`);
+  } catch (e) {
+    console.error("Facebook case-study import failed:", e);
+    return res.redirect("/admin/case-studies?err=" + encodeURIComponent(e?.message || "Could not import that Facebook post."));
+  }
+});
+
+app.get("/admin/case-studies/:id/edit", requireAdmin, (req, res) => {
+  const study = getCaseStudy(req.params.id);
+  if (!study) return res.status(404).send("Case study not found");
+
+  return res.render("admin/case-study-edit", {
+    title: "Edit Case Study",
+    study,
+    errorMsg: req.query.err || ""
+  });
+});
+
+app.post("/admin/case-studies/:id/edit", requireAdmin, (req, res) => {
+  caseStudyUpload.single("photo")(req, res, (uploadErr) => {
+    if (uploadErr) {
+      return res.redirect(`/admin/case-studies/${req.params.id}/edit?err=${encodeURIComponent(uploadErr.message)}`);
+    }
+
+    const study = getCaseStudy(req.params.id);
+    if (!study) {
+      if (req.file?.filename) removeCaseStudyPhoto(req.file.filename);
+      return res.status(404).send("Case study not found");
+    }
+
+    const title = String(req.body.title || "").trim().slice(0, 160);
+    const bodyText = String(req.body.body_text || "").trim().slice(0, 12000);
+    const vehicle = String(req.body.vehicle || "").trim().slice(0, 160);
+    const eventDate = safeCaseStudyDate(req.body.event_date);
+    const photoAlt = String(req.body.photo_alt || "").trim().slice(0, 240);
+    const slug = normaliseCaseStudySlug(req.body.slug || title || `case-study-${study.id}`, `case-study-${study.id}`);
+
+    if (!title || !bodyText) {
+      if (req.file?.filename) removeCaseStudyPhoto(req.file.filename);
+      return res.redirect(`/admin/case-studies/${study.id}/edit?err=${encodeURIComponent("Title and case study text are required.")}`);
+    }
+
+    const oldPhotoFilename = String(study.photo_filename || "");
+    let photoFilename = oldPhotoFilename;
+
+    if (req.body.remove_photo === "1") {
+      photoFilename = "";
+    }
+
+    if (req.file?.filename) {
+      photoFilename = req.file.filename;
+    }
+
+    try {
+      updateCaseStudy(study.id, {
+        slug,
+        title,
+        event_date: eventDate,
+        vehicle,
+        body_text: bodyText,
+        photo_filename: photoFilename,
+        photo_alt: photoAlt
+      });
+    } catch (e) {
+      if (req.file?.filename) removeCaseStudyPhoto(req.file.filename);
+      console.error("Case-study save failed:", e);
+      const message = String(e?.message || "").includes("UNIQUE")
+        ? "That page anchor/slug is already in use. Please choose another."
+        : "Could not save the case study.";
+      return res.redirect(`/admin/case-studies/${study.id}/edit?err=${encodeURIComponent(message)}`);
+    }
+
+    if (oldPhotoFilename && oldPhotoFilename !== photoFilename) {
+      removeCaseStudyPhoto(oldPhotoFilename);
+    }
+
+    return res.redirect("/admin/case-studies?msg=" + encodeURIComponent("Case study saved."));
+  });
+});
+
+app.get("/admin/case-studies/:id/preview", requireAdmin, (req, res) => {
+  const study = getCaseStudy(req.params.id);
+  if (!study) return res.status(404).send("Case study not found");
+
+  return res.render("admin/case-study-preview", {
+    title: `Preview: ${study.title}`,
+    study
+  });
+});
+
+app.post("/admin/case-studies/:id/publish", requireAdmin, (req, res) => {
+  const study = getCaseStudy(req.params.id);
+  if (!study) return res.status(404).send("Case study not found");
+
+  if (!String(study.title || "").trim() || !String(study.body_text || "").trim()) {
+    return res.redirect(`/admin/case-studies/${study.id}/edit?err=${encodeURIComponent("Add a title and case study text before publishing.")}`);
+  }
+
+  publishCaseStudy(study.id);
+  return res.redirect("/admin/case-studies?msg=" + encodeURIComponent("Case study published."));
+});
+
+app.post("/admin/case-studies/:id/draft", requireAdmin, (req, res) => {
+  const study = getCaseStudy(req.params.id);
+  if (!study) return res.status(404).send("Case study not found");
+
+  moveCaseStudyToDraft(study.id);
+  return res.redirect("/admin/case-studies?msg=" + encodeURIComponent("Case study moved back to draft."));
+});
+
+app.post("/admin/case-studies/:id/delete", requireAdmin, (req, res) => {
+  const study = getCaseStudy(req.params.id);
+  if (!study) return res.redirect("/admin/case-studies");
+
+  if (study.photo_filename) removeCaseStudyPhoto(study.photo_filename);
+  deleteCaseStudy(study.id);
+
+  return res.redirect("/admin/case-studies?msg=" + encodeURIComponent("Case study deleted."));
 });
 
 app.get("/admin/pages/:slug", requireAdmin, (req, res) => {

@@ -20,6 +20,18 @@
   const phoneRaw = String(s.phone || "").trim();
   const phoneTel = phoneRaw.replace(/\s+/g, "");
 
+  const managedCaseStudies = Array.isArray(dynamicCaseStudies) ? dynamicCaseStudies : [];
+  const formatManagedDate = (value) => {
+    if (!value) return "";
+    const d = new Date(value + "T12:00:00");
+    if (Number.isNaN(d.getTime())) return String(value);
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }).format(d);
+  };
+
   const caseStudies = [
     {
       slug: "hull-renault-magnum",
@@ -236,6 +248,58 @@
   </div>
 
   <section class="case-studies-list" aria-label="Truck hearse case studies">
+    <% managedCaseStudies.forEach(study => {
+      const managedParagraphs = String(study.body_text || "").split(/\n\s*\n/).map(x => x.trim()).filter(Boolean);
+    %>
+      <article class="card case-study" id="<%= study.slug %>">
+        <h2 class="section-title case-study-title"><%= study.title %></h2>
+
+        <% if (study.event_date || study.vehicle) { %>
+          <div class="case-study-meta-wrap" style="margin:0 0 10px;">
+            <% if (study.event_date) { %>
+              <p class="small muted case-study-meta" style="margin:0 0 4px;">
+                Date:
+                <time datetime="<%= study.event_date %>"><%= formatManagedDate(study.event_date) %></time>
+              </p>
+            <% } %>
+
+            <% if (study.vehicle) { %>
+              <p class="small muted case-study-meta" style="margin:0;">
+                Vehicle: <%= study.vehicle %>
+              </p>
+            <% } %>
+          </div>
+        <% } %>
+
+        <div class="rich case-study-copy">
+          <% managedParagraphs.forEach(paragraph => { %>
+            <p style="white-space:pre-line;"><%= paragraph %></p>
+          <% }) %>
+        </div>
+
+        <% if (study.photo_filename) { %>
+          <div class="case-study-gallery case-study-gallery-single">
+            <figure class="case-study-photo">
+              <a
+                href="/uploads/<%= study.photo_filename %>"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open larger image: <%= study.photo_alt || study.title %>"
+                title="<%= study.photo_alt || study.title %>"
+              >
+                <img
+                  src="/uploads/<%= study.photo_filename %>"
+                  alt="<%= study.photo_alt || study.title %>"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </a>
+            </figure>
+          </div>
+        <% } %>
+      </article>
+    <% }) %>
+
     <% caseStudies.forEach(study => { %>
       <article class="card case-study" id="<%= study.slug %>">
         <h2 class="section-title case-study-title"><%= study.title %></h2>
