@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  syntax-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check server.js
+          node --check src/db.js
+          node --check src/facebook.js
+
+      - name: Compile EJS templates
+        run: |
+          node --input-type=module - <<'NODE'
+          import fs from 'fs';
+          import path from 'path';
+          import ejs from 'ejs';
+
+          const files = [
+            'views/case-studies.ejs',
+            'views/admin/case-studies.ejs',
+            'views/admin/case-study-edit.ejs',
+            'views/admin/case-study-preview.ejs',
+            'views/admin/dashboard.ejs'
+          ];
+
+          for (const file of files) {
+            ejs.compile(fs.readFileSync(path.resolve(file), 'utf8'), { filename: path.resolve(file) });
+            console.log('compiled', file);
+          }
+          NODE
+
+      - name: Check database schema
+        env:
+          DATA_DIR: /tmp/pnw-ci-data
+        run: |
+          rm -rf "$DATA_DIR"
+          node --input-type=module - <<'NODE'
+          const mod = await import('./src/db.js');
+          const row = mod.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='case_studies'").get();
+          if (!row) throw new Error('case_studies table was not created');
+          console.log('case_studies table OK');
+          NODE
