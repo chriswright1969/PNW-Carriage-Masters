@@ -1,0 +1,140 @@
+<%- include('../partials/head', { title }) %>
+<%- include('../partials/header') %>
+
+<%
+  const fmtDate = (value) => {
+    if (!value) return '';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return String(value);
+    return new Intl.DateTimeFormat('en-GB', { day:'numeric', month:'short', year:'numeric' }).format(d);
+  };
+%>
+
+<div class="wrap">
+  <div class="card">
+    <h1 class="section-title">Case Studies</h1>
+    <p class="muted">
+      Import recent PNW Carriage Masters Facebook posts as drafts, edit the wording and details, preview them, then publish to the website.
+    </p>
+
+    <% if (message) { %>
+      <div class="notice" style="margin-top:14px;"><%= message %></div>
+    <% } %>
+
+    <% if (errorMsg) { %>
+      <div class="notice" style="margin-top:14px; border-color:#b42318;">
+        <strong>Facebook import:</strong> <%= errorMsg %>
+      </div>
+    <% } %>
+
+    <div style="margin-top:16px;">
+      <a class="btn" href="/admin">Back to dashboard</a>
+      <a class="btn" href="/case-studies" target="_blank" rel="noopener noreferrer">View public Case Studies</a>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px;">
+    <h2 class="section-title">Facebook import</h2>
+
+    <% if (!facebookConfig.configured) { %>
+      <div class="notice">
+        <strong>Setup required.</strong>
+        Add <code>FACEBOOK_PAGE_ID</code> and <code>FACEBOOK_PAGE_ACCESS_TOKEN</code> to the Render environment.
+        The configured Graph API version is <code><%= facebookConfig.version %></code>.
+      </div>
+    <% } else { %>
+      <p class="small muted">
+        Connected to Page ID <code><%= facebookConfig.pageId %></code> using Graph API <code><%= facebookConfig.version %></code>.
+        Only posts you explicitly import will become website drafts.
+      </p>
+
+      <% if (!facebookPosts.length && !errorMsg) { %>
+        <div class="notice">No recent Facebook posts were returned.</div>
+      <% } %>
+
+      <div style="display:grid; gap:14px;">
+        <% facebookPosts.forEach(post => { 
+          const imported = importedByPostId[String(post.id || '')];
+        %>
+          <div class="notice" style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:16px; align-items:start;">
+            <div>
+              <div class="small muted"><%= fmtDate(post.created_time) %></div>
+              <% if (post.full_picture) { %>
+                <img
+                  src="<%= post.full_picture %>"
+                  alt=""
+                  style="display:block; width:100%; max-width:340px; max-height:230px; object-fit:contain; margin:10px 0; border-radius:8px;"
+                  referrerpolicy="no-referrer"
+                >
+              <% } %>
+
+              <div style="white-space:pre-wrap;"><%= post.message || '(No text in this post)' %></div>
+
+              <% if (post.permalink_url) { %>
+                <div style="margin-top:10px;">
+                  <a href="<%= post.permalink_url %>" target="_blank" rel="noopener noreferrer">Open original Facebook post</a>
+                </div>
+              <% } %>
+            </div>
+
+            <div>
+              <% if (imported) { %>
+                <div class="small muted" style="margin-bottom:8px;">Already imported</div>
+                <a class="btn" href="/admin/case-studies/<%= imported.id %>/edit">Edit draft/case study</a>
+              <% } else { %>
+                <form method="post" action="/admin/case-studies/facebook/<%= encodeURIComponent(post.id) %>/import">
+                  <button class="btn" type="submit">Import as draft</button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="card" style="margin-top:18px;">
+    <h2 class="section-title">Website case studies</h2>
+    <p class="small muted">Facebook imports are drafts until you publish them.</p>
+
+    <% if (!caseStudies.length) { %>
+      <div class="notice">No database-managed case studies yet. The existing hard-coded case studies remain on the public page.</div>
+    <% } %>
+
+    <div style="display:grid; gap:12px;">
+      <% caseStudies.forEach(study => { %>
+        <div class="notice" style="display:flex; gap:16px; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+          <div>
+            <strong><%= study.title %></strong>
+            <div class="small muted">
+              <%= study.event_date ? fmtDate(study.event_date) : 'No date' %>
+              <% if (study.vehicle) { %> · <%= study.vehicle %><% } %>
+              · <%= study.status === 'published' ? 'Published' : 'Draft' %>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <a class="btn" href="/admin/case-studies/<%= study.id %>/edit">Edit</a>
+            <a class="btn" href="/admin/case-studies/<%= study.id %>/preview" target="_blank" rel="noopener noreferrer">Preview</a>
+
+            <% if (study.status === 'published') { %>
+              <form method="post" action="/admin/case-studies/<%= study.id %>/draft">
+                <button class="btn" type="submit">Move to draft</button>
+              </form>
+            <% } else { %>
+              <form method="post" action="/admin/case-studies/<%= study.id %>/publish">
+                <button class="btn" type="submit">Publish</button>
+              </form>
+            <% } %>
+
+            <form method="post" action="/admin/case-studies/<%= study.id %>/delete" onsubmit="return confirm('Delete this case study draft?');">
+              <button class="btn" type="submit">Delete</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
